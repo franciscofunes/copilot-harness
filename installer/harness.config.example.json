@@ -1,5 +1,12 @@
 {
   "initializeSpecKit": true,
+  "specKitRepository": "https://github.com/github/spec-kit",
+  "specKitLayout": "commands",
+  "specKitExtensions": [
+    "git",
+    "bug",
+    "assess"
+  ],
   "installCopilotInstructions": true,
   "installPathInstructions": true,
   "installSharedPrompts": true,
