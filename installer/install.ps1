@@ -130,10 +130,16 @@ $results = [ordered]@{}
 $results[".github/copilot-instructions.md"] = Copy-HarnessFile ".github\copilot-instructions.md" ".github\copilot-instructions.md"
 $results[".github/instructions/tests.instructions.md"] = Copy-HarnessFile ".github\instructions\tests.instructions.md" ".github\instructions\tests.instructions.md"
 $results[".github/instructions/release-testing.instructions.md"] = Copy-HarnessFile ".github\instructions\release-testing.instructions.md" ".github\instructions\release-testing.instructions.md"
+$results[".github/instructions/policy-verification.instructions.md"] = Copy-HarnessFile ".github\instructions\policy-verification.instructions.md" ".github\instructions\policy-verification.instructions.md"
 $results[".github/prompts/feature.prompt.md"] = Copy-HarnessFile ".github\prompts\feature.prompt.md" ".github\prompts\feature.prompt.md"
 $results["spec-kit/constitution-template.md"] = Copy-HarnessFile "spec-kit\constitution-template.md" "spec-kit\constitution-template.md"
+$results["docs/POLICY-GATE.md"] = Copy-HarnessFile "docs\POLICY-GATE.md" "docs\POLICY-GATE.md"
+$results["docs/VERIFICATION-CONTRACT.md"] = Copy-HarnessFile "docs\VERIFICATION-CONTRACT.md" "docs\VERIFICATION-CONTRACT.md"
+$results["docs/SPECKIT-EXTENSIONS-VALIDATION.md"] = Copy-HarnessFile "docs\SPECKIT-EXTENSIONS-VALIDATION.md" "docs\SPECKIT-EXTENSIONS-VALIDATION.md"
 $results["docs/RELEASE-TESTING.md"] = Copy-HarnessFile "docs\RELEASE-TESTING.md" "docs\RELEASE-TESTING.md"
 $results["docs/releases/TESTING-TEMPLATE.md"] = Copy-HarnessFile "docs\releases\TESTING-TEMPLATE.md" "docs\releases\TESTING-TEMPLATE.md"
+$results["scripts/policy-check.ps1"] = Copy-HarnessFile "scripts\policy-check.ps1" "scripts\policy-check.ps1"
+$results["scripts/verify.ps1"] = Copy-HarnessFile "scripts\verify.ps1" "scripts\verify.ps1"
 
 if ($stack.Signals.DotNet) {
     $results[".github/instructions/dotnet.instructions.md"] = Copy-HarnessFile ".github\instructions\dotnet.instructions.md" ".github\instructions\dotnet.instructions.md"
@@ -163,6 +169,14 @@ $manifest = [ordered]@{
         requestedExtensions = @($SpecKitExtensions)
         installedThisRun = @($extensionsInstalled)
     }
+    policy = [ordered]@{
+        gate = "docs/POLICY-GATE.md"
+        evaluator = "scripts/policy-check.ps1"
+    }
+    verification = [ordered]@{
+        contract = "docs/VERIFICATION-CONTRACT.md"
+        runner = "scripts/verify.ps1"
+    }
     releaseTesting = [ordered]@{
         contract = "docs/RELEASE-TESTING.md"
         template = "docs/releases/TESTING-TEMPLATE.md"
@@ -182,6 +196,10 @@ Write-Host "Spec Kit Copilot layout: $SpecKitLayout"
 if (-not $SkipSpecKitExtensions) {
     Write-Host ("Spec Kit extensions requested: " + ($SpecKitExtensions -join ", "))
 }
+Write-Host "Policy gate: docs/POLICY-GATE.md"
+Write-Host "Policy evaluator: scripts/policy-check.ps1"
+Write-Host "Verification contract: docs/VERIFICATION-CONTRACT.md"
+Write-Host "Verification runner: scripts/verify.ps1"
 Write-Host "Release testing contract: docs/RELEASE-TESTING.md"
 
 if (-not $SkipDoctor -and (Test-Path -LiteralPath $doctorScript)) {
