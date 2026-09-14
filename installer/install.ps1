@@ -6,7 +6,14 @@ param(
     [ValidateSet("skip", "overwrite")]
     [string]$ConflictMode = "skip",
 
+    [ValidateSet("commands", "skills")]
+    [string]$SpecKitLayout = "commands",
+
+    [string[]]$SpecKitExtensions = @("git", "bug", "assess"),
+
     [switch]$SkipSpecKit,
+
+    [switch]$SkipSpecKitExtensions,
 
     [switch]$SkipDoctor
 )
@@ -18,6 +25,7 @@ $harnessRoot = Split-Path -Parent $PSScriptRoot
 $targetRoot = (Resolve-Path -LiteralPath $TargetPath).Path
 $detectScript = Join-Path $harnessRoot "scripts\detect-stack.ps1"
 $doctorScript = Join-Path $PSScriptRoot "doctor.ps1"
+$specKitRepository = "https://github.com/github/spec-kit"
 
 function Write-Step([string]$Message) {
     Write-Host "==> $Message"
@@ -57,6 +65,15 @@ function Copy-HarnessFile {
     return "installed"
 }
 
+function Invoke-Specify {
+    param([Parameter(Mandatory)] [string[]]$Arguments)
+
+    & specify @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "specify $($Arguments -join ' ') failed with exit code $LASTEXITCODE."
+    }
+}
+
 Write-Step "Detecting repository stack"
 $stack = & $detectScript -Path $targetRoot
 $detectedStacks = @($stack.DetectedStacks)
@@ -66,26 +83,44 @@ if ($detectedStacks.Count -eq 0) {
     Write-Host ("Detected: " + ($detectedStacks -join ", "))
 }
 
+$specKitInitialized = $false
+$extensionsInstalled = @()
+
 if (-not $SkipSpecKit) {
     $specify = Get-Command specify -ErrorAction SilentlyContinue
     $specKitMarker = Join-Path $targetRoot ".specify"
 
-    if (Test-Path -LiteralPath $specKitMarker) {
-        Write-Host "GitHub Spec Kit already appears initialized; leaving it unchanged."
-    } elseif ($null -eq $specify) {
-        Write-Warning "'specify' was not found. Skipping Spec Kit initialization. Install specify-cli and rerun this installer."
+    if ($null -eq $specify) {
+        Write-Warning "'specify' was not found. GitHub Spec Kit bootstrap cannot run. Install specify-cli from $specKitRepository and rerun this installer."
     } else {
-        Write-Step "Initializing GitHub Spec Kit with Copilot integration"
-        if ($PSCmdlet.ShouldProcess($targetRoot, "Run specify init")) {
-            Push-Location $targetRoot
-            try {
-                & specify init . --here --integration copilot --force
-                if ($LASTEXITCODE -ne 0) {
-                    throw "GitHub Spec Kit initialization failed with exit code $LASTEXITCODE."
+        Push-Location $targetRoot
+        try {
+            if (Test-Path -LiteralPath $specKitMarker) {
+                Write-Host "GitHub Spec Kit already appears initialized; leaving generated core workflow files unchanged."
+            } else {
+                Write-Step "Initializing official github/spec-kit with Copilot integration ($SpecKitLayout layout)"
+                if ($PSCmdlet.ShouldProcess($targetRoot, "Run official github/spec-kit specify init")) {
+                    if ($SpecKitLayout -eq "commands") {
+                        Invoke-Specify @("init", ".", "--here", "--integration", "copilot", "--integration-options=--commands", "--force")
+                    } else {
+                        Invoke-Specify @("init", ".", "--here", "--integration", "copilot", "--force")
+                    }
+                    $specKitInitialized = $true
                 }
-            } finally {
-                Pop-Location
             }
+
+            if (-not $SkipSpecKitExtensions) {
+                foreach ($extension in $SpecKitExtensions) {
+                    if ([string]::IsNullOrWhiteSpace($extension)) { continue }
+                    Write-Step "Ensuring Spec Kit extension '$extension' is installed"
+                    if ($PSCmdlet.ShouldProcess($targetRoot, "Install Spec Kit extension $extension")) {
+                        Invoke-Specify @("extension", "add", $extension)
+                        $extensionsInstalled += $extension
+                    }
+                }
+            }
+        } finally {
+            Pop-Location
         }
     }
 }
@@ -117,21 +152,33 @@ $manifest = [ordered]@{
     installedAtUtc = [DateTime]::UtcNow.ToString("o")
     detectedStacks = $detectedStacks
     conflictMode = $ConflictMode
-    specKitRequested = (-not $SkipSpecKit)
+    specKit = [ordered]@{
+        repository = $specKitRepository
+        requested = (-not $SkipSpecKit)
+        layout = $SpecKitLayout
+        initializedThisRun = $specKitInitialized
+        requestedExtensions = @($SpecKitExtensions)
+        installedThisRun = @($extensionsInstalled)
+    }
 }
 
 if ($PSCmdlet.ShouldProcess($manifestPath, "Write harness manifest")) {
-    $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
+    $manifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
 }
 
 Write-Step "Installation summary"
 foreach ($entry in $results.GetEnumerator()) {
     Write-Host ("{0,-55} {1}" -f $entry.Key, $entry.Value)
 }
+Write-Host "Spec Kit source of truth: $specKitRepository"
+Write-Host "Spec Kit Copilot layout: $SpecKitLayout"
+if (-not $SkipSpecKitExtensions) {
+    Write-Host ("Spec Kit extensions requested: " + ($SpecKitExtensions -join ", "))
+}
 
 if (-not $SkipDoctor -and (Test-Path -LiteralPath $doctorScript)) {
     Write-Step "Running harness doctor"
-    & $doctorScript -TargetPath $targetRoot
+    & $doctorScript -TargetPath $targetRoot -ExpectedSpecKitLayout $SpecKitLayout -ExpectedSpecKitExtensions $SpecKitExtensions
     if ($LASTEXITCODE -ne 0) {
         throw "Harness installation completed, but doctor reported blocking failures."
     }
