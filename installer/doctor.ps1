@@ -98,8 +98,11 @@ if ($stack.Signals.JFrog) {
 
 Test-FileCheck ".github\copilot-instructions.md"
 Test-FileCheck ".github\instructions\tests.instructions.md"
+Test-FileCheck ".github\instructions\release-testing.instructions.md"
 Test-FileCheck ".github\prompts\feature.prompt.md"
 Test-FileCheck "spec-kit\constitution-template.md"
+Test-FileCheck "docs\RELEASE-TESTING.md"
+Test-FileCheck "docs\releases\TESTING-TEMPLATE.md"
 
 if ($stack.Signals.DotNet) {
     Test-FileCheck ".github\instructions\dotnet.instructions.md"
@@ -170,6 +173,12 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         } else {
             Add-Check "manifest:spec-kit-source" "WARN" "manifest does not record the official github/spec-kit repository."
         }
+
+        if ($null -ne $manifest.releaseTesting -and $manifest.releaseTesting.contract -eq "docs/RELEASE-TESTING.md") {
+            Add-Check "manifest:release-testing" "PASS" "release testing contract recorded"
+        } else {
+            Add-Check "manifest:release-testing" "WARN" "manifest does not record the release testing contract."
+        }
     } catch {
         Add-Check "manifest:json" "WARN" "manifest could not be parsed as JSON."
     }
@@ -183,6 +192,7 @@ Write-Host "Repository: $targetRoot"
 Write-Host "Detected stacks: $(if ($stack.DetectedStacks.Count) { $stack.DetectedStacks -join ', ' } else { 'none' })"
 Write-Host "Expected Spec Kit source: $specKitRepository"
 Write-Host "Expected Copilot layout: $ExpectedSpecKitLayout"
+Write-Host "Release testing contract: docs/RELEASE-TESTING.md"
 Write-Host ""
 
 foreach ($check in $checks) {
