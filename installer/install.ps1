@@ -129,8 +129,11 @@ Write-Step "Installing repository-native Copilot harness"
 $results = [ordered]@{}
 $results[".github/copilot-instructions.md"] = Copy-HarnessFile ".github\copilot-instructions.md" ".github\copilot-instructions.md"
 $results[".github/instructions/tests.instructions.md"] = Copy-HarnessFile ".github\instructions\tests.instructions.md" ".github\instructions\tests.instructions.md"
+$results[".github/instructions/release-testing.instructions.md"] = Copy-HarnessFile ".github\instructions\release-testing.instructions.md" ".github\instructions\release-testing.instructions.md"
 $results[".github/prompts/feature.prompt.md"] = Copy-HarnessFile ".github\prompts\feature.prompt.md" ".github\prompts\feature.prompt.md"
 $results["spec-kit/constitution-template.md"] = Copy-HarnessFile "spec-kit\constitution-template.md" "spec-kit\constitution-template.md"
+$results["docs/RELEASE-TESTING.md"] = Copy-HarnessFile "docs\RELEASE-TESTING.md" "docs\RELEASE-TESTING.md"
+$results["docs/releases/TESTING-TEMPLATE.md"] = Copy-HarnessFile "docs\releases\TESTING-TEMPLATE.md" "docs\releases\TESTING-TEMPLATE.md"
 
 if ($stack.Signals.DotNet) {
     $results[".github/instructions/dotnet.instructions.md"] = Copy-HarnessFile ".github\instructions\dotnet.instructions.md" ".github\instructions\dotnet.instructions.md"
@@ -160,6 +163,10 @@ $manifest = [ordered]@{
         requestedExtensions = @($SpecKitExtensions)
         installedThisRun = @($extensionsInstalled)
     }
+    releaseTesting = [ordered]@{
+        contract = "docs/RELEASE-TESTING.md"
+        template = "docs/releases/TESTING-TEMPLATE.md"
+    }
 }
 
 if ($PSCmdlet.ShouldProcess($manifestPath, "Write harness manifest")) {
@@ -175,6 +182,7 @@ Write-Host "Spec Kit Copilot layout: $SpecKitLayout"
 if (-not $SkipSpecKitExtensions) {
     Write-Host ("Spec Kit extensions requested: " + ($SpecKitExtensions -join ", "))
 }
+Write-Host "Release testing contract: docs/RELEASE-TESTING.md"
 
 if (-not $SkipDoctor -and (Test-Path -LiteralPath $doctorScript)) {
     Write-Step "Running harness doctor"
