@@ -79,6 +79,46 @@ Examples:
 
 Where a safe preview is possible, produce the preview and request approval for the destructive step.
 
+## Executable evaluator
+
+`scripts/policy-check.ps1` provides a deterministic policy decision before an action is executed.
+
+Examples:
+
+```powershell
+.\scripts\policy-check.ps1 -ActionKind read
+
+.\scripts\policy-check.ps1 `
+  -ActionKind remote-mutate `
+  -Environment shared `
+  -Target "GitHub pull request"
+
+.\scripts\policy-check.ps1 `
+  -ActionKind remote-mutate `
+  -Environment shared `
+  -Target "GitHub pull request" `
+  -ExplicitIntent
+
+.\scripts\policy-check.ps1 `
+  -ActionKind destructive `
+  -Environment production `
+  -Target "production database migration" `
+  -ImmediateApproval
+```
+
+Exit codes:
+
+| Exit | Meaning |
+| ---: | --- |
+| `0` | `ALLOW` |
+| `20` | `REQUIRE_INTENT` |
+| `30` | `REQUIRE_APPROVAL` |
+| `40` | policy evaluation error / unsupported decision |
+
+Use `-Json` when another script or agent needs machine-readable output.
+
+The evaluator intentionally requires the caller to declare action kind and environment instead of guessing authorization from natural language.
+
 ## Always prohibited
 
 The harness must not:
