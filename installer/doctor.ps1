@@ -1,7 +1,12 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [string]$TargetPath = "."
+    [string]$TargetPath = ".",
+
+    [ValidateSet("commands", "skills")]
+    [string]$ExpectedSpecKitLayout = "commands",
+
+    [string[]]$ExpectedSpecKitExtensions = @("git", "bug", "assess")
 )
 
 Set-StrictMode -Version Latest
@@ -11,6 +16,7 @@ $harnessRoot = Split-Path -Parent $PSScriptRoot
 $targetRoot = (Resolve-Path -LiteralPath $TargetPath).Path
 $detectScript = Join-Path $harnessRoot "scripts\detect-stack.ps1"
 $stack = & $detectScript -Path $targetRoot
+$specKitRepository = "https://github.com/github/spec-kit"
 
 $checks = New-Object System.Collections.Generic.List[object]
 
@@ -70,7 +76,7 @@ if ($isWindows) {
 
 Test-CommandCheck "git" $true "Git is required for the repository workflow."
 Test-CommandCheck "gh" $true "GitHub CLI is required by the approved workflow."
-Test-CommandCheck "specify" $false "Install GitHub Spec Kit specify-cli to initialize or update SDD assets."
+Test-CommandCheck "specify" $false "Install the official github/spec-kit specify-cli from $specKitRepository."
 Test-CommandCheck "uv" $false "uv is the recommended installer/runtime for specify-cli."
 
 if ($stack.Signals.DotNet) {
@@ -109,14 +115,64 @@ if ($stack.Signals.SqlServer -or $stack.Signals.MongoDb -or $stack.Signals.Snowf
 
 $specKitMarker = Join-Path $targetRoot ".specify"
 if (Test-Path -LiteralPath $specKitMarker) {
-    Add-Check "spec-kit" "PASS" ".specify directory detected"
+    Add-Check "spec-kit" "PASS" ".specify directory detected; expected source of truth is $specKitRepository"
+
+    if ($ExpectedSpecKitLayout -eq "commands") {
+        $agentFiles = @(Get-ChildItem -LiteralPath (Join-Path $targetRoot ".github\agents") -Filter "*.agent.md" -File -ErrorAction SilentlyContinue)
+        $promptFiles = @(Get-ChildItem -LiteralPath (Join-Path $targetRoot ".github\prompts") -Filter "*.prompt.md" -File -ErrorAction SilentlyContinue)
+        if ($agentFiles.Count -gt 0 -or $promptFiles.Count -gt 1) {
+            Add-Check "spec-kit:layout" "PASS" "commands layout evidence detected under .github/agents or .github/prompts"
+        } else {
+            Add-Check "spec-kit:layout" "WARN" "commands layout expected, but no generated Spec Kit agents/prompts were detected."
+        }
+    } else {
+        $skillsPath = Join-Path $targetRoot ".github\skills"
+        if (Test-Path -LiteralPath $skillsPath) {
+            Add-Check "spec-kit:layout" "PASS" "skills layout detected under .github/skills"
+        } else {
+            Add-Check "spec-kit:layout" "WARN" "skills layout expected, but .github/skills was not detected."
+        }
+    }
+
+    $specify = Get-Command specify -ErrorAction SilentlyContinue
+    if ($null -ne $specify) {
+        Push-Location $targetRoot
+        try {
+            $extensionOutput = (& specify extension list 2>&1 | Out-String)
+            if ($LASTEXITCODE -eq 0) {
+                foreach ($extension in $ExpectedSpecKitExtensions) {
+                    if ($extensionOutput -match "(?im)^.*\b$([regex]::Escape($extension))\b.*$") {
+                        Add-Check "spec-kit:extension:$extension" "PASS" "installed"
+                    } else {
+                        Add-Check "spec-kit:extension:$extension" "WARN" "recommended extension is not listed; run: specify extension add $extension"
+                    }
+                }
+            } else {
+                Add-Check "spec-kit:extensions" "WARN" "could not query installed extensions; verify with: specify extension list"
+            }
+        } finally {
+            Pop-Location
+        }
+    } else {
+        Add-Check "spec-kit:extensions" "WARN" "specify CLI unavailable; cannot verify recommended extensions."
+    }
 } else {
-    Add-Check "spec-kit" "WARN" "Spec Kit is not initialized in this repository yet."
+    Add-Check "spec-kit" "WARN" "Official github/spec-kit is not initialized in this repository yet."
 }
 
 $manifestPath = Join-Path $targetRoot ".copilot-harness.json"
 if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
     Add-Check "manifest" "PASS" ".copilot-harness.json present"
+    try {
+        $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        if ($null -ne $manifest.specKit -and $manifest.specKit.repository -eq $specKitRepository) {
+            Add-Check "manifest:spec-kit-source" "PASS" $specKitRepository
+        } else {
+            Add-Check "manifest:spec-kit-source" "WARN" "manifest does not record the official github/spec-kit repository."
+        }
+    } catch {
+        Add-Check "manifest:json" "WARN" "manifest could not be parsed as JSON."
+    }
 } else {
     Add-Check "manifest" "WARN" "No installer manifest found; repository may have been configured manually."
 }
@@ -125,6 +181,8 @@ Write-Host ""
 Write-Host "Copilot Harness Doctor"
 Write-Host "Repository: $targetRoot"
 Write-Host "Detected stacks: $(if ($stack.DetectedStacks.Count) { $stack.DetectedStacks -join ', ' } else { 'none' })"
+Write-Host "Expected Spec Kit source: $specKitRepository"
+Write-Host "Expected Copilot layout: $ExpectedSpecKitLayout"
 Write-Host ""
 
 foreach ($check in $checks) {
