@@ -65,6 +65,40 @@ Required for release readiness:
 - required CI/security/compliance checks are green or explicitly blocked/skipped by an authorized decision;
 - release notes and version impact are correct.
 
+## Deterministic runner
+
+`scripts/verify.ps1` executes baseline verification and emits the evidence states above.
+
+Examples:
+
+```powershell
+.\scripts\verify.ps1 -TargetPath . -ChangeType powershell
+.\scripts\verify.ps1 -TargetPath . -ChangeType dotnet
+.\scripts\verify.ps1 -TargetPath . -ChangeType angular
+.\scripts\verify.ps1 -TargetPath . -ChangeType release -Json
+```
+
+`-ChangeType auto` uses detected stack signals and chooses a conservative baseline. Repository-specific V3/V4 checks remain explicit instead of being guessed.
+
+Current built-in checks include:
+- `git diff --check` when the target is a Git work tree;
+- PowerShell parse validation;
+- harness smoke tests for PowerShell changes when `tests/smoke.ps1` exists;
+- `.NET` build/test without restore when a root solution is available;
+- Angular lint when the repository defines a lint script;
+- explicit `NOT RUN` evidence for integration/data/security/platform/release checks that require environment-specific commands.
+
+Exit codes:
+
+| Exit | Meaning |
+| ---: | --- |
+| `0` | no `FAIL`, `BLOCKED`, or `NOT RUN` evidence remains |
+| `1` | one or more checks are `FAIL` |
+| `2` | no failures, but one or more required checks are `BLOCKED` |
+| `3` | no failures/blockers, but required checks remain `NOT RUN` |
+
+The runner never converts missing tooling or missing environment-specific execution into `PASS`.
+
 ## Change-type matrix
 
 | Change type | Minimum evidence |
