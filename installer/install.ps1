@@ -1,0 +1,140 @@
+[CmdletBinding(SupportsShouldProcess = $true)]
+param(
+    [Parameter(Position = 0)]
+    [string]$TargetPath = ".",
+
+    [ValidateSet("skip", "overwrite")]
+    [string]$ConflictMode = "skip",
+
+    [switch]$SkipSpecKit,
+
+    [switch]$SkipDoctor
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$harnessRoot = Split-Path -Parent $PSScriptRoot
+$targetRoot = (Resolve-Path -LiteralPath $TargetPath).Path
+$detectScript = Join-Path $harnessRoot "scripts\detect-stack.ps1"
+$doctorScript = Join-Path $PSScriptRoot "doctor.ps1"
+
+function Write-Step([string]$Message) {
+    Write-Host "==> $Message"
+}
+
+function Copy-HarnessFile {
+    param(
+        [Parameter(Mandatory)] [string]$SourceRelativePath,
+        [Parameter(Mandatory)] [string]$DestinationRelativePath
+    )
+
+    $source = Join-Path $harnessRoot $SourceRelativePath
+    $destination = Join-Path $targetRoot $DestinationRelativePath
+
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
+        throw "Harness source file not found: $source"
+    }
+
+    $destinationDirectory = Split-Path -Parent $destination
+    if (-not (Test-Path -LiteralPath $destinationDirectory)) {
+        if ($PSCmdlet.ShouldProcess($destinationDirectory, "Create directory")) {
+            New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
+        }
+    }
+
+    if (Test-Path -LiteralPath $destination -PathType Leaf) {
+        if ($ConflictMode -eq "skip") {
+            Write-Warning "Skipping existing file: $DestinationRelativePath"
+            return "skipped"
+        }
+    }
+
+    if ($PSCmdlet.ShouldProcess($destination, "Install harness file")) {
+        Copy-Item -LiteralPath $source -Destination $destination -Force
+    }
+
+    return "installed"
+}
+
+Write-Step "Detecting repository stack"
+$stack = & $detectScript -Path $targetRoot
+$detectedStacks = @($stack.DetectedStacks)
+if ($detectedStacks.Count -eq 0) {
+    Write-Host "No known application stack detected; installing base harness only."
+} else {
+    Write-Host ("Detected: " + ($detectedStacks -join ", "))
+}
+
+if (-not $SkipSpecKit) {
+    $specify = Get-Command specify -ErrorAction SilentlyContinue
+    $specKitMarker = Join-Path $targetRoot ".specify"
+
+    if (Test-Path -LiteralPath $specKitMarker) {
+        Write-Host "GitHub Spec Kit already appears initialized; leaving it unchanged."
+    } elseif ($null -eq $specify) {
+        Write-Warning "'specify' was not found. Skipping Spec Kit initialization. Install specify-cli and rerun this installer."
+    } else {
+        Write-Step "Initializing GitHub Spec Kit with Copilot integration"
+        if ($PSCmdlet.ShouldProcess($targetRoot, "Run specify init")) {
+            Push-Location $targetRoot
+            try {
+                & specify init . --here --integration copilot --force
+                if ($LASTEXITCODE -ne 0) {
+                    throw "GitHub Spec Kit initialization failed with exit code $LASTEXITCODE."
+                }
+            } finally {
+                Pop-Location
+            }
+        }
+    }
+}
+
+Write-Step "Installing repository-native Copilot harness"
+$results = [ordered]@{}
+$results[".github/copilot-instructions.md"] = Copy-HarnessFile ".github\copilot-instructions.md" ".github\copilot-instructions.md"
+$results[".github/instructions/tests.instructions.md"] = Copy-HarnessFile ".github\instructions\tests.instructions.md" ".github\instructions\tests.instructions.md"
+$results[".github/prompts/feature.prompt.md"] = Copy-HarnessFile ".github\prompts\feature.prompt.md" ".github\prompts\feature.prompt.md"
+$results["spec-kit/constitution-template.md"] = Copy-HarnessFile "spec-kit\constitution-template.md" "spec-kit\constitution-template.md"
+
+if ($stack.Signals.DotNet) {
+    $results[".github/instructions/dotnet.instructions.md"] = Copy-HarnessFile ".github\instructions\dotnet.instructions.md" ".github\instructions\dotnet.instructions.md"
+}
+
+if ($stack.Signals.Angular) {
+    $results[".github/instructions/angular.instructions.md"] = Copy-HarnessFile ".github\instructions\angular.instructions.md" ".github\instructions\angular.instructions.md"
+}
+
+if ($stack.Signals.SqlServer -or $stack.Signals.MongoDb -or $stack.Signals.Snowflake -or $stack.Signals.Parquet) {
+    $results[".github/instructions/data.instructions.md"] = Copy-HarnessFile ".github\instructions\data.instructions.md" ".github\instructions\data.instructions.md"
+}
+
+$versionFile = Join-Path $harnessRoot "VERSION"
+$harnessVersion = if (Test-Path -LiteralPath $versionFile) { (Get-Content -LiteralPath $versionFile -Raw).Trim() } else { "unknown" }
+$manifestPath = Join-Path $targetRoot ".copilot-harness.json"
+$manifest = [ordered]@{
+    harnessVersion = $harnessVersion
+    installedAtUtc = [DateTime]::UtcNow.ToString("o")
+    detectedStacks = $detectedStacks
+    conflictMode = $ConflictMode
+    specKitRequested = (-not $SkipSpecKit)
+}
+
+if ($PSCmdlet.ShouldProcess($manifestPath, "Write harness manifest")) {
+    $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
+}
+
+Write-Step "Installation summary"
+foreach ($entry in $results.GetEnumerator()) {
+    Write-Host ("{0,-55} {1}" -f $entry.Key, $entry.Value)
+}
+
+if (-not $SkipDoctor -and (Test-Path -LiteralPath $doctorScript)) {
+    Write-Step "Running harness doctor"
+    & $doctorScript -TargetPath $targetRoot
+    if ($LASTEXITCODE -ne 0) {
+        throw "Harness installation completed, but doctor reported blocking failures."
+    }
+}
+
+Write-Host "Copilot Harness bootstrap complete."
