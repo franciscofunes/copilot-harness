@@ -1,0 +1,26 @@
+name: Harness Smoke
+
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-smoke:
+    name: PowerShell smoke
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run harness smoke checks
+        shell: pwsh
+        run: .\tests\smoke.ps1

@@ -1,0 +1,26 @@
+{
+  "initializeSpecKit": true,
+  "specKitRepository": "https://github.com/github/spec-kit",
+  "specKitLayout": "commands",
+  "specKitExtensions": [
+    "git",
+    "bug",
+    "assess"
+  ],
+  "installCopilotInstructions": true,
+  "installPathInstructions": true,
+  "installSharedPrompts": true,
+  "installConstitutionTemplate": true,
+  "conflictMode": "skip",
+  "requiredTools": [
+    "git",
+    "gh",
+    "dotnet",
+    "node",
+    "npm",
+    "az",
+    "jf",
+    "uv",
+    "specify"
+  ]
+}
