@@ -1,0 +1,19 @@
+{
+  "initializeSpecKit": true,
+  "installCopilotInstructions": true,
+  "installPathInstructions": true,
+  "installSharedPrompts": true,
+  "installConstitutionTemplate": true,
+  "conflictMode": "skip",
+  "requiredTools": [
+    "git",
+    "gh",
+    "dotnet",
+    "node",
+    "npm",
+    "az",
+    "jf",
+    "uv",
+    "specify"
+  ]
+}
