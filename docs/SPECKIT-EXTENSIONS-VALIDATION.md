@@ -23,7 +23,11 @@ Harness mapping:
 - test supports V2/V3 execution evidence;
 - the test result still enters the harness evidence model as PASS/FAIL/BLOCKED/SKIPPED/NOT RUN.
 
-The bug extension is additive. Its `test` step does not replace repository-defined build/test/security/compliance checks.
+The bug extension is additive. Its `test` step does not replace repository-defined build/test/security/compliance checks. After defect work, run the harness verifier as the deterministic baseline:
+
+```powershell
+.\scripts\verify.ps1 -TargetPath . -ChangeType auto
+```
 
 ### `git` — recommended workflow support
 
@@ -35,7 +39,15 @@ Harness mapping:
 - branch validation contributes V0 workflow/scope evidence;
 - remote push/merge/release actions remain A3 even when a git extension command initiated the workflow.
 
-The harness Git Flow conventions remain authoritative for this repository.
+The harness Git Flow conventions remain authoritative for this repository. Before a remote Git operation, the executable gate can be called explicitly:
+
+```powershell
+.\scripts\policy-check.ps1 `
+  -ActionKind remote-mutate `
+  -Environment shared `
+  -Target "push feature branch" `
+  -ExplicitIntent
+```
 
 ### `agent-context` — optional context maintenance
 
@@ -71,7 +83,22 @@ The harness may use hooks to surface verification commands, but with these const
 4. Hooks must not bypass repository CI, security or compliance gates.
 5. `auto_execute_hooks` must not be treated as a security authorization mechanism.
 
-A useful future pattern is an `after_implement` verification hook that invokes a harness-owned deterministic verification runner. This should remain optional until tested against the approved Spec Kit version and IDE behavior.
+A useful optional pattern is an `after_implement` hook that invokes the harness-owned deterministic verifier:
+
+```text
+Spec Kit implement
+    -> after_implement
+    -> scripts/verify.ps1
+    -> PASS / FAIL / BLOCKED / SKIPPED / NOT RUN
+```
+
+Before enabling this hook in a target repository:
+
+1. verify the hook capability against the approved Spec Kit version;
+2. test it on Windows/PowerShell;
+3. make failure propagation explicit;
+4. ensure it does not mutate remote/shared state without the Policy Gate;
+5. document the exact command and expected exit-code behavior.
 
 ## Extension discovery and trust
 
@@ -112,4 +139,13 @@ Catalog presence is discovery metadata, not proof that third-party extension cod
 
 The harness must remain functional when optional extensions are absent.
 
-Extensions can provide commands, artifacts, context and lifecycle hooks, but the source of truth for authorization is `docs/POLICY-GATE.md` and the source of truth for acceptance evidence is `docs/VERIFICATION-CONTRACT.md` plus the repository's executable checks.
+The hierarchy is deliberate:
+
+1. active Spec Kit artifacts define requested engineering scope;
+2. optional Spec Kit extensions improve workflow/context;
+3. `scripts/policy-check.ps1` evaluates execution authorization;
+4. approved tools perform the action;
+5. `scripts/verify.ps1` plus repository/environment checks produce evidence;
+6. `docs/VERIFICATION-CONTRACT.md` determines whether the result is acceptable.
+
+Extensions can make the workflow better; they cannot make the authorization or evidence model weaker.
