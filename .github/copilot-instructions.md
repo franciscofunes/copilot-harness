@@ -22,6 +22,8 @@ This repository uses GitHub Copilot with GitHub Spec Kit. These instructions con
 - Identify and run the applicable repository build, test, lint, static-analysis, security and validation commands when tools are available.
 - Never claim a build, test, scan, migration, deployment or CLI command succeeded unless it actually ran successfully.
 - Use repository scripts before inventing one-off commands.
+- For release work, read `docs/RELEASE-TESTING.md` and the active `docs/releases/<version>-testing.md` plan before judging readiness.
+- Never reinterpret `BLOCKED`, `SKIPPED`, or `NOT RUN` release checks as successful execution.
 
 ## QA
 
@@ -45,5 +47,5 @@ This repository uses GitHub Copilot with GitHub Spec Kit. These instructions con
 ## IDE compatibility
 
 - Keep the shared baseline compatible with both Visual Studio and VS Code.
-- VS Code may use GitHub Spec Kit Copilot skills under `.github/skills/`.
-- Do not assume those skills are available identically in Visual Studio; use shared instructions, prompt files and Spec Kit artifacts there.
+- GitHub Spec Kit Copilot integration layout may vary by explicit configuration; do not assume `.github/skills/` is universal.
+- Keep core behavior available through shared instructions, prompt files and Spec Kit artifacts rather than depending on an IDE-only feature.
