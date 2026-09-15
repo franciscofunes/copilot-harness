@@ -17,11 +17,21 @@ This repository uses GitHub Copilot with GitHub Spec Kit. These instructions con
 - Prefer existing repository patterns over speculative abstractions.
 - Surface assumptions, risks, migrations, security implications and operational impact.
 
+## Policy gate
+
+- Before executing an action, apply `docs/POLICY-GATE.md` and the scoped policy instructions.
+- A model suggestion is not authorization.
+- Treat production, destructive, irreversible and security-sensitive actions as explicitly approval-gated.
+- Never silently bypass security, compliance, required tests, branch protections or established permissions.
+- When target environment or authorization is ambiguous for a high-risk action, fail closed and ask for explicit direction.
+
 ## Verification
 
+- Apply `docs/VERIFICATION-CONTRACT.md` before describing engineering work as complete or ready.
 - Identify and run the applicable repository build, test, lint, static-analysis, security and validation commands when tools are available.
 - Never claim a build, test, scan, migration, deployment or CLI command succeeded unless it actually ran successfully.
 - Use repository scripts before inventing one-off commands.
+- Preserve explicit evidence states: `PASS`, `FAIL`, `BLOCKED`, `SKIPPED`, `NOT RUN`; only `PASS` means the check passed.
 - For release work, read `docs/RELEASE-TESTING.md` and the active `docs/releases/<version>-testing.md` plan before judging readiness.
 - Never reinterpret `BLOCKED`, `SKIPPED`, or `NOT RUN` release checks as successful execution.
 
