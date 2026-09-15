@@ -48,7 +48,8 @@ function Invoke-VerifyJson {
     param([string]$Target,[string]$ChangeType="docs",[string]$ProfilePath)
     if ($ProfilePath) { $text = (& $verifyScript -TargetPath $Target -ChangeType $ChangeType -ProfilePath $ProfilePath -Json | Out-String) }
     else { $text = (& $verifyScript -TargetPath $Target -ChangeType $ChangeType -Json | Out-String) }
-    return [pscustomobject]@{ Exit=$LASTEXITCODE; Data=($text | ConvertFrom-Json) }
+    $verifyExit = $LASTEXITCODE
+    return [pscustomobject]@{ Exit=$verifyExit; Data=($text | ConvertFrom-Json) }
 }
 
 function Write-Profile {
@@ -73,27 +74,23 @@ try {
     $docs = Invoke-VerifyJson $docsFixture
     if ($docs.Exit -ne 0 -or -not $docs.Data.Ready) { throw "Documentation fallback fixture should be ready." }
 
-    # Valid A1 profile: use PowerShell itself as a deterministic, side-effect-free child process.
     $profileFixture = New-VerifyFixture "profile-pass"
     $profilePath = Join-Path $profileFixture ".copilot-harness.verify.json"
     Write-Profile $profilePath ([ordered]@{ schemaVersion=1; checks=@([ordered]@{ id="V1-PROFILE-PASS"; name="Profile pass"; changeTypes=@("docs"); verificationLevel="V1"; policyClass="A1"; command="powershell"; args=@("-NoProfile","-Command","exit 0"); required=$true }) })
     $pass = Invoke-VerifyJson $profileFixture
     if ($pass.Exit -ne 0 -or -not $pass.Data.Ready -or @($pass.Data.Results | Where-Object { $_.Id -eq "V1-PROFILE-PASS" -and $_.State -eq "PASS" }).Count -ne 1) { throw "Allowed A1 profile should execute and PASS." }
 
-    # Explicit profile path and change-type mismatch.
     $explicitFixture = New-VerifyFixture "profile-explicit"
     $explicitPath = Join-Path $temp "explicit-profile.json"
     Write-Profile $explicitPath ([ordered]@{ schemaVersion=1; checks=@([ordered]@{ id="V1-EXPLICIT"; name="Explicit profile"; changeTypes=@("dotnet"); verificationLevel="V1"; policyClass="A1"; command="powershell"; args=@("-NoProfile","-Command","exit 0") }) })
     $explicit = Invoke-VerifyJson $explicitFixture "docs" $explicitPath
     if ($explicit.Exit -ne 0 -or @($explicit.Data.Results | Where-Object { $_.Id -eq "V1-EXPLICIT" -and $_.State -eq "SKIPPED" }).Count -ne 1) { throw "Explicit profile should load and nonmatching change type should SKIP." }
 
-    # Child command failure must become FAIL/exit 1.
     $failFixture = New-VerifyFixture "profile-fail"
     Write-Profile (Join-Path $failFixture ".copilot-harness.verify.json") ([ordered]@{ schemaVersion=1; checks=@([ordered]@{ id="V2-EXPECTED-FAIL"; name="Expected child failure"; changeTypes=@("all"); verificationLevel="V2"; policyClass="A1"; command="powershell"; args=@("-NoProfile","-Command","exit 7") }) })
     $failed = Invoke-VerifyJson $failFixture
     if ($failed.Exit -ne 1 -or @($failed.Data.Results | Where-Object { $_.Id -eq "V2-EXPECTED-FAIL" -and $_.State -eq "FAIL" }).Count -ne 1) { throw "Failed child command must produce FAIL/exit 1." }
 
-    # A repository profile cannot authorize A2/A3/A4.
     foreach ($policyClass in @("A2","A3","A4")) {
         $blockedFixture = New-VerifyFixture ("profile-" + $policyClass.ToLowerInvariant())
         Write-Profile (Join-Path $blockedFixture ".copilot-harness.verify.json") ([ordered]@{ schemaVersion=1; checks=@([ordered]@{ id="POLICY-$policyClass"; name="Blocked $policyClass"; changeTypes=@("all"); verificationLevel="V1"; policyClass=$policyClass; command="powershell"; args=@("-NoProfile","-Command","exit 0") }) })
@@ -101,13 +98,11 @@ try {
         if ($blocked.Exit -ne 2 -or @($blocked.Data.Results | Where-Object { $_.Id -eq "POLICY-$policyClass" -and $_.State -eq "BLOCKED" }).Count -ne 1) { throw "$policyClass profile action must be BLOCKED/exit 2." }
     }
 
-    # Non-allowlisted process cannot execute.
     $allowFixture = New-VerifyFixture "profile-allowlist"
     Write-Profile (Join-Path $allowFixture ".copilot-harness.verify.json") ([ordered]@{ schemaVersion=1; checks=@([ordered]@{ id="ALLOWLIST"; name="Disallowed executable"; changeTypes=@("all"); verificationLevel="V1"; policyClass="A1"; command="cmd"; args=@("/c","exit 0") }) })
     $allow = Invoke-VerifyJson $allowFixture
     if ($allow.Exit -ne 2 -or @($allow.Data.Results | Where-Object { $_.Id -eq "ALLOWLIST" -and $_.State -eq "BLOCKED" }).Count -ne 1) { throw "Non-allowlisted executable must be BLOCKED." }
 
-    # Malformed and unsupported profiles fail closed.
     $badJsonFixture = New-VerifyFixture "profile-bad-json"
     Set-Content -LiteralPath (Join-Path $badJsonFixture ".copilot-harness.verify.json") -Value '{bad json'
     $badJson = Invoke-VerifyJson $badJsonFixture
@@ -131,6 +126,11 @@ try {
     Write-Host "PASS: A1 profile execution, command failure, and change-type filtering are deterministic."
     Write-Host "PASS: A2/A3/A4 profile actions and non-allowlisted executables fail closed."
     Write-Host "PASS: Malformed, unsupported, and incomplete profiles fail closed."
+
+    # Expected negative fixtures intentionally leave LASTEXITCODE non-zero.
+    # A successful smoke suite must explicitly return success to the CI runner.
+    $global:LASTEXITCODE = 0
+    exit 0
 } finally {
     Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
 }
