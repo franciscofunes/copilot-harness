@@ -99,10 +99,16 @@ if ($stack.Signals.JFrog) {
 Test-FileCheck ".github\copilot-instructions.md"
 Test-FileCheck ".github\instructions\tests.instructions.md"
 Test-FileCheck ".github\instructions\release-testing.instructions.md"
+Test-FileCheck ".github\instructions\policy-verification.instructions.md"
 Test-FileCheck ".github\prompts\feature.prompt.md"
 Test-FileCheck "spec-kit\constitution-template.md"
+Test-FileCheck "docs\POLICY-GATE.md"
+Test-FileCheck "docs\VERIFICATION-CONTRACT.md"
+Test-FileCheck "docs\SPECKIT-EXTENSIONS-VALIDATION.md"
 Test-FileCheck "docs\RELEASE-TESTING.md"
 Test-FileCheck "docs\releases\TESTING-TEMPLATE.md"
+Test-FileCheck "scripts\policy-check.ps1"
+Test-FileCheck "scripts\verify.ps1"
 
 if ($stack.Signals.DotNet) {
     Test-FileCheck ".github\instructions\dotnet.instructions.md"
@@ -179,6 +185,18 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         } else {
             Add-Check "manifest:release-testing" "WARN" "manifest does not record the release testing contract."
         }
+
+        if ($null -ne $manifest.policy -and $manifest.policy.gate -eq "docs/POLICY-GATE.md" -and $manifest.policy.evaluator -eq "scripts/policy-check.ps1") {
+            Add-Check "manifest:policy" "PASS" "policy gate and evaluator recorded"
+        } else {
+            Add-Check "manifest:policy" "WARN" "manifest does not record executable policy assets."
+        }
+
+        if ($null -ne $manifest.verification -and $manifest.verification.contract -eq "docs/VERIFICATION-CONTRACT.md" -and $manifest.verification.runner -eq "scripts/verify.ps1") {
+            Add-Check "manifest:verification" "PASS" "verification contract and runner recorded"
+        } else {
+            Add-Check "manifest:verification" "WARN" "manifest does not record executable verification assets."
+        }
     } catch {
         Add-Check "manifest:json" "WARN" "manifest could not be parsed as JSON."
     }
@@ -192,6 +210,8 @@ Write-Host "Repository: $targetRoot"
 Write-Host "Detected stacks: $(if ($stack.DetectedStacks.Count) { $stack.DetectedStacks -join ', ' } else { 'none' })"
 Write-Host "Expected Spec Kit source: $specKitRepository"
 Write-Host "Expected Copilot layout: $ExpectedSpecKitLayout"
+Write-Host "Policy gate: docs/POLICY-GATE.md"
+Write-Host "Verification contract: docs/VERIFICATION-CONTRACT.md"
 Write-Host "Release testing contract: docs/RELEASE-TESTING.md"
 Write-Host ""
 
