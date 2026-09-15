@@ -4,6 +4,35 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.4.0] - 2026-09-15
+
+### Added
+
+- Repository-configurable verification profiles through `.copilot-harness.verify.json`.
+- Explicit verification profile selection with `-ProfilePath`.
+- Direct executable + argument-array invocation for repository checks without shell evaluation or `Invoke-Expression`.
+- Verification-profile CLI allowlist for supported development and verification tooling.
+- Profile change-type filtering and preservation of explicit harness evidence states.
+- Example verification profile and repository profile documentation.
+- Repository-neutral PR branch-position diagram convention alongside the technical Mermaid change diagram.
+
+### Changed
+
+- `scripts/verify.ps1` can use repository-specific deterministic checks while retaining generic stack-aware verification when no profile exists.
+- Automatic profile execution is restricted to A0/A1 verification; A2-A4 actions cannot gain authorization from repository configuration.
+- Installed target-repository guidance supports only `feature/*` and `release/*` working branch families and does not assume a `develop` branch.
+- PR templates no longer project this harness repository's internal integration topology onto target solutions.
+
+### Security
+
+- Repository verification profiles are treated as reviewed executable configuration.
+- Profile commands use direct process invocation rather than arbitrary shell expressions.
+- Remote, destructive, production, and security-sensitive operations remain governed by the Policy Gate and cannot be authorized by a verification profile.
+
+### Notes
+
+This release makes the verification layer repository-aware without expanding global Copilot context or weakening the v0.3.0 policy boundary.
+
 ## [0.3.0] - 2026-09-15
 
 ### Added
