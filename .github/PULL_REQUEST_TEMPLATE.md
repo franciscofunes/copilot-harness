@@ -34,7 +34,7 @@ flowchart LR
   FEATURE -->|pull request into| BASE
 ```
 
-For a release PR, replace `feature/example` with `release/x.y.z`. Do not introduce `develop`, `hotfix/*`, or any other branch family unless it actually exists in the repository being documented.
+For a release PR, replace `feature/example` with `release/x.y.z`. Do not introduce `develop`, `hotfix/*`, or any other branch family into generated target-repository guidance.
 
 ## QA handoff
 
