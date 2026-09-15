@@ -59,7 +59,7 @@ function Invoke-VerificationCommand {
             Add-Result $Id "PASS" $Check $summary
         } else {
             $summary = if ([string]::IsNullOrWhiteSpace($output)) { "Command failed with exit code $exitCode." } else { ($output -split "`r?`n" | Select-Object -Last 8) -join " | " }
-            Add-Result $Id "FAIL" $Check "Exit $exitCode: $summary"
+            Add-Result $Id "FAIL" $Check "Exit ${exitCode}: $summary"
         }
     } catch {
         Add-Result $Id "FAIL" $Check $_.Exception.Message
@@ -82,7 +82,7 @@ function Test-PowerShellFiles {
         $errors = $null
         [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$errors) | Out-Null
         if ($errors.Count -gt 0) {
-            Add-Result "V1-PS" "FAIL" "PowerShell parse" "$($file.FullName): $($errors[0].Message)"
+            Add-Result "V1-PS" "FAIL" "PowerShell parse" "${file}: $($errors[0].Message)"
             return
         }
     }
