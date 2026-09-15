@@ -69,6 +69,17 @@ try {
     $verifyFixture = Join-Path $temp "verify-fixture"
     New-Item -ItemType Directory -Path $verifyFixture -Force | Out-Null
     Set-Content -LiteralPath (Join-Path $verifyFixture "README.md") -Value "fixture"
+
+    Push-Location $verifyFixture
+    try {
+        & git init --quiet
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to initialize verification fixture as a Git repository."
+        }
+    } finally {
+        Pop-Location
+    }
+
     $verifyJson = (& (Join-Path $repoRoot "scripts\verify.ps1") -TargetPath $verifyFixture -ChangeType docs -Json | Out-String)
     if ($LASTEXITCODE -ne 0) {
         throw "Documentation verification fixture should complete without blocking evidence."
