@@ -8,7 +8,7 @@ Start from `config/verification.profile.example.json` and copy it to the target 
 
 The harness must not project this tool repository's internal branch topology onto installed solutions. Target repositories support working branches named only `feature/*` and `release/*`.
 
-Generated guidance, PR templates, diagrams, and Copilot instructions must not introduce `develop`, `hotfix/*`, or other branch families unless a target repository explicitly defines them. PR branch diagrams should use the repository's actual base branch rather than inventing a conventional branch name.
+Generated target-repository guidance, PR templates, diagrams, and Copilot instructions must not introduce `develop`, `hotfix/*`, or other branch families. PR branch diagrams should use the repository's actual base branch rather than inventing a conventional branch name.
 
 The `copilot-harness` repository can use its own integration topology to build and release the tool; that implementation detail is not an installation requirement.
 
