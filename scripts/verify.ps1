@@ -33,12 +33,6 @@ function Get-ObjectPropertyValue {
     return $property.Value
 }
 
-function ConvertTo-ObjectArray {
-    param([object]$Value)
-    if ($null -eq $Value) { return ,@() }
-    return ,@($Value)
-}
-
 function Invoke-VerificationCommand {
     param([string]$Id,[string]$Check,[string]$Command,[string[]]$Arguments)
     $tool = Get-Command $Command -ErrorAction SilentlyContinue
@@ -96,7 +90,7 @@ function Invoke-VerificationProfile {
     $checksValue = Get-ObjectPropertyValue $profile "checks"
     if ($schemaVersion -ne 1) { Add-Result "PROFILE" "FAIL" "Verification profile" "Unsupported schemaVersion '$schemaVersion'. Expected 1."; return }
     if ($null -eq $checksValue) { Add-Result "PROFILE" "FAIL" "Verification profile" "Property 'checks' is required."; return }
-    $checks = @(ConvertTo-ObjectArray $checksValue)
+    $checks = @($checksValue)
 
     $allowedCommands=@("dotnet","npm","node","powershell","pwsh","git","az","gh","jf","sqlcmd","mongosh","snowsql")
     $allowedLevels=@("V0","V1","V2","V3","V4")
@@ -113,11 +107,11 @@ function Invoke-VerificationProfile {
         if ($allowedCommands -notcontains $command.ToLowerInvariant()) { Add-Result $id "BLOCKED" $name "Command '$command' is not in the verification allowlist."; continue }
 
         $changeTypesValue = Get-ObjectPropertyValue $check "changeTypes"
-        $types = if ($null -eq $changeTypesValue) { @() } else { @(ConvertTo-ObjectArray $changeTypesValue) }
+        $types = if ($null -eq $changeTypesValue) { @() } else { @($changeTypesValue) }
         if (@($types).Count -gt 0 -and $types -notcontains $EffectiveType -and $types -notcontains "all") { Add-Result $id "SKIPPED" $name "Not applicable to change type '$EffectiveType'."; continue }
 
         $argsValue = Get-ObjectPropertyValue $check "args"
-        $args=@(); if ($null -ne $argsValue) { $args=@(ConvertTo-ObjectArray $argsValue | ForEach-Object { [string]$_ }) }
+        $args=@(); if ($null -ne $argsValue) { $args=@($argsValue | ForEach-Object { [string]$_ }) }
         Invoke-VerificationCommand $id $name $command $args
     }
 }
