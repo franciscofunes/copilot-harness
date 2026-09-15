@@ -28,7 +28,7 @@ function Add-Result {
         [string]$Evidence
     )
 
-    $results.Add([pscustomobject]@{
+    [void]$results.Add([pscustomobject]@{
         Id = $Id
         State = $State
         Check = $Check
@@ -55,11 +55,11 @@ function Invoke-VerificationCommand {
         $output = (& $Command @Arguments 2>&1 | Out-String).Trim()
         $exitCode = $LASTEXITCODE
         if ($exitCode -eq 0) {
-            $summary = if ([string]::IsNullOrWhiteSpace($output)) { "Command completed successfully." } else { ($output -split "`r?`n" | Select-Object -Last 8) -join " | " }
-            Add-Result $Id "PASS" $Check $summary
+            $summaryText = if ([string]::IsNullOrWhiteSpace($output)) { "Command completed successfully." } else { ($output -split "`r?`n" | Select-Object -Last 8) -join " | " }
+            Add-Result $Id "PASS" $Check $summaryText
         } else {
-            $summary = if ([string]::IsNullOrWhiteSpace($output)) { "Command failed with exit code $exitCode." } else { ($output -split "`r?`n" | Select-Object -Last 8) -join " | " }
-            Add-Result $Id "FAIL" $Check "Exit ${exitCode}: $summary"
+            $summaryText = if ([string]::IsNullOrWhiteSpace($output)) { "Command failed with exit code $exitCode." } else { ($output -split "`r?`n" | Select-Object -Last 8) -join " | " }
+            Add-Result $Id "FAIL" $Check "Exit ${exitCode}: $summaryText"
         }
     } catch {
         Add-Result $Id "FAIL" $Check $_.Exception.Message
@@ -82,7 +82,7 @@ function Test-PowerShellFiles {
         $errors = $null
         [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$errors) | Out-Null
         if ($errors.Count -gt 0) {
-            Add-Result "V1-PS" "FAIL" "PowerShell parse" "${file}: $($errors[0].Message)"
+            Add-Result "V1-PS" "FAIL" "PowerShell parse" "$($file.FullName): $($errors[0].Message)"
             return
         }
     }
@@ -173,18 +173,19 @@ switch ($effectiveType) {
     }
 }
 
-$blocking = @($results | Where-Object { $_.State -in @("FAIL", "BLOCKED", "NOT RUN") })
+$resultArray = $results.ToArray()
+$blocking = @($resultArray | Where-Object { $_.State -in @("FAIL", "BLOCKED", "NOT RUN") })
 $summary = [pscustomobject]@{
     Target = $targetRoot
     ChangeType = $effectiveType
     DetectedStacks = @($stack.DetectedStacks)
-    Results = @($results)
+    Results = $resultArray
     Counts = [pscustomobject]@{
-        Pass = @($results | Where-Object State -eq "PASS").Count
-        Fail = @($results | Where-Object State -eq "FAIL").Count
-        Blocked = @($results | Where-Object State -eq "BLOCKED").Count
-        Skipped = @($results | Where-Object State -eq "SKIPPED").Count
-        NotRun = @($results | Where-Object State -eq "NOT RUN").Count
+        Pass = @($resultArray | Where-Object State -eq "PASS").Count
+        Fail = @($resultArray | Where-Object State -eq "FAIL").Count
+        Blocked = @($resultArray | Where-Object State -eq "BLOCKED").Count
+        Skipped = @($resultArray | Where-Object State -eq "SKIPPED").Count
+        NotRun = @($resultArray | Where-Object State -eq "NOT RUN").Count
     }
     Ready = ($blocking.Count -eq 0)
 }
@@ -197,14 +198,14 @@ if ($Json) {
     Write-Host "Target: $targetRoot"
     Write-Host "Change type: $effectiveType"
     Write-Host ""
-    foreach ($result in $results) {
+    foreach ($result in $resultArray) {
         Write-Host ("[{0,-7}] {1,-12} {2} -- {3}" -f $result.State, $result.Id, $result.Check, $result.Evidence)
     }
     Write-Host ""
     Write-Host ("Summary: {0} PASS, {1} FAIL, {2} BLOCKED, {3} SKIPPED, {4} NOT RUN" -f $summary.Counts.Pass, $summary.Counts.Fail, $summary.Counts.Blocked, $summary.Counts.Skipped, $summary.Counts.NotRun)
 }
 
-if (@($results | Where-Object State -eq "FAIL").Count -gt 0) { exit 1 }
-if (@($results | Where-Object State -eq "BLOCKED").Count -gt 0) { exit 2 }
-if (@($results | Where-Object State -eq "NOT RUN").Count -gt 0) { exit 3 }
+if (@($resultArray | Where-Object State -eq "FAIL").Count -gt 0) { exit 1 }
+if (@($resultArray | Where-Object State -eq "BLOCKED").Count -gt 0) { exit 2 }
+if (@($resultArray | Where-Object State -eq "NOT RUN").Count -gt 0) { exit 3 }
 exit 0
