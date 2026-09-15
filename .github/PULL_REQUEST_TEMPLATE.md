@@ -30,9 +30,8 @@ Keep this second diagram and adapt it to the repository's actual branch topology
 
 ```mermaid
 flowchart LR
-  BASE[Base branch] --> FEATURE[feature/example]
-  FEATURE --> PR[Pull request]
-  PR --> BASE
+  BASE[Base branch] -->|branch from| FEATURE[feature/example]
+  FEATURE -->|pull request into| BASE
 ```
 
 For a release PR, replace `feature/example` with `release/x.y.z`. Do not introduce `develop`, `hotfix/*`, or any other branch family unless it actually exists in the repository being documented.
