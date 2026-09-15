@@ -4,6 +4,29 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.3.0] - 2026-09-15
+
+### Added
+
+- Policy Gate contract with A0-A4 action classifications for read-only work, local verification, repository mutation, shared-state mutation, and destructive/production/security-sensitive actions.
+- Executable `scripts/policy-check.ps1` evaluator with deterministic allow, intent-required, and approval-required decisions.
+- Verification Contract with V0-V4 evidence levels covering scope, static correctness, automated behavior, integration/data/security, and acceptance/release evidence.
+- Executable `scripts/verify.ps1` verification runner with explicit `PASS`, `FAIL`, `BLOCKED`, `SKIPPED`, and `NOT RUN` states.
+- Cross-repository Copilot instructions that route execution and completion decisions through the policy and verification contracts.
+- Spec Kit extension validation strategy covering the official `bug`, `git`, `assess`, and optional `agent-context` extensions without making extensions the authorization or verification source of truth.
+- Installer, manifest, doctor, and smoke-test integration for the policy and verification runtime.
+- Windows CI smoke coverage for policy A0/A3/A4 behavior and verification-runner behavior.
+
+### Changed
+
+- Harness verification now distinguishes generated reasoning from deterministic execution evidence.
+- High-risk actions fail closed when production target or authorization is ambiguous.
+- Release and engineering completion claims are bound to explicit verification evidence rather than model assertions.
+
+### Notes
+
+This release establishes the harness reliability layer: Copilot can propose work, but policy determines execution boundaries and deterministic verification determines whether evidence supports acceptance. Spec Kit extensions remain optional accelerators around this model rather than hidden runtime dependencies.
+
 ## [0.2.0] - 2026-09-14
 
 ### Added
