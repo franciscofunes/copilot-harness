@@ -24,6 +24,20 @@ flowchart LR
   B --> C[Result]
 ```
 
+## Git Flow position
+
+Keep this diagram and replace the example feature branch name with the current branch. The diagram should make the PR's branch/base relationship visible; release and hotfix PRs should adapt it to their actual Git Flow path.
+
+```mermaid
+gitGraph
+  commit id: "develop baseline"
+  branch feature/example
+  checkout feature/example
+  commit id: "this change"
+  checkout develop
+  merge feature/example
+```
+
 ## QA handoff
 
 - Acceptance criteria covered:
