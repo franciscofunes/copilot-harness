@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checks": [
+    {
+      "id": "V1-DOTNET-BUILD",
+      "name": ".NET build",
+      "changeTypes": ["dotnet", "api"],
+      "verificationLevel": "V1",
+      "policyClass": "A1",
+      "command": "dotnet",
+      "args": ["build", "--no-restore"],
+      "required": true
+    },
+    {
+      "id": "V2-DOTNET-TEST",
+      "name": ".NET tests",
+      "changeTypes": ["dotnet", "api"],
+      "verificationLevel": "V2",
+      "policyClass": "A1",
+      "command": "dotnet",
+      "args": ["test", "--no-build", "--no-restore"],
+      "required": true
+    },
+    {
+      "id": "V1-ANGULAR-LINT",
+      "name": "Angular lint",
+      "changeTypes": ["angular"],
+      "verificationLevel": "V1",
+      "policyClass": "A1",
+      "command": "npm",
+      "args": ["run", "lint", "--", "--no-fix"],
+      "required": true
+    },
+    {
+      "id": "V2-ANGULAR-TEST",
+      "name": "Angular CI tests",
+      "changeTypes": ["angular"],
+      "verificationLevel": "V2",
+      "policyClass": "A1",
+      "command": "npm",
+      "args": ["run", "test:ci"],
+      "required": true
+    }
+  ]
+}

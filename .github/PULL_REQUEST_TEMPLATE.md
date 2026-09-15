@@ -24,6 +24,18 @@ flowchart LR
   B --> C[Result]
 ```
 
+## Branch position
+
+Keep this second diagram and adapt it to the repository's actual branch topology. The harness does **not** assume a `develop` branch or Git Flow internals in target repositories. Supported working branch prefixes are `feature/*` and `release/*`; show the actual PR base branch as `Base branch` rather than inventing a branch name.
+
+```mermaid
+flowchart LR
+  BASE[Base branch] -->|branch from| FEATURE[feature/example]
+  FEATURE -->|pull request into| BASE
+```
+
+For a release PR, replace `feature/example` with `release/x.y.z`. Do not introduce `develop`, `hotfix/*`, or any other branch family into generated target-repository guidance.
+
 ## QA handoff
 
 - Acceptance criteria covered:
