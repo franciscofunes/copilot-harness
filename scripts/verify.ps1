@@ -25,6 +25,14 @@ function Add-Result {
     [void]$results.Add([pscustomobject]@{ Id=$Id; State=$State; Check=$Check; Evidence=$Evidence })
 }
 
+function Get-ObjectPropertyValue {
+    param([object]$InputObject,[string]$Name)
+    if ($null -eq $InputObject) { return $null }
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $null }
+    return $property.Value
+}
+
 function Invoke-VerificationCommand {
     param([string]$Id,[string]$Check,[string]$Command,[string[]]$Arguments)
     $tool = Get-Command $Command -ErrorAction SilentlyContinue
@@ -77,20 +85,32 @@ function Resolve-ProfilePath {
 function Invoke-VerificationProfile {
     param([string]$Path,[string]$EffectiveType)
     try { $profile=Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json } catch { Add-Result "PROFILE" "FAIL" "Verification profile" "Invalid JSON: $($_.Exception.Message)"; return }
-    if ($profile.schemaVersion -ne 1) { Add-Result "PROFILE" "FAIL" "Verification profile" "Unsupported schemaVersion '$($profile.schemaVersion)'. Expected 1."; return }
-    if ($null -eq $profile.checks) { Add-Result "PROFILE" "FAIL" "Verification profile" "Property 'checks' is required."; return }
+
+    $schemaVersion = Get-ObjectPropertyValue $profile "schemaVersion"
+    $checks = Get-ObjectPropertyValue $profile "checks"
+    if ($schemaVersion -ne 1) { Add-Result "PROFILE" "FAIL" "Verification profile" "Unsupported schemaVersion '$schemaVersion'. Expected 1."; return }
+    if ($null -eq $checks) { Add-Result "PROFILE" "FAIL" "Verification profile" "Property 'checks' is required."; return }
 
     $allowedCommands=@("dotnet","npm","node","powershell","pwsh","git","az","gh","jf","sqlcmd","mongosh","snowsql")
     $allowedLevels=@("V0","V1","V2","V3","V4")
-    foreach ($check in @($profile.checks)) {
-        $id=[string]$check.id; $name=[string]$check.name; $command=[string]$check.command
+    foreach ($check in @($checks)) {
+        $id=[string](Get-ObjectPropertyValue $check "id")
+        $name=[string](Get-ObjectPropertyValue $check "name")
+        $command=[string](Get-ObjectPropertyValue $check "command")
         if ([string]::IsNullOrWhiteSpace($id) -or [string]::IsNullOrWhiteSpace($name) -or [string]::IsNullOrWhiteSpace($command)) { Add-Result "PROFILE" "FAIL" "Verification profile" "Each check requires id, name and command."; continue }
-        if ($allowedLevels -notcontains [string]$check.verificationLevel) { Add-Result $id "FAIL" $name "verificationLevel must be V0-V4."; continue }
-        if (@("A0","A1") -notcontains [string]$check.policyClass) { Add-Result $id "BLOCKED" $name "Profile execution only permits local/read-only A0-A1 checks. '$($check.policyClass)' requires a separately authorized workflow."; continue }
+
+        $verificationLevel=[string](Get-ObjectPropertyValue $check "verificationLevel")
+        $policyClass=[string](Get-ObjectPropertyValue $check "policyClass")
+        if ($allowedLevels -notcontains $verificationLevel) { Add-Result $id "FAIL" $name "verificationLevel must be V0-V4."; continue }
+        if (@("A0","A1") -notcontains $policyClass) { Add-Result $id "BLOCKED" $name "Profile execution only permits local/read-only A0-A1 checks. '$policyClass' requires a separately authorized workflow."; continue }
         if ($allowedCommands -notcontains $command.ToLowerInvariant()) { Add-Result $id "BLOCKED" $name "Command '$command' is not in the verification allowlist."; continue }
-        $types=@($check.changeTypes)
+
+        $changeTypes = Get-ObjectPropertyValue $check "changeTypes"
+        $types = if ($null -eq $changeTypes) { @() } else { @($changeTypes) }
         if ($types.Count -gt 0 -and $types -notcontains $EffectiveType -and $types -notcontains "all") { Add-Result $id "SKIPPED" $name "Not applicable to change type '$EffectiveType'."; continue }
-        $args=@(); if ($null -ne $check.args) { $args=@($check.args | ForEach-Object { [string]$_ }) }
+
+        $argsValue = Get-ObjectPropertyValue $check "args"
+        $args=@(); if ($null -ne $argsValue) { $args=@($argsValue | ForEach-Object { [string]$_ }) }
         Invoke-VerificationCommand $id $name $command $args
     }
 }
