@@ -19,8 +19,21 @@ $setup = Get-Content -LiteralPath $setupPath -Raw
 $installer = Get-Content -LiteralPath $installerPath -Raw
 $docs = Get-Content -LiteralPath $docsPath -Raw
 
+$requiredRepository = "colbymchenry/codegraph"
 $requiredSource = "https://github.com/colbymchenry/codegraph"
-if ($setup -notmatch [regex]::Escape($requiredSource)) { throw "CodeGraph bootstrap must pin the upstream repository." }
+
+# The setup script composes URLs from one pinned repository declaration.
+# Validate that source-of-truth declaration and both derived URL templates
+# instead of requiring a redundant expanded URL literal.
+if ($setup -notmatch [regex]::Escape('$repository = "colbymchenry/codegraph"')) {
+    throw "CodeGraph bootstrap must pin the upstream repository owner/name."
+}
+if ($setup -notmatch [regex]::Escape('$repositoryUrl = "https://github.com/$repository"')) {
+    throw "CodeGraph bootstrap must derive its GitHub URL from the pinned repository."
+}
+if ($setup -notmatch [regex]::Escape('$installerUrl = "https://raw.githubusercontent.com/$repository/main/install.ps1"')) {
+    throw "CodeGraph bootstrap must derive the installer URL from the pinned repository."
+}
 if ($installer -notmatch [regex]::Escape($requiredSource)) { throw "Harness manifest/install flow must record the upstream CodeGraph repository." }
 if ($docs -notmatch [regex]::Escape($requiredSource)) { throw "CodeGraph documentation must name the upstream repository." }
 
@@ -32,7 +45,7 @@ if ($installer -notmatch "SkipCodeGraph") { throw "Harness installer must provid
 if ($installer -notmatch "CodeGraphVersion") { throw "Harness installer must support a reviewed/pinned CodeGraph release." }
 
 Write-Host "PASS: CodeGraph scripts parse successfully."
-Write-Host "PASS: CodeGraph source is constrained to colbymchenry/codegraph."
+Write-Host "PASS: CodeGraph source is constrained to $requiredRepository and official derived URLs."
 Write-Host "PASS: CodeGraph bootstrap remains CLI-only and avoids remote Invoke-Expression."
 Write-Host "PASS: Telemetry-off default, project init, opt-out, and version pin contracts are present."
 exit 0
