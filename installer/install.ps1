@@ -103,21 +103,31 @@ if (-not $SkipCodeGraph) {
 
 Write-Step "Installing repository-native Copilot harness"
 $results = [ordered]@{}
-$results[".github/copilot-instructions.md"] = Copy-HarnessFile ".github\copilot-instructions.md" ".github\copilot-instructions.md"
-$results[".github/instructions/tests.instructions.md"] = Copy-HarnessFile ".github\instructions\tests.instructions.md" ".github\instructions\tests.instructions.md"
-$results[".github/instructions/release-testing.instructions.md"] = Copy-HarnessFile ".github\instructions\release-testing.instructions.md" ".github\instructions\release-testing.instructions.md"
-$results[".github/instructions/policy-verification.instructions.md"] = Copy-HarnessFile ".github\instructions\policy-verification.instructions.md" ".github\instructions\policy-verification.instructions.md"
-$results[".github/prompts/feature.prompt.md"] = Copy-HarnessFile ".github\prompts\feature.prompt.md" ".github\prompts\feature.prompt.md"
-$results["spec-kit/constitution-template.md"] = Copy-HarnessFile "spec-kit\constitution-template.md" "spec-kit\constitution-template.md"
-$results["docs/POLICY-GATE.md"] = Copy-HarnessFile "docs\POLICY-GATE.md" "docs\POLICY-GATE.md"
-$results["docs/VERIFICATION-CONTRACT.md"] = Copy-HarnessFile "docs\VERIFICATION-CONTRACT.md" "docs\VERIFICATION-CONTRACT.md"
-$results["docs/SPECKIT-EXTENSIONS-VALIDATION.md"] = Copy-HarnessFile "docs\SPECKIT-EXTENSIONS-VALIDATION.md" "docs\SPECKIT-EXTENSIONS-VALIDATION.md"
-$results["docs/RELEASE-TESTING.md"] = Copy-HarnessFile "docs\RELEASE-TESTING.md" "docs\RELEASE-TESTING.md"
-$results["docs/releases/TESTING-TEMPLATE.md"] = Copy-HarnessFile "docs\releases\TESTING-TEMPLATE.md" "docs\releases\TESTING-TEMPLATE.md"
-$results["docs/CODEGRAPH.md"] = Copy-HarnessFile "docs\CODEGRAPH.md" "docs\CODEGRAPH.md"
-$results["scripts/policy-check.ps1"] = Copy-HarnessFile "scripts\policy-check.ps1" "scripts\policy-check.ps1"
-$results["scripts/verify.ps1"] = Copy-HarnessFile "scripts\verify.ps1" "scripts\verify.ps1"
-$results["scripts/setup-codegraph.ps1"] = Copy-HarnessFile "scripts\setup-codegraph.ps1" "scripts\setup-codegraph.ps1"
+$files = @(
+    ".github\copilot-instructions.md",
+    ".github\instructions\tests.instructions.md",
+    ".github\instructions\release-testing.instructions.md",
+    ".github\instructions\policy-verification.instructions.md",
+    ".github\prompts\feature.prompt.md",
+    "spec-kit\constitution-template.md",
+    "docs\POLICY-GATE.md",
+    "docs\VERIFICATION-CONTRACT.md",
+    "docs\SPECKIT-EXTENSIONS-VALIDATION.md",
+    "docs\RELEASE-TESTING.md",
+    "docs\releases\TESTING-TEMPLATE.md",
+    "docs\CODEGRAPH.md",
+    "docs\CONTEXT-EVIDENCE-ENGINE.md",
+    "scripts\policy-check.ps1",
+    "scripts\verify.ps1",
+    "scripts\setup-codegraph.ps1",
+    "scripts\context.ps1",
+    "scripts\record-evidence.ps1",
+    "scripts\run-harness.ps1"
+)
+foreach ($file in $files) {
+    $display = $file -replace "\","/"
+    $results[$display] = Copy-HarnessFile $file $file
+}
 if ($stack.Signals.DotNet) { $results[".github/instructions/dotnet.instructions.md"] = Copy-HarnessFile ".github\instructions\dotnet.instructions.md" ".github\instructions\dotnet.instructions.md" }
 if ($stack.Signals.Angular) { $results[".github/instructions/angular.instructions.md"] = Copy-HarnessFile ".github\instructions\angular.instructions.md" ".github\instructions\angular.instructions.md" }
 if ($stack.Signals.SqlServer -or $stack.Signals.MongoDb -or $stack.Signals.Snowflake -or $stack.Signals.Parquet) { $results[".github/instructions/data.instructions.md"] = Copy-HarnessFile ".github\instructions\data.instructions.md" ".github\instructions\data.instructions.md" }
@@ -126,11 +136,15 @@ $versionFile = Join-Path $harnessRoot "VERSION"
 $harnessVersion = if (Test-Path -LiteralPath $versionFile) { (Get-Content -LiteralPath $versionFile -Raw).Trim() } else { "unknown" }
 $manifestPath = Join-Path $targetRoot ".copilot-harness.json"
 $manifest = [ordered]@{
-    harnessVersion = $harnessVersion; installedAtUtc = [DateTime]::UtcNow.ToString("o"); detectedStacks = $detectedStacks; conflictMode = $ConflictMode
+    harnessVersion = $harnessVersion
+    installedAtUtc = [DateTime]::UtcNow.ToString("o")
+    detectedStacks = $detectedStacks
+    conflictMode = $ConflictMode
     specKit = [ordered]@{ repository = $specKitRepository; requested = (-not $SkipSpecKit); layout = $SpecKitLayout; initializedThisRun = $specKitInitialized; requestedExtensions = @($SpecKitExtensions); installedThisRun = @($extensionsInstalled) }
     codeGraph = [ordered]@{ repository = $codeGraphRepository; requested = (-not $SkipCodeGraph); configuredThisRun = $codeGraphConfigured; requestedVersion = $CodeGraphVersion; projectInitRequested = (-not $SkipCodeGraphInit); telemetryEnabledByHarness = [bool]$KeepCodeGraphTelemetry; mode = "cli-only" }
     policy = [ordered]@{ gate = "docs/POLICY-GATE.md"; evaluator = "scripts/policy-check.ps1" }
     verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1" }
+    context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
     releaseTesting = [ordered]@{ contract = "docs/RELEASE-TESTING.md"; template = "docs/releases/TESTING-TEMPLATE.md" }
 }
 if ($PSCmdlet.ShouldProcess($manifestPath, "Write harness manifest")) { $manifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $manifestPath -Encoding UTF8 }
@@ -142,9 +156,10 @@ Write-Host "Spec Kit Copilot layout: $SpecKitLayout"
 if (-not $SkipSpecKitExtensions) { Write-Host ("Spec Kit extensions requested: " + ($SpecKitExtensions -join ", ")) }
 Write-Host "CodeGraph source of truth: $codeGraphRepository"
 Write-Host "CodeGraph integration mode: CLI only (no MCP/marketplace integration)"
+Write-Host "Context builder: scripts/context.ps1"
+Write-Host "Harness orchestrator: scripts/run-harness.ps1"
+Write-Host "Evidence recorder: scripts/record-evidence.ps1"
 Write-Host "Policy gate: docs/POLICY-GATE.md"
-Write-Host "Policy evaluator: scripts/policy-check.ps1"
-Write-Host "Verification contract: docs/VERIFICATION-CONTRACT.md"
 Write-Host "Verification runner: scripts/verify.ps1"
 Write-Host "Release testing contract: docs/RELEASE-TESTING.md"
 
