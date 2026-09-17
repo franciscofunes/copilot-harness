@@ -38,7 +38,16 @@ if ($installer -notmatch [regex]::Escape($requiredSource)) { throw "Harness mani
 if ($docs -notmatch [regex]::Escape($requiredSource)) { throw "CodeGraph documentation must name the upstream repository." }
 
 if ($setup -match "Invoke-Expression|\biex\b") { throw "CodeGraph bootstrap must not pipe the remote installer into Invoke-Expression." }
-if ($setup -match "codegraph\s+install") { throw "CodeGraph bootstrap must not configure MCP/agent integrations." }
+
+# Reject the actual CodeGraph integration command, not words such as
+# "CodeGraph installer". The previous broad regex treated the prefix
+# "install" inside "installer" as if it were `codegraph install`.
+$directIntegrationCommand = '(?im)^\s*(?:&\s*)?codegraph(?:\.exe|\.cmd)?\s+install(?:\s|$)'
+$resolvedIntegrationCommand = [regex]::Escape('& $codegraphCommand install')
+if ($setup -match $directIntegrationCommand -or $setup -match $resolvedIntegrationCommand) {
+    throw "CodeGraph bootstrap must not configure MCP/agent integrations."
+}
+
 if ($setup -notmatch "telemetry off") { throw "CodeGraph telemetry must be disabled by default." }
 if ($setup -notmatch "codegraphCommand init") { throw "CodeGraph project initialization must be part of the bootstrap." }
 if ($installer -notmatch "SkipCodeGraph") { throw "Harness installer must provide an explicit CodeGraph opt-out." }
