@@ -4,6 +4,32 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.5.0] - 2026-09-17
+
+### Added
+
+- First-class CodeGraph bootstrap integration using the official `colbymchenry/codegraph` repository.
+- Windows CodeGraph setup through `scripts/setup-codegraph.ps1` with optional release pinning via `-CodeGraphVersion`.
+- Local CodeGraph project initialization through `codegraph init`.
+- CodeGraph telemetry disabled by default unless explicitly retained.
+- CodeGraph source, requested version, initialization intent, telemetry mode, and CLI-only integration mode recorded in `.copilot-harness.json`.
+- CodeGraph documentation and dedicated smoke tests.
+
+### Changed
+
+- Harness installer can provision CodeGraph as part of repository bootstrap, with explicit opt-out switches.
+- CI now validates both the existing harness smoke suite and CodeGraph integration contracts.
+- CodeGraph integration remains CLI-only so the harness baseline does not require MCP or marketplace plugins.
+
+### Verification
+
+- PR #12 merged into `develop` after the Windows `Harness Smoke` workflow completed successfully on commit `222f76c127a52544f9ffee9eacca1cabded55179`.
+- Release branch: `release/0.5.0`.
+
+### Notes
+
+This release adds semantic code-graph tooling to the harness while preserving the existing policy boundary: repository analysis may use CodeGraph CLI context, but model output remains separate from deterministic execution evidence.
+
 ## [0.4.0] - 2026-09-15
 
 ### Added
