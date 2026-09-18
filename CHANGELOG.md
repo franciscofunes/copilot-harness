@@ -4,6 +4,33 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.6.0] - 2026-09-18
+
+### Added
+
+- Deterministic context builder through `scripts/context.ps1`.
+- Local evidence recorder through `scripts/record-evidence.ps1`.
+- Orchestrated context → verification → evidence workflow through `scripts/run-harness.ps1`.
+- Context manifests covering stack detection, changed files, relevant Copilot instructions, verification profile presence, CodeGraph availability, and policy/verification entry points.
+- Local evidence runs under `.copilot-harness/runs/<run-id>/`.
+- Context & Evidence Engine documentation and smoke coverage.
+
+### Changed
+
+- Harness installer now deploys and records the Context & Evidence Engine assets.
+- Verification failures can be fed back as grounded context for the next implementation iteration.
+- CodeGraph is explicitly treated as a context provider rather than verification evidence.
+
+### Verification
+
+- PR #14 merged into `develop` as merge commit `7d708942c5c287d8bd53c296e65a9386a985cfcc`.
+- Release branch: `release/0.6.0`.
+- Release-head CI must complete before promotion to `main`.
+
+### Notes
+
+This release extends the reliability layer from policy and deterministic verification into deterministic context selection and durable local evidence. Evidence storage is metadata/output oriented and is not a transcript or hidden-reasoning archive.
+
 ## [0.5.0] - 2026-09-17
 
 ### Added
