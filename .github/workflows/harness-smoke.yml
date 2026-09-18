@@ -24,3 +24,7 @@ jobs:
       - name: Run harness smoke checks
         shell: pwsh
         run: .\tests\smoke.ps1
+
+      - name: Run CodeGraph integration smoke checks
+        shell: pwsh
+        run: .\tests\codegraph-smoke.ps1
