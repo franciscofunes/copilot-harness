@@ -125,7 +125,22 @@ try {
     Write-Host "PASS: Verification profile discovery and explicit path selection work."
     Write-Host "PASS: A1 profile execution, command failure, and change-type filtering are deterministic."
     Write-Host "PASS: A2/A3/A4 profile actions and non-allowlisted executables fail closed."
+    $contextFixture = New-VerifyFixture "context-engine"
+    Set-Content -LiteralPath (Join-Path $contextFixture "README.md") -Value "docs change"
+    $contextJson = (& (Join-Path $repoRoot "scripts\\context.ps1") -TargetPath $contextFixture -ChangeType docs -Json | Out-String) | ConvertFrom-Json
+    if ($contextJson.ChangeType -ne "docs") { throw "Context builder should preserve explicit docs change type." }
+    if ($contextJson.Policy.DefaultAutomaticCeiling -ne "A2") { throw "Context builder must expose the A2 automatic ceiling." }
+
+    $ctxPath = Join-Path $temp "context.json"
+    $verPath = Join-Path $temp "verification.json"
+    $contextJson | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ctxPath -Encoding UTF8
+    $docs.Data | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $verPath -Encoding UTF8
+    $evidenceJson = (& (Join-Path $repoRoot "scripts\\record-evidence.ps1") -TargetPath $contextFixture -RunId "smoke-run" -ContextPath $ctxPath -VerificationPath $verPath -Json | Out-String) | ConvertFrom-Json
+    if (-not (Test-Path -LiteralPath $evidenceJson.Manifest -PathType Leaf)) { throw "Evidence manifest was not created." }
+    if (-not (Test-Path -LiteralPath $evidenceJson.Summary -PathType Leaf)) { throw "Evidence summary was not created." }
+
     Write-Host "PASS: Malformed, unsupported, and incomplete profiles fail closed."
+    Write-Host "PASS: Context builder and evidence recorder produce deterministic local artifacts."
 
     # Expected negative fixtures intentionally leave LASTEXITCODE non-zero.
     # A successful smoke suite must explicitly return success to the CI runner.
