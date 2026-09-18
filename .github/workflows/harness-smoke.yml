@@ -28,3 +28,7 @@ jobs:
       - name: Run CodeGraph integration smoke checks
         shell: pwsh
         run: .\tests\codegraph-smoke.ps1
+
+      - name: Run curated skills smoke checks
+        shell: pwsh
+        run: .\tests\skills-smoke.ps1
