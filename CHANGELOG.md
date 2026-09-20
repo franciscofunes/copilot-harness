@@ -4,6 +4,32 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.7.0] - 2026-09-20
+
+### Added
+
+- Curated skills catalog with recorded upstream provenance.
+- Deterministic skill selection through `scripts/skills.ps1`.
+- Initial capabilities for systematic debugging, test-driven development, verification before completion, and codebase knowledge acquisition.
+- Dedicated curated-skills smoke coverage in the Windows Harness Smoke workflow.
+
+### Changed
+
+- The harness can select task-relevant capability guidance from intent and detected stack without installing an overlapping agent framework.
+- Skills requiring MCP are excluded from the baseline.
+- Curated skills remain advisory: Spec Kit owns planning, Policy Gate owns authorization, `verify.ps1` owns deterministic evidence, and CodeGraph remains a context provider.
+
+### Verification
+
+- PR #18 merged into `develop` as `7545d7ac6a58cee6380edbc9b2d2b1b8fa2a8e38`.
+- Harness Smoke run #59 completed successfully on feature head `719bc350f915988134ab2feb7b717669dd1fbaa3`.
+- Release branch: `release/0.7.0`.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+This release adds a narrow capability layer instead of installing external frameworks wholesale, preserving the harness's existing authority boundaries.
+
 ## [0.6.0] - 2026-09-18
 
 ### Added
