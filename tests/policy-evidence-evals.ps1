@@ -8,6 +8,8 @@ function Invoke-PolicyCase {
   param([string]$Id,[hashtable]$PolicyArgs,[string]$ExpectedClass,[string]$ExpectedDecision,[int]$ExpectedExit)
   $raw = & $policy @PolicyArgs -Json
   $exitCode = $LASTEXITCODE
+  # policy-check intentionally uses non-zero exit codes for gated decisions; do not leak them as this test process exit state.
+  $global:LASTEXITCODE = 0
   $actual = $raw | ConvertFrom-Json
   [pscustomobject]@{
     Id=$Id
@@ -45,3 +47,4 @@ $failed=@($results|Where-Object{-not $_.Passed})
 foreach($r in $results){Write-Host "$(if($r.Passed){'[PASS]'}else{'[FAIL]'}) $($r.Id) expected=$($r.Expected) actual=$($r.Actual)"}
 if($failed.Count){throw "$($failed.Count) policy/evidence eval(s) failed."}
 Write-Host "Policy & evidence eval smoke: PASS"
+exit 0
