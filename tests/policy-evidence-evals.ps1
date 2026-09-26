@@ -5,8 +5,8 @@ $policy = Join-Path $root "scripts\policy-check.ps1"
 $recorder = Join-Path $root "scripts\record-evidence.ps1"
 
 function Invoke-PolicyCase {
-  param([string]$Id,[hashtable]$Args,[string]$ExpectedClass,[string]$ExpectedDecision,[int]$ExpectedExit)
-  $raw = & $policy @Args -Json
+  param([string]$Id,[hashtable]$PolicyArgs,[string]$ExpectedClass,[string]$ExpectedDecision,[int]$ExpectedExit)
+  $raw = & $policy @PolicyArgs -Json
   $exitCode = $LASTEXITCODE
   $actual = $raw | ConvertFrom-Json
   [pscustomobject]@{
