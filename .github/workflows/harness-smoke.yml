@@ -36,3 +36,7 @@ jobs:
       - name: Run harness eval regression checks
         shell: pwsh
         run: .\tests\evals-smoke.ps1
+
+      - name: Run policy and evidence evals
+        shell: pwsh
+        run: .\tests\policy-evidence-evals.ps1
