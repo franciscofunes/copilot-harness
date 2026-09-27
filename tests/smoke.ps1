@@ -6,10 +6,12 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $verifyScript = Join-Path $repoRoot "scripts\verify.ps1"
+$generatorScript = Join-Path $repoRoot "scripts\new-verification-profile.ps1"
 $scriptsToParse = @(
     "scripts\detect-stack.ps1",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
+    "scripts\new-verification-profile.ps1",
     "installer\install.ps1",
     "installer\doctor.ps1"
 )
