@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "dotnet-debug",
+      "stackMarkers": ["sample.sln"],
+      "intent": "debug unexpected build failure",
+      "changeType": "dotnet",
+      "expectedSkills": ["systematic-debugging"],
+      "expectedStacks": ["DotNet"]
+    },
+    {
+      "id": "angular-feature",
+      "stackMarkers": ["angular.json", "package.json"],
+      "intent": "implement feature using test driven development",
+      "changeType": "angular",
+      "expectedSkills": ["test-driven-development"],
+      "expectedStacks": ["Angular"]
+    },
+    {
+      "id": "release-verification",
+      "stackMarkers": [],
+      "intent": "complete release and verify before done",
+      "changeType": "release",
+      "expectedSkills": ["verification-before-completion"],
+      "expectedStacks": []
+    }
+  ]
+}
