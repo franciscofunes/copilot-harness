@@ -122,6 +122,31 @@ if ($stack.Signals.SqlServer -or $stack.Signals.MongoDb -or $stack.Signals.Snowf
     Test-FileCheck ".github\instructions\data.instructions.md"
 }
 
+
+$profilePath = Join-Path $targetRoot ".copilot-harness.verify.json"
+if (Test-Path -LiteralPath $profilePath -PathType Leaf) {
+    try {
+        $profile = Get-Content -LiteralPath $profilePath -Raw | ConvertFrom-Json
+        if ($profile.schemaVersion -ne 1) {
+            Add-Check "verification:profile" "FAIL" "unsupported schemaVersion"
+        } elseif ($null -eq $profile.checks) {
+            Add-Check "verification:profile" "FAIL" "checks property missing"
+        } else {
+            Add-Check "verification:profile" "PASS" "schemaVersion 1 profile is parseable"
+            $unsafe = @($profile.checks | Where-Object { $_.policyClass -notin @("A0","A1") })
+            if ($unsafe.Count -gt 0) {
+                Add-Check "verification:profile-policy" "WARN" "$($unsafe.Count) check(s) require separate authorization and will be blocked by verify.ps1"
+            } else {
+                Add-Check "verification:profile-policy" "PASS" "automatic checks are A0/A1 only"
+            }
+        }
+    } catch {
+        Add-Check "verification:profile" "FAIL" "invalid JSON: $($_.Exception.Message)"
+    }
+} else {
+    Add-Check "verification:profile" "WARN" "No .copilot-harness.verify.json found; run scripts/new-verification-profile.ps1 or configure one explicitly."
+}
+
 $specKitMarker = Join-Path $targetRoot ".specify"
 if (Test-Path -LiteralPath $specKitMarker) {
     Add-Check "spec-kit" "PASS" ".specify directory detected; expected source of truth is $specKitRepository"
@@ -192,8 +217,8 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
             Add-Check "manifest:policy" "WARN" "manifest does not record executable policy assets."
         }
 
-        if ($null -ne $manifest.verification -and $manifest.verification.contract -eq "docs/VERIFICATION-CONTRACT.md" -and $manifest.verification.runner -eq "scripts/verify.ps1") {
-            Add-Check "manifest:verification" "PASS" "verification contract and runner recorded"
+        if ($null -ne $manifest.verification -and $manifest.verification.contract -eq "docs/VERIFICATION-CONTRACT.md" -and $manifest.verification.runner -eq "scripts/verify.ps1" -and $manifest.verification.profileGenerator -eq "scripts/new-verification-profile.ps1") {
+            Add-Check "manifest:verification" "PASS" "verification contract, runner and profile generator recorded"
         } else {
             Add-Check "manifest:verification" "WARN" "manifest does not record executable verification assets."
         }

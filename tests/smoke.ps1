@@ -139,7 +139,43 @@ try {
     if (-not (Test-Path -LiteralPath $evidenceJson.Manifest -PathType Leaf)) { throw "Evidence manifest was not created." }
     if (-not (Test-Path -LiteralPath $evidenceJson.Summary -PathType Leaf)) { throw "Evidence summary was not created." }
 
+    # Stack-aware generator: .NET + Angular scripts produce only known local A1 checks.
+    $genFixture = New-VerifyFixture "generator"
+    Set-Content -LiteralPath (Join-Path $genFixture "app.sln") -Value ""
+    Set-Content -LiteralPath (Join-Path $genFixture "angular.json") -Value "{}"
+    Set-Content -LiteralPath (Join-Path $genFixture "package.json") -Value '{"scripts":{"lint":"ng lint","test:ci":"ng test --watch=false"},"dependencies":{"@angular/core":"latest"}}'
+    $genText = (& $generatorScript -TargetPath $genFixture -Json | Out-String)
+    if ($LASTEXITCODE -ne 0) { throw "Stack-aware generator failed." }
+    $genResult = $genText | ConvertFrom-Json
+    $generated = Get-Content -LiteralPath (Join-Path $genFixture ".copilot-harness.verify.json") -Raw | ConvertFrom-Json
+    $ids = @($generated.checks.id)
+    foreach ($id in @("V1-DOTNET-BUILD","V2-DOTNET-TEST","V1-ANGULAR-LINT","V2-ANGULAR-TEST")) {
+        if ($ids -notcontains $id) { throw "Generated profile missing $id." }
+    }
+    if (@($generated.checks | Where-Object { $_.policyClass -ne "A1" }).Count -ne 0) { throw "Generator emitted non-A1 executable check." }
+    if ($genResult.GeneratedChecks -ne 4) { throw "Expected four generated executable checks." }
+
+    # Existing profile preservation: generation without -Force must fail and leave bytes unchanged.
+    $before = Get-Content -LiteralPath (Join-Path $genFixture ".copilot-harness.verify.json") -Raw
+    $preserveFailed = $false
+    try { & $generatorScript -TargetPath $genFixture *> $null } catch { $preserveFailed = $true }
+    $after = Get-Content -LiteralPath (Join-Path $genFixture ".copilot-harness.verify.json") -Raw
+    if (-not $preserveFailed -or $before -ne $after) { throw "Generator must preserve an existing profile unless -Force is explicit." }
+
+    # Data/cloud signals generate recommendations, never guessed executable remote checks.
+    $dataFixture = New-VerifyFixture "generator-data"
+    Set-Content -LiteralPath (Join-Path $dataFixture "warehouse.sql") -Value "SELECT 1; -- snowflake"
+    Set-Content -LiteralPath (Join-Path $dataFixture "azure-pipelines.yml") -Value "trigger: none"
+    Set-Content -LiteralPath (Join-Path $dataFixture "jfrog.config") -Value "jfrog"
+    & $generatorScript -TargetPath $dataFixture *> $null
+    $dataProfile = Get-Content -LiteralPath (Join-Path $dataFixture ".copilot-harness.verify.json") -Raw | ConvertFrom-Json
+    if (@($dataProfile.checks).Count -ne 0) { throw "Data/platform-only fixture must not receive guessed executable checks." }
+    if (@($dataProfile.recommendations).Count -lt 1) { throw "Detected data/platform signals should produce review recommendations." }
+
     Write-Host "PASS: Malformed, unsupported, and incomplete profiles fail closed."
+    Write-Host "PASS: Stack-aware generator emits deterministic .NET/Angular A1 checks."
+    Write-Host "PASS: Generator preserves repository-owned profiles by default."
+    Write-Host "PASS: Data/platform detections produce recommendations rather than guessed remote commands."
     Write-Host "PASS: Context builder and evidence recorder produce deterministic local artifacts."
 
     # Expected negative fixtures intentionally leave LASTEXITCODE non-zero.
