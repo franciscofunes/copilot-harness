@@ -18,6 +18,7 @@ param(
     [switch]$SkipCodeGraph,
     [switch]$SkipCodeGraphInit,
     [switch]$KeepCodeGraphTelemetry,
+    [switch]$SkipVerificationProfile,
     [switch]$SkipDoctor
 )
 
@@ -132,6 +133,21 @@ if ($stack.Signals.DotNet) { $results[".github/instructions/dotnet.instructions.
 if ($stack.Signals.Angular) { $results[".github/instructions/angular.instructions.md"] = Copy-HarnessFile ".github\instructions\angular.instructions.md" ".github\instructions\angular.instructions.md" }
 if ($stack.Signals.SqlServer -or $stack.Signals.MongoDb -or $stack.Signals.Snowflake -or $stack.Signals.Parquet) { $results[".github/instructions/data.instructions.md"] = Copy-HarnessFile ".github\instructions\data.instructions.md" ".github\instructions\data.instructions.md" }
 
+
+$verificationProfilePath = Join-Path $targetRoot ".copilot-harness.verify.json"
+$verificationProfileStatus = "skipped-by-option"
+if (-not $SkipVerificationProfile) {
+    if (Test-Path -LiteralPath $verificationProfilePath -PathType Leaf) {
+        $verificationProfileStatus = "preserved"
+        Write-Host "Repository verification profile already exists; preserving it."
+    } elseif ($PSCmdlet.ShouldProcess($verificationProfilePath, "Generate stack-aware verification profile")) {
+        Write-Step "Generating stack-aware verification profile"
+        & $profileGenerator -TargetPath $targetRoot
+        if ($LASTEXITCODE -ne 0) { throw "Verification profile generation failed with exit code $LASTEXITCODE." }
+        $verificationProfileStatus = "generated"
+    }
+}
+
 $versionFile = Join-Path $harnessRoot "VERSION"
 $harnessVersion = if (Test-Path -LiteralPath $versionFile) { (Get-Content -LiteralPath $versionFile -Raw).Trim() } else { "unknown" }
 $manifestPath = Join-Path $targetRoot ".copilot-harness.json"
@@ -143,7 +159,7 @@ $manifest = [ordered]@{
     specKit = [ordered]@{ repository = $specKitRepository; requested = (-not $SkipSpecKit); layout = $SpecKitLayout; initializedThisRun = $specKitInitialized; requestedExtensions = @($SpecKitExtensions); installedThisRun = @($extensionsInstalled) }
     codeGraph = [ordered]@{ repository = $codeGraphRepository; requested = (-not $SkipCodeGraph); configuredThisRun = $codeGraphConfigured; requestedVersion = $CodeGraphVersion; projectInitRequested = (-not $SkipCodeGraphInit); telemetryEnabledByHarness = [bool]$KeepCodeGraphTelemetry; mode = "cli-only" }
     policy = [ordered]@{ gate = "docs/POLICY-GATE.md"; evaluator = "scripts/policy-check.ps1" }
-    verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1" }
+    verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1"; profile = ".copilot-harness.verify.json"; profileGenerator = "scripts/new-verification-profile.ps1"; profileStatus = $verificationProfileStatus }
     context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
     releaseTesting = [ordered]@{ contract = "docs/RELEASE-TESTING.md"; template = "docs/releases/TESTING-TEMPLATE.md" }
 }
@@ -161,6 +177,7 @@ Write-Host "Harness orchestrator: scripts/run-harness.ps1"
 Write-Host "Evidence recorder: scripts/record-evidence.ps1"
 Write-Host "Policy gate: docs/POLICY-GATE.md"
 Write-Host "Verification runner: scripts/verify.ps1"
+Write-Host "Verification profile: $verificationProfileStatus"
 Write-Host "Release testing contract: docs/RELEASE-TESTING.md"
 
 if (-not $SkipDoctor -and (Test-Path -LiteralPath $doctorScript)) {
