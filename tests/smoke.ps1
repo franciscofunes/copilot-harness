@@ -11,6 +11,8 @@ $scriptsToParse = @(
     "scripts\detect-stack.ps1",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
+    "scripts\skills.ps1",
+    "scripts\context.ps1",
     "scripts\new-verification-profile.ps1",
     "installer\install.ps1",
     "installer\doctor.ps1"
@@ -133,6 +135,10 @@ try {
     if ($contextJson.ChangeType -ne "docs") { throw "Context builder should preserve explicit docs change type." }
     if ($contextJson.Policy.DefaultAutomaticCeiling -ne "A2") { throw "Context builder must expose the A2 automatic ceiling." }
 
+    $skillContextJson = (& (Join-Path $repoRoot "scripts\context.ps1") -TargetPath $contextFixture -ChangeType release -Intent "prepare release pr complete" -Json | Out-String) | ConvertFrom-Json
+    if (@($skillContextJson.SelectedSkills | Where-Object { $_.Id -eq "verification-before-completion" }).Count -ne 1) { throw "Context builder must include selected curated skills." }
+    if (-not $skillContextJson.SkillRules.PolicyGateOwnsAuthorization -or -not $skillContextJson.SkillRules.VerifyOwnsEvidence) { throw "Context builder must preserve skill authority boundaries." }
+
     $ctxPath = Join-Path $temp "context.json"
     $verPath = Join-Path $temp "verification.json"
     $contextJson | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ctxPath -Encoding UTF8
@@ -178,6 +184,7 @@ try {
     Write-Host "PASS: Stack-aware generator emits deterministic .NET/Angular A1 checks."
     Write-Host "PASS: Generator preserves repository-owned profiles by default."
     Write-Host "PASS: Data/platform detections produce recommendations rather than guessed remote commands."
+    Write-Host "PASS: Context builder integrates curated skills without changing policy or evidence authority."
     Write-Host "PASS: Context builder and evidence recorder produce deterministic local artifacts."
 
     # Expected negative fixtures intentionally leave LASTEXITCODE non-zero.
