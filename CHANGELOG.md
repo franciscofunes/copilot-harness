@@ -4,6 +4,59 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.8.1] - 2026-09-28
+
+### Added
+
+- Stack-aware repository verification profile generation through `scripts/new-verification-profile.ps1`.
+- Deterministic local A1 verification checks for detected .NET and Angular projects.
+- Review recommendations for detected data/platform stacks instead of guessed remote executable checks.
+- Installer and doctor integration for generated repository verification profiles.
+
+### Changed
+
+- Existing `.copilot-harness.verify.json` files are preserved by default unless replacement is explicitly requested.
+- Harness Smoke now validates generated profiles, profile preservation, and safe data/platform recommendations.
+- GitHub Actions Harness Smoke coverage now includes release branches and pull requests targeting `main`, enabling release-head CI before promotion.
+
+### Verification
+
+- PR #11 merged into `develop` as `9caf1ae36fd184864315478546e790fbb3311945`.
+- Final PR #11 feature head `12a47cf0df2a0d1944a1e706aba3d06f723e8383` completed Harness Smoke successfully.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+This patch restores the previously unmerged stack-aware verification capability on top of the current harness architecture and hardens the release verification path. Generated executable checks remain limited to known local A1 verification; remote or higher-risk actions are not inferred from stack detection.
+
+## [0.8.0] - 2026-09-27
+
+### Added
+
+- Deterministic harness eval runner and scenario catalog for regression testing.
+- Baseline .NET debugging, Angular feature/TDD, and release-verification eval scenarios.
+- Machine-readable pass/fail/pass-rate metrics for expected stack and curated-skill selection.
+- Policy Gate evals for A1, A3 explicit-intent boundaries, and A4 production approval requirements.
+- Evidence Engine evals for artifact completeness and preservation of FAIL verification state.
+- Dedicated Windows CI coverage for harness eval regressions and policy/evidence boundaries.
+
+### Changed
+
+- Harness reliability can now be regression-tested across stack detection, skill selection, policy decisions, and evidence recording.
+- Eval acceptance relies on deterministic assertions rather than an LLM judge.
+
+### Verification
+
+- PR #21 merged into `develop`; Harness Smoke #63 passed on its feature head.
+- PR #22 merged into `develop` as `54b2e1920b9dba7742e97591c25b93e99a1863a3`.
+- Harness Smoke #67 completed successfully on PR #22 feature head `52a779c5a2ef9704d75e821558be717c8fe3bd81`.
+- Release branch: `release/0.8.0`.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+This release establishes an objective regression layer for key harness contracts. Metrics describe harness behavior and evidence completeness; they are not developer productivity scores or model-generated proof.
+
 ## [0.7.0] - 2026-09-20
 
 ### Added
