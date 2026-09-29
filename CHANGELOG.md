@@ -4,6 +4,31 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.8.1] - 2026-09-28
+
+### Added
+
+- Stack-aware repository verification profile generation through `scripts/new-verification-profile.ps1`.
+- Deterministic local A1 verification checks for detected .NET and Angular projects.
+- Review recommendations for detected data/platform stacks instead of guessed remote executable checks.
+- Installer and doctor integration for generated repository verification profiles.
+
+### Changed
+
+- Existing `.copilot-harness.verify.json` files are preserved by default unless replacement is explicitly requested.
+- Harness Smoke now validates generated profiles, profile preservation, and safe data/platform recommendations.
+- GitHub Actions Harness Smoke coverage now includes release branches and pull requests targeting `main`, enabling release-head CI before promotion.
+
+### Verification
+
+- PR #11 merged into `develop` as `9caf1ae36fd184864315478546e790fbb3311945`.
+- Final PR #11 feature head `12a47cf0df2a0d1944a1e706aba3d06f723e8383` completed Harness Smoke successfully.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+This patch restores the previously unmerged stack-aware verification capability on top of the current harness architecture and hardens the release verification path. Generated executable checks remain limited to known local A1 verification; remote or higher-risk actions are not inferred from stack detection.
+
 ## [0.8.0] - 2026-09-27
 
 ### Added
