@@ -41,3 +41,14 @@ Selection is deterministic from the local catalog, detected stack, and task inte
 ## Why not install everything?
 
 Whole-framework installation would create overlapping authorities for planning, execution, verification, and agent behavior. The harness instead adopts narrowly useful patterns while preserving one policy gate and one verification contract.
+
+
+## Runtime integration
+
+`scripts/context.ps1` invokes the selector with the effective change type and optional task intent. The context manifest exposes `SelectedSkills` and `SkillRules`, so the normal Context & Evidence Engine can consume capability guidance without a separate manual selection step.
+
+The installer deploys `scripts/skills.ps1`, `skills/catalog.json`, and this contract, and records those assets in the installation manifest.
+
+A selected skill cannot raise the automatic execution ceiling or turn generated guidance into deterministic verification evidence.
+
+**Copilot proposes; the harness verifies.**

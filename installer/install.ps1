@@ -30,6 +30,7 @@ $targetRoot = (Resolve-Path -LiteralPath $TargetPath).Path
 $detectScript = Join-Path $harnessRoot "scripts\detect-stack.ps1"
 $doctorScript = Join-Path $PSScriptRoot "doctor.ps1"
 $codeGraphScript = Join-Path $harnessRoot "scripts\setup-codegraph.ps1"
+$profileGenerator = Join-Path $harnessRoot "scripts\new-verification-profile.ps1"
 $specKitRepository = "https://github.com/github/spec-kit"
 $codeGraphRepository = "https://github.com/colbymchenry/codegraph"
 
@@ -118,10 +119,13 @@ $files = @(
     "docs\releases\TESTING-TEMPLATE.md",
     "docs\CODEGRAPH.md",
     "docs\CONTEXT-EVIDENCE-ENGINE.md",
+    "docs\CURATED-SKILLS.md",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
     "scripts\setup-codegraph.ps1",
     "scripts\context.ps1",
+    "scripts\skills.ps1",
+    "skills\catalog.json",
     "scripts\record-evidence.ps1",
     "scripts\run-harness.ps1"
 )
@@ -161,6 +165,7 @@ $manifest = [ordered]@{
     policy = [ordered]@{ gate = "docs/POLICY-GATE.md"; evaluator = "scripts/policy-check.ps1" }
     verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1"; profile = ".copilot-harness.verify.json"; profileGenerator = "scripts/new-verification-profile.ps1"; profileStatus = $verificationProfileStatus }
     context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
+    skills = [ordered]@{ selector = "scripts/skills.ps1"; catalog = "skills/catalog.json"; contract = "docs/CURATED-SKILLS.md"; authority = "advisory/harness-mapped" }
     releaseTesting = [ordered]@{ contract = "docs/RELEASE-TESTING.md"; template = "docs/releases/TESTING-TEMPLATE.md" }
 }
 if ($PSCmdlet.ShouldProcess($manifestPath, "Write harness manifest")) { $manifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $manifestPath -Encoding UTF8 }
@@ -173,6 +178,7 @@ if (-not $SkipSpecKitExtensions) { Write-Host ("Spec Kit extensions requested: "
 Write-Host "CodeGraph source of truth: $codeGraphRepository"
 Write-Host "CodeGraph integration mode: CLI only (no MCP/marketplace integration)"
 Write-Host "Context builder: scripts/context.ps1"
+Write-Host "Curated skills selector: scripts/skills.ps1"
 Write-Host "Harness orchestrator: scripts/run-harness.ps1"
 Write-Host "Evidence recorder: scripts/record-evidence.ps1"
 Write-Host "Policy gate: docs/POLICY-GATE.md"
