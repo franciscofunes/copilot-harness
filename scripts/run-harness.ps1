@@ -24,6 +24,7 @@ try {
     $contextArgs = @{ TargetPath=$targetRoot; ChangeType=$ChangeType; Json=$true }
     if (-not [string]::IsNullOrWhiteSpace($BaseRef)) { $contextArgs.BaseRef = $BaseRef }
     $contextArgs.Intent = $Intent
+    $global:LASTEXITCODE = 0 # Avoid inheriting unrelated native-command status
     $contextOutput = (& $contextScript @contextArgs | Out-String)
     if ($LASTEXITCODE -ne 0) { throw "Context generation failed with exit code $LASTEXITCODE." }
     $contextOutput | Set-Content -LiteralPath $contextPath -Encoding UTF8
@@ -32,6 +33,7 @@ try {
     $verifyExit = $LASTEXITCODE
     if ([string]::IsNullOrWhiteSpace($verifyOutput)) { throw "Verification returned no JSON; refusing to record incomplete evidence." }
     $verifyOutput | Set-Content -LiteralPath $verificationPath -Encoding UTF8
+    $global:LASTEXITCODE = 0 # Evidence recorder is a PowerShell script
     $evidenceText = (& $recordScript -TargetPath $targetRoot -ContextPath $contextPath -VerificationPath $verificationPath -Json | Out-String)
     if ($LASTEXITCODE -ne 0) { throw "Evidence recording failed with exit code $LASTEXITCODE." }
     $evidence = $evidenceText | ConvertFrom-Json
