@@ -100,3 +100,10 @@ stateDiagram-v2
 ```
 
 Every transition is validated and appended to `state.json` history. Lifecycle state does not authorize an operation and does not replace verification evidence. It records where a run is in the engineering loop so later tooling can resume or hand work to a human without reconstructing state from a conversation.
+
+
+## Closed-loop orchestration
+
+When `run-harness.ps1` receives a `-ProposalId`, it binds the proposal, deterministic checker, lifecycle state, and evidence to one run ID. A passing checker moves the lifecycle from `VERIFYING` to `COMPLETE`; rejected verification moves it to `RETRY`.
+
+The orchestrator's `AUTHORIZED` transition describes authorization for the verification-only stage; it does not authorize repository, remote, destructive, production, or security-sensitive mutations. Those remain Policy Gate decisions.
