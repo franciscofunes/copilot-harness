@@ -32,6 +32,10 @@ jobs:
         shell: pwsh
         run: .\tests\orchestration-smoke.ps1
 
+      - name: Run lifecycle state smoke checks
+        shell: pwsh
+        run: .\tests\lifecycle-smoke.ps1
+
       - name: Run CodeGraph integration smoke checks
         shell: pwsh
         run: .\tests\codegraph-smoke.ps1
