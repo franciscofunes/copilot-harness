@@ -8,7 +8,7 @@ $fixture = Join-Path ([System.IO.Path]::GetTempPath()) ("harness-orchestration-"
 New-Item -ItemType Directory -Path $fixture -Force | Out-Null
 try {
     Set-Content -LiteralPath (Join-Path $fixture "README.md") -Value "documentation fixture"
-    $output = (& $runner -TargetPath $fixture -ChangeType docs -Intent "verify documentation before completion" -Json | Out-String)
+    $output = (& $runner -TargetPath $fixture -ChangeType docs -Intent "verify documentation complete" -Json | Out-String)
     if ($LASTEXITCODE -ne 0) { throw "Expected successful orchestration, exit $LASTEXITCODE." }
     $run = $output | ConvertFrom-Json
     if (@($run.Context.SelectedSkills | Where-Object Id -eq "verification-before-completion").Count -ne 1) {
