@@ -4,6 +4,31 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.9.0] - 2026-10-02
+
+### Added
+
+- End-to-end task-intent propagation through `scripts/run-harness.ps1` into deterministic context and curated skill selection.
+- Durable selected-skill and authority-boundary context in evidence runs.
+- End-to-end orchestration smoke coverage in Windows Harness Smoke CI.
+
+### Changed
+
+- Orchestration fails closed when context generation fails, verification returns no JSON, or evidence recording fails.
+- Verification FAIL, BLOCKED, and NOT RUN outcomes retain their verification exit state instead of being converted into orchestration success.
+- Curated skills are integrated into runtime context while Policy Gate remains authoritative for authorization and `verify.ps1` remains authoritative for deterministic evidence.
+
+### Verification
+
+- PR #26 integrated curated skills into runtime context and completed Harness Smoke successfully.
+- PR #27 merged into `develop` as `1041eacad10b57453358c28d5927de330f1bf824`.
+- PR #27 final feature head `50fb676bfc8e951f82141a15ce64149cef43ae61` completed Harness Smoke run #36995593859 successfully.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+This release turns the existing context, curated-skills, verification, and evidence components into a more explicit end-to-end orchestration path. It preserves the core boundary: Copilot proposes; the harness verifies. Authorization is not inferred from task intent or skill selection.
+
 ## [0.8.1] - 2026-09-28
 
 ### Added

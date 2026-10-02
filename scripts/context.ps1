@@ -5,6 +5,7 @@ param(
     [ValidateSet("auto","docs","powershell","dotnet","angular","api","data","platform","security","release")]
     [string]$ChangeType = "auto",
     [string]$BaseRef,
+    [string]$Intent = "",
     [switch]$Json
 )
 
@@ -79,6 +80,15 @@ $instructions = Get-RelevantInstructions $effectiveType
 $profilePath = Join-Path $targetRoot ".copilot-harness.verify.json"
 $profile = if (Test-Path -LiteralPath $profilePath -PathType Leaf) { ".copilot-harness.verify.json" } else { $null }
 $codeGraph = Get-CodeGraphContext
+$skillsScript = Join-Path $harnessRoot "scripts\skills.ps1"
+$skills = if (Test-Path -LiteralPath $skillsScript -PathType Leaf) {
+    $global:LASTEXITCODE = 0 # Clear unrelated git exit status before PowerShell selector
+    $skillsText = (& $skillsScript -TargetPath $targetRoot -Intent $Intent -ChangeType $effectiveType -Json | Out-String)
+    if ($LASTEXITCODE -ne 0) { throw "Curated skill selection failed with exit code $LASTEXITCODE." }
+    $skillsText | ConvertFrom-Json
+} else {
+    [pscustomobject]@{ SelectedSkills=@(); Rules=[pscustomobject]@{ SpecKitOwnsPlanning=$true; PolicyGateOwnsAuthorization=$true; VerifyOwnsEvidence=$true } }
+}
 $result = [pscustomobject]@{
     Target = $targetRoot
     ChangeType = $effectiveType
@@ -87,6 +97,8 @@ $result = [pscustomobject]@{
     RelevantInstructions = @($instructions)
     VerificationProfile = $profile
     CodeGraph = $codeGraph
+    SelectedSkills = @($skills.SelectedSkills)
+    SkillRules = $skills.Rules
     Policy = [pscustomobject]@{ DefaultAutomaticCeiling="A2"; Gate="scripts/policy-check.ps1" }
     Verification = [pscustomobject]@{ Runner="scripts/verify.ps1"; EvidenceStates=@("PASS","FAIL","BLOCKED","SKIPPED","NOT RUN") }
 }
@@ -99,4 +111,5 @@ if ($Json) { $result | ConvertTo-Json -Depth 7 } else {
     Write-Host "Instructions: $(if ($result.RelevantInstructions.Count) { $result.RelevantInstructions -join ', ' } else { 'none' })"
     Write-Host "Verification profile: $(if ($profile) { $profile } else { 'none' })"
     Write-Host "CodeGraph: $($codeGraph.Summary)"
+    Write-Host "Curated skills: $(if ($result.SelectedSkills.Count) { $result.SelectedSkills.Id -join ', ' } else { 'none' })"
 }
