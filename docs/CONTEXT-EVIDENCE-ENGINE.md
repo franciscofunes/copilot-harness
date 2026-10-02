@@ -107,3 +107,8 @@ Every transition is validated and appended to `state.json` history. Lifecycle st
 When `run-harness.ps1` receives a `-ProposalId`, it binds the proposal, deterministic checker, lifecycle state, and evidence to one run ID. A passing checker moves the lifecycle from `VERIFYING` to `COMPLETE`; rejected verification moves it to `RETRY`.
 
 The orchestrator's `AUTHORIZED` transition describes authorization for the verification-only stage; it does not authorize repository, remote, destructive, production, or security-sensitive mutations. Those remain Policy Gate decisions.
+
+
+## Resume and human handoff
+
+Use `lifecycle.ps1 -Action resume -RunId <id>` to read a non-terminal run from durable repository state. Resume never advances state by itself and completed runs cannot be resumed. A rejected checker path can remain in `RETRY` for another proposal or move to `HUMAN_HANDOFF` when manual investigation is required. The reason and transition remain in lifecycle history.
