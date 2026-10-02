@@ -40,6 +40,10 @@ jobs:
         shell: pwsh
         run: .\tests\maker-checker-smoke.ps1
 
+      - name: Run lifecycle negative-path smoke checks
+        shell: pwsh
+        run: .\tests\lifecycle-negative-smoke.ps1
+
       - name: Run CodeGraph integration smoke checks
         shell: pwsh
         run: .\tests\codegraph-smoke.ps1
