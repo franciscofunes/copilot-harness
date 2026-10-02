@@ -64,3 +64,11 @@ CodeGraph is one input to the context builder. The harness does not treat CodeGr
 - Policy decisions remain the responsibility of `scripts/policy-check.ps1`.
 - Verification evidence remains the responsibility of `scripts/verify.ps1`.
 - The evidence store records metadata and deterministic outputs; it is not a transcript archive.
+
+## End-to-end intent propagation
+
+Use `run-harness.ps1 -TargetPath . -ChangeType release -Intent "prepare release pr"` to carry task intent through context and curated-skill selection into the durable evidence context snapshot.
+
+The orchestrator stops when context generation fails, verification returns no JSON, or evidence recording fails. Verification failures and blocked checks retain their verification exit code and are recorded as evidence rather than converted to success.
+
+The orchestration smoke fixture checks selected skills, authority boundaries, and the persisted context snapshot. This is deterministic local coverage; representative real-project validation remains a separate release gate.

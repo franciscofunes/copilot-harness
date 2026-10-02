@@ -82,6 +82,7 @@ $profile = if (Test-Path -LiteralPath $profilePath -PathType Leaf) { ".copilot-h
 $codeGraph = Get-CodeGraphContext
 $skillsScript = Join-Path $harnessRoot "scripts\skills.ps1"
 $skills = if (Test-Path -LiteralPath $skillsScript -PathType Leaf) {
+    $global:LASTEXITCODE = 0 # Clear unrelated git exit status before PowerShell selector
     $skillsText = (& $skillsScript -TargetPath $targetRoot -Intent $Intent -ChangeType $effectiveType -Json | Out-String)
     if ($LASTEXITCODE -ne 0) { throw "Curated skill selection failed with exit code $LASTEXITCODE." }
     $skillsText | ConvertFrom-Json
