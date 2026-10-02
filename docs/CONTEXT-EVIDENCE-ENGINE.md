@@ -72,3 +72,43 @@ Use `run-harness.ps1 -TargetPath . -ChangeType release -Intent "prepare release 
 The orchestrator stops when context generation fails, verification returns no JSON, or evidence recording fails. Verification failures and blocked checks retain their verification exit code and are recorded as evidence rather than converted to success.
 
 The orchestration smoke fixture checks selected skills, authority boundaries, and the persisted context snapshot. This is deterministic local coverage; representative real-project validation remains a separate release gate.
+
+
+## Persistent lifecycle state
+
+`scripts/lifecycle.ps1` stores a small resumable state machine in each harness run. The lifecycle is repository state, not chat history:
+
+```mermaid
+stateDiagram-v2
+    [*] --> CONTEXT
+    CONTEXT --> PROPOSED
+    PROPOSED --> AWAITING_AUTHORIZATION
+    PROPOSED --> AUTHORIZED
+    AWAITING_AUTHORIZATION --> AUTHORIZED
+    AUTHORIZED --> VERIFYING
+    VERIFYING --> COMPLETE
+    VERIFYING --> RETRY
+    RETRY --> PROPOSED
+    CONTEXT --> HUMAN_HANDOFF
+    PROPOSED --> HUMAN_HANDOFF
+    AWAITING_AUTHORIZATION --> HUMAN_HANDOFF
+    AUTHORIZED --> HUMAN_HANDOFF
+    VERIFYING --> HUMAN_HANDOFF
+    RETRY --> HUMAN_HANDOFF
+    HUMAN_HANDOFF --> PROPOSED
+    HUMAN_HANDOFF --> AUTHORIZED
+```
+
+Every transition is validated and appended to `state.json` history. Lifecycle state does not authorize an operation and does not replace verification evidence. It records where a run is in the engineering loop so later tooling can resume or hand work to a human without reconstructing state from a conversation.
+
+
+## Closed-loop orchestration
+
+When `run-harness.ps1` receives a `-ProposalId`, it binds the proposal, deterministic checker, lifecycle state, and evidence to one run ID. A passing checker moves the lifecycle from `VERIFYING` to `COMPLETE`; rejected verification moves it to `RETRY`.
+
+The orchestrator's `AUTHORIZED` transition describes authorization for the verification-only stage; it does not authorize repository, remote, destructive, production, or security-sensitive mutations. Those remain Policy Gate decisions.
+
+
+## Resume and human handoff
+
+Use `lifecycle.ps1 -Action resume -RunId <id>` to read a non-terminal run from durable repository state. Resume never advances state by itself and completed runs cannot be resumed. A rejected checker path can remain in `RETRY` for another proposal or move to `HUMAN_HANDOFF` when manual investigation is required. The reason and transition remain in lifecycle history.

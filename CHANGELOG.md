@@ -4,6 +4,34 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.9.1] - 2026-10-02
+
+### Added
+
+- Persistent lifecycle state with validated transitions and durable transition history.
+- Explicit maker/checker evidence contract separating candidate proposals from deterministic verification decisions.
+- Closed-loop orchestration binding context, proposal, verification, checker, lifecycle, and evidence to one run ID.
+- Explicit retry, resume, and human-handoff lifecycle behavior.
+
+### Changed
+
+- Passing deterministic verification can move a proposal to `COMPLETE`; FAIL, BLOCKED, and NOT RUN evidence cannot produce checker acceptance.
+- Non-terminal runs can be inspected/resumed from repository state without silently advancing lifecycle state.
+- `COMPLETE` remains terminal.
+- Verification-stage lifecycle authorization does not grant mutation authorization; Policy Gate remains authoritative for repository, remote, destructive, production, and security-sensitive actions.
+
+### Verification
+
+- PR #31 lifecycle state feature head completed Harness Smoke run #36997581742 successfully.
+- PR #32 maker/checker feature head completed Harness Smoke run #36997858489 successfully.
+- PR #33 closed-loop orchestration feature head completed Harness Smoke run #36998699431 successfully.
+- PR #34 negative-path/resume feature head completed Harness Smoke run #36998886835 successfully.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+v0.9.1 turns the v0.9.0 orchestration path into a durable engineering loop with explicit state, independent checker evidence, retry semantics, and human handoff. Copilot proposes; the harness verifies.
+
 ## [0.9.0] - 2026-10-02
 
 ### Added
