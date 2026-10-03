@@ -10,6 +10,7 @@ try{
  [pscustomobject]@{checker=[pscustomobject]@{decision="ACCEPT"}}|ConvertTo-Json -Depth 4|Set-Content (Join-Path $good "maker-checker.json")
  [pscustomobject]@{Ready=$true}|ConvertTo-Json|Set-Content (Join-Path $good "verification.json")
  "{}"|Set-Content (Join-Path $good "evidence.json")
+ $global:LASTEXITCODE=0
  $out=(& $audit -TargetPath $fixture -Json|Out-String);if($LASTEXITCODE-ne 0){throw "Healthy fixture failed integrity audit."};$r=$out|ConvertFrom-Json;if(-not $r.healthy){throw "Healthy fixture marked unhealthy."}
  $bad=Join-Path $runs "bad";New-Item -ItemType Directory -Path $bad -Force|Out-Null
  [pscustomobject]@{state="COMPLETE";history=@([pscustomobject]@{to="RETRY"})}|ConvertTo-Json -Depth 4|Set-Content (Join-Path $bad "state.json")
