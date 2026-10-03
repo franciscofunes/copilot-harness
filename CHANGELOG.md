@@ -4,6 +4,32 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [0.9.2] - 2026-10-03
+
+### Added
+
+- Deterministic run audit metrics for lifecycle outcomes, checker decisions, verification readiness, retries, and human handoffs.
+- Cross-artifact integrity diagnostics with stable finding codes for contradictory, missing, or invalid durable evidence.
+- Portable audit report generation producing `metrics.json`, `integrity.json`, and `summary.md`.
+- CI smoke coverage for audit metrics, integrity diagnostics, and report generation.
+
+### Changed
+
+- Harness observability is derived from durable run evidence rather than model-generated scoring.
+- Integrity diagnostics fail closed when persisted evidence violates harness invariants.
+- Audit reports propagate integrity failures through a non-zero exit code for CI/release consumption.
+
+### Verification
+
+- PR #37 audit metrics feature head completed Harness Smoke run #37059641958 successfully.
+- PR #38 integrity diagnostics feature head completed Harness Smoke run #37148115863 successfully.
+- PR #39 portable audit reports feature head completed Harness Smoke run #37151741698 successfully.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+v0.9.2 makes harness behavior measurable and its durable evidence auditable. It provides deterministic observability without turning model judgment or developer productivity into a metric. Copilot proposes; the harness verifies.
+
 ## [0.9.1] - 2026-10-02
 
 ### Added
