@@ -48,6 +48,10 @@ jobs:
         shell: pwsh
         run: .\tests\audit-smoke.ps1
 
+      - name: Run integrity audit smoke checks
+        shell: pwsh
+        run: .\tests\integrity-audit-smoke.ps1
+
       - name: Run CodeGraph integration smoke checks
         shell: pwsh
         run: .\tests\codegraph-smoke.ps1
