@@ -127,7 +127,12 @@ $files = @(
     "scripts\skills.ps1",
     "skills\catalog.json",
     "scripts\record-evidence.ps1",
-    "scripts\run-harness.ps1"
+    "scripts\run-harness.ps1",
+    "scripts\lifecycle.ps1",
+    "scripts\maker-checker.ps1",
+    "scripts\audit-runs.ps1",
+    "scripts\audit-integrity.ps1",
+    "scripts\new-audit-report.ps1"
 )
 foreach ($file in $files) {
     $display = $file.Replace([char]92, [char]47)
