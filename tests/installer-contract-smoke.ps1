@@ -10,7 +10,9 @@ $required=@(
  "scripts\\audit-runs.ps1","scripts\\audit-integrity.ps1","scripts\\new-audit-report.ps1"
 )
 foreach($path in $required){
- if($installer -notmatch [regex]::Escape('"' + $path + '"')){throw "Installer contract missing $path"}
+ $normalizedInstaller=$installer -replace '\\\\','/'
+ $normalizedPath=$path -replace '\\\\','/'
+ if($normalizedInstaller -notmatch [regex]::Escape('"' + $normalizedPath + '"')){throw "Installer contract missing $path"}
  $source=Join-Path $root $path;if(-not(Test-Path $source -PathType Leaf)){throw "Runtime source missing $path"}
 }
 foreach($manifestField in @("lifecycle","makerChecker","observability")){if($installer -notmatch $manifestField){throw "Install manifest missing $manifestField contract."}}
