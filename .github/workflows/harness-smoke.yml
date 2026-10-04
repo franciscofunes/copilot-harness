@@ -32,6 +32,10 @@ jobs:
         shell: pwsh
         run: .\tests\installer-contract-smoke.ps1
 
+      - name: Run fresh install and upgrade smoke checks
+        shell: pwsh
+        run: .\tests\install-upgrade-smoke.ps1
+
       - name: Run end-to-end orchestration smoke checks
         shell: pwsh
         run: .\tests\orchestration-smoke.ps1
