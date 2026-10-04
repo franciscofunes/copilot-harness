@@ -130,7 +130,7 @@ $files = @(
     "scripts\run-harness.ps1"
 )
 foreach ($file in $files) {
-    $display = $file -replace "\","/"
+    $display = $file.Replace([char]92, [char]47)
     $results[$display] = Copy-HarnessFile $file $file
 }
 if ($stack.Signals.DotNet) { $results[".github/instructions/dotnet.instructions.md"] = Copy-HarnessFile ".github\instructions\dotnet.instructions.md" ".github\instructions\dotnet.instructions.md" }
