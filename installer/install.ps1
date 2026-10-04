@@ -164,7 +164,8 @@ $manifest = [ordered]@{
     codeGraph = [ordered]@{ repository = $codeGraphRepository; requested = (-not $SkipCodeGraph); configuredThisRun = $codeGraphConfigured; requestedVersion = $CodeGraphVersion; projectInitRequested = (-not $SkipCodeGraphInit); telemetryEnabledByHarness = [bool]$KeepCodeGraphTelemetry; mode = "cli-only" }
     policy = [ordered]@{ gate = "docs/POLICY-GATE.md"; evaluator = "scripts/policy-check.ps1" }
     verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1"; profile = ".copilot-harness.verify.json"; profileGenerator = "scripts/new-verification-profile.ps1"; profileStatus = $verificationProfileStatus }
-    context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
+    context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; lifecycle = "scripts/lifecycle.ps1"; makerChecker = "scripts/maker-checker.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
+    observability = [ordered]@{ metrics = "scripts/audit-runs.ps1"; integrity = "scripts/audit-integrity.ps1"; report = "scripts/new-audit-report.ps1" }
     skills = [ordered]@{ selector = "scripts/skills.ps1"; catalog = "skills/catalog.json"; contract = "docs/CURATED-SKILLS.md"; authority = "advisory/harness-mapped" }
     releaseTesting = [ordered]@{ contract = "docs/RELEASE-TESTING.md"; template = "docs/releases/TESTING-TEMPLATE.md" }
 }
