@@ -40,6 +40,10 @@ jobs:
         shell: pwsh
         run: .\tests\doctor-readiness-smoke.ps1
 
+      - name: Run representative project validation
+        shell: pwsh
+        run: .\tests\representative-projects-smoke.ps1
+
       - name: Run end-to-end orchestration smoke checks
         shell: pwsh
         run: .\tests\orchestration-smoke.ps1
