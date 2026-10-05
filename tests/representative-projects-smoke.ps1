@@ -168,7 +168,16 @@ try {
     'Console.WriteLine("representative dotnet fixture");' |
         Set-Content -LiteralPath (Join-Path $dotnet "Program.cs") -Encoding UTF8
 
-    Invoke-NativeChecked "dotnet" @("restore", ".\RepresentativeApp.csproj", "--ignore-failed-sources") $dotnet | Out-Null
+    @'
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+  </packageSources>
+</configuration>
+'@ | Set-Content -LiteralPath (Join-Path $dotnet "NuGet.Config") -Encoding UTF8
+
+    Invoke-NativeChecked "dotnet" @("restore", ".\RepresentativeApp.csproj", "--configfile", ".\NuGet.Config") $dotnet | Out-Null
     Install-Harness $dotnet
     Assert-RepresentativeRun -Target $dotnet -ChangeType "dotnet" -ExpectedStacks @("DotNet") -ExpectedCheckIds @("V1-DOTNET-BUILD", "V2-DOTNET-TEST") -ProposalId "representative-dotnet" -ChangedFiles @("RepresentativeApp.csproj", "Program.cs")
 
