@@ -222,6 +222,18 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         } else {
             Add-Check "manifest:verification" "WARN" "manifest does not record executable verification assets."
         }
+
+        if ($null -ne $manifest.context -and $manifest.context.lifecycle -eq "scripts/lifecycle.ps1" -and $manifest.context.makerChecker -eq "scripts/maker-checker.ps1" -and $manifest.context.orchestrator -eq "scripts/run-harness.ps1") {
+            Add-Check "manifest:lifecycle" "PASS" "orchestrator, lifecycle and maker/checker recorded"
+        } else {
+            Add-Check "manifest:lifecycle" "FAIL" "manifest does not record the complete stable lifecycle runtime."
+        }
+
+        if ($null -ne $manifest.observability -and $manifest.observability.metrics -eq "scripts/audit-runs.ps1" -and $manifest.observability.integrity -eq "scripts/audit-integrity.ps1" -and $manifest.observability.report -eq "scripts/new-audit-report.ps1") {
+            Add-Check "manifest:observability" "PASS" "metrics, integrity and audit report recorded"
+        } else {
+            Add-Check "manifest:observability" "FAIL" "manifest does not record the complete stable observability runtime."
+        }
     } catch {
         Add-Check "manifest:json" "WARN" "manifest could not be parsed as JSON."
     }
