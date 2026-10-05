@@ -14,6 +14,7 @@ $scriptsToParse = @(
     "scripts\skills.ps1",
     "scripts\context.ps1",
     "scripts\new-verification-profile.ps1",
+    "scripts\doctor.ps1",
     "installer\install.ps1",
     "installer\doctor.ps1"
 )
