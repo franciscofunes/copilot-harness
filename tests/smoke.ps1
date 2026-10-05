@@ -16,7 +16,8 @@ $scriptsToParse = @(
     "scripts\new-verification-profile.ps1",
     "scripts\doctor.ps1",
     "installer\install.ps1",
-    "installer\doctor.ps1"
+    "installer\doctor.ps1",
+    "tests\representative-projects-smoke.ps1"
 )
 
 foreach ($relative in $scriptsToParse) {
