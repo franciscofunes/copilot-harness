@@ -92,6 +92,7 @@ try {
         throw "Doctor did not identify the missing lifecycle runtime."
     }
 
+    $global:LASTEXITCODE = 0
     Write-Host "PASS: doctor exposes machine-readable readiness and fails closed on incomplete stable runtime."
 } finally {
     Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
