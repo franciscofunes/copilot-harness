@@ -100,8 +100,8 @@ function Test-ManifestValue {
     }
 }
 
-$isWindows = $env:OS -eq "Windows_NT"
-if ($isWindows) {
+$runningOnWindows = $env:OS -eq "Windows_NT"
+if ($runningOnWindows) {
     Add-Check "platform" "PASS" "Windows"
 } else {
     Add-Check "platform" "WARN" "Harness is designed and supported primarily for Windows workstations."
