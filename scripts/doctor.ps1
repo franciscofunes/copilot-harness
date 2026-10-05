@@ -144,6 +144,7 @@ $requiredFiles = @(
     "docs\CODEGRAPH.md",
     "docs\CONTEXT-EVIDENCE-ENGINE.md",
     "docs\CURATED-SKILLS.md",
+    "docs\HARNESS-READINESS.md",
     "scripts\detect-stack.ps1",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
@@ -276,6 +277,7 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         Test-ManifestValue $manifestObservability "metrics" "scripts/audit-runs.ps1" "manifest:audit-metrics" "audit metrics runtime recorded"
         Test-ManifestValue $manifestObservability "integrity" "scripts/audit-integrity.ps1" "manifest:audit-integrity" "integrity runtime recorded"
         Test-ManifestValue $manifestObservability "report" "scripts/new-audit-report.ps1" "manifest:audit-report" "audit report runtime recorded"
+        Test-ManifestValue $manifestReadiness "contract" "docs/HARNESS-READINESS.md" "manifest:readiness-contract" "readiness contract recorded"
         Test-ManifestValue $manifestReadiness "doctor" "scripts/doctor.ps1" "manifest:doctor" "doctor runtime recorded"
         Test-ManifestValue $manifestReadiness "schemaVersion" $schemaVersion "manifest:doctor-schema" "doctor schemaVersion $schemaVersion recorded"
     } catch {
