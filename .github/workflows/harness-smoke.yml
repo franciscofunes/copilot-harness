@@ -36,7 +36,7 @@ jobs:
         shell: pwsh
         run: .\tests\install-upgrade-smoke.ps1
 
-      - name: Run Doctor readiness smoke checks
+      - name: Run doctor readiness smoke checks
         shell: pwsh
         run: .\tests\doctor-readiness-smoke.ps1
 
