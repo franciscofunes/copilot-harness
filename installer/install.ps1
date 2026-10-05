@@ -120,9 +120,12 @@ $files = @(
     "docs\CODEGRAPH.md",
     "docs\CONTEXT-EVIDENCE-ENGINE.md",
     "docs\CURATED-SKILLS.md",
+    "scripts\detect-stack.ps1",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
+    "scripts\new-verification-profile.ps1",
     "scripts\setup-codegraph.ps1",
+    "scripts\doctor.ps1",
     "scripts\context.ps1",
     "scripts\skills.ps1",
     "skills\catalog.json",
@@ -171,6 +174,7 @@ $manifest = [ordered]@{
     verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1"; profile = ".copilot-harness.verify.json"; profileGenerator = "scripts/new-verification-profile.ps1"; profileStatus = $verificationProfileStatus }
     context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; lifecycle = "scripts/lifecycle.ps1"; makerChecker = "scripts/maker-checker.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
     observability = [ordered]@{ metrics = "scripts/audit-runs.ps1"; integrity = "scripts/audit-integrity.ps1"; report = "scripts/new-audit-report.ps1" }
+    readiness = [ordered]@{ doctor = "scripts/doctor.ps1"; schemaVersion = 1 }
     skills = [ordered]@{ selector = "scripts/skills.ps1"; catalog = "skills/catalog.json"; contract = "docs/CURATED-SKILLS.md"; authority = "advisory/harness-mapped" }
     releaseTesting = [ordered]@{ contract = "docs/RELEASE-TESTING.md"; template = "docs/releases/TESTING-TEMPLATE.md" }
 }
@@ -187,6 +191,7 @@ Write-Host "Context builder: scripts/context.ps1"
 Write-Host "Curated skills selector: scripts/skills.ps1"
 Write-Host "Harness orchestrator: scripts/run-harness.ps1"
 Write-Host "Evidence recorder: scripts/record-evidence.ps1"
+Write-Host "Harness doctor: scripts/doctor.ps1"
 Write-Host "Policy gate: docs/POLICY-GATE.md"
 Write-Host "Verification runner: scripts/verify.ps1"
 Write-Host "Verification profile: $verificationProfileStatus"
