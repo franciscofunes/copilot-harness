@@ -111,7 +111,7 @@ scripts/
   setup-codegraph.ps1          Bootstrap CodeGraph CLI integration
 
 skills/catalog.json             Curated capability catalog
-tests/                          Smoke tests and harness evals
+tests/                          Smoke tests, representative projects, and harness evals
 installer/                      Windows installation/bootstrap
 docs/                           Contracts and implementation guidance
 .github/                        Copilot instructions, PR workflow, CI
@@ -133,7 +133,7 @@ flowchart LR
 
 **v0.9.2 — Harness Audit + Observability** will make harness health, failure attribution, and lifecycle coverage measurable.
 
-**v1.0.0 — Stable Harness** will focus on contract stability, representative project validation, upgrade behavior, documentation, and release-quality gates.
+**v1.0.0 — Stable Harness** focuses on contract stability, representative project validation, upgrade behavior, documentation, and release-quality gates. Representative .NET and Angular end-to-end validation is documented in `docs/REPRESENTATIVE-VALIDATION.md`.
 
 ## Getting started
 
