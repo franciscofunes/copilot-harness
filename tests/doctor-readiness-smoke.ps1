@@ -54,7 +54,7 @@ try {
     }
 
     $manifest = Get-Content -LiteralPath (Join-Path $target ".copilot-harness.json") -Raw | ConvertFrom-Json
-    if ($manifest.readiness.doctor -ne "scripts/doctor.ps1" -or $manifest.readiness.schemaVersion -ne 1) {
+    if ($manifest.readiness.contract -ne "docs/HARNESS-READINESS.md" -or $manifest.readiness.doctor -ne "scripts/doctor.ps1" -or $manifest.readiness.schemaVersion -ne 1) {
         throw "Manifest readiness contract is missing or invalid."
     }
 
@@ -70,6 +70,7 @@ try {
         "file:scripts/detect-stack.ps1",
         "file:scripts/new-verification-profile.ps1",
         "file:scripts/doctor.ps1",
+        "manifest:readiness-contract",
         "manifest:doctor",
         "manifest:doctor-schema"
     )
