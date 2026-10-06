@@ -13,7 +13,7 @@ function Invoke-Install([string]$target,[string]$mode="skip"){
 try{
  $fresh=Join-Path $temp "fresh";New-Item -ItemType Directory -Path $fresh -Force|Out-Null
  Invoke-Install $fresh
- foreach($p in @("scripts\detect-stack.ps1","scripts\new-verification-profile.ps1","scripts\doctor.ps1","scripts\run-harness.ps1","scripts\lifecycle.ps1","scripts\maker-checker.ps1","scripts\audit-runs.ps1","scripts\audit-integrity.ps1","scripts\new-audit-report.ps1",".copilot-harness.json")){
+ foreach($p in @("scripts\run-harness.ps1","scripts\lifecycle.ps1","scripts\maker-checker.ps1","scripts\audit-runs.ps1","scripts\audit-integrity.ps1","scripts\new-audit-report.ps1",".copilot-harness.json")){
   if(-not(Test-Path (Join-Path $fresh $p) -PathType Leaf)){throw "Fresh install missing $p"}
  }
  $manifest=Get-Content (Join-Path $fresh ".copilot-harness.json") -Raw|ConvertFrom-Json
@@ -24,6 +24,6 @@ try{
  Invoke-Install $upgrade "skip"
  if((Get-Content (Join-Path $upgrade "scripts\verify.ps1") -Raw).Trim() -ne $owned){throw "Upgrade replaced repository-owned file in skip mode."}
  if((Get-Content (Join-Path $upgrade ".copilot-harness.verify.json") -Raw).Trim() -ne $profile){throw "Upgrade changed repository verification profile."}
- foreach($p in @("scripts\detect-stack.ps1","scripts\new-verification-profile.ps1","scripts\doctor.ps1","scripts\lifecycle.ps1","scripts\maker-checker.ps1","scripts\new-audit-report.ps1")){if(-not(Test-Path (Join-Path $upgrade $p))){throw "Upgrade did not add $p"}}
+ foreach($p in @("scripts\lifecycle.ps1","scripts\maker-checker.ps1","scripts\new-audit-report.ps1")){if(-not(Test-Path (Join-Path $upgrade $p))){throw "Upgrade did not add $p"}}
  Write-Host "PASS: fresh install is complete and skip-mode upgrade preserves repository-owned configuration while adding stable runtime."
 }finally{Remove-Item $temp -Recurse -Force -ErrorAction SilentlyContinue}

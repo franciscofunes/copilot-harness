@@ -122,11 +122,11 @@ $files = @(
     "docs\CURATED-SKILLS.md",
     "docs\HARNESS-READINESS.md",
     "scripts\detect-stack.ps1",
+    "scripts\new-verification-profile.ps1",
+    "scripts\doctor.ps1",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
-    "scripts\new-verification-profile.ps1",
     "scripts\setup-codegraph.ps1",
-    "scripts\doctor.ps1",
     "scripts\context.ps1",
     "scripts\skills.ps1",
     "skills\catalog.json",
@@ -192,7 +192,6 @@ Write-Host "Context builder: scripts/context.ps1"
 Write-Host "Curated skills selector: scripts/skills.ps1"
 Write-Host "Harness orchestrator: scripts/run-harness.ps1"
 Write-Host "Evidence recorder: scripts/record-evidence.ps1"
-Write-Host "Harness doctor: scripts/doctor.ps1"
 Write-Host "Policy gate: docs/POLICY-GATE.md"
 Write-Host "Verification runner: scripts/verify.ps1"
 Write-Host "Verification profile: $verificationProfileStatus"

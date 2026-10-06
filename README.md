@@ -41,7 +41,7 @@ The model is intentionally asymmetric: AI can reason and propose broadly, but **
 | **Evidence Engine** | Persists context, verification output, policy snapshots when supplied, and run summaries under `.copilot-harness/runs/`. |
 | **Harness Evals** | Regression-tests stack detection, skill selection, policy decisions, and evidence behavior. |
 | **CodeGraph integration** | Adds semantic codebase context through the official CLI while keeping it separate from verification evidence. |
-| **Installer + Doctor** | Bootstraps the harness on Windows and exposes deterministic human + JSON readiness diagnostics. |
+| **Installer + Doctor** | Bootstraps the harness on Windows and diagnoses repository/environment readiness. |
 | **Windows CI** | Exercises harness contracts through GitHub Actions smoke and regression checks. |
 
 ## Safety and verification model
@@ -139,7 +139,7 @@ flowchart LR
 
 Start with the bootstrap and architecture documentation in `docs/`. The installer detects the target repository, installs the supported harness assets, integrates the official GitHub Spec Kit workflow, and records installation metadata.
 
-After installation, use `scripts/doctor.ps1` (or `-Json` in automation) and the verification tooling to validate the environment before relying on harness completion evidence. The readiness contract is documented in `docs/HARNESS-READINESS.md`.
+After installation, use the doctor and verification tooling to validate the environment before relying on harness completion evidence.
 
 ## Branching and releases
 
