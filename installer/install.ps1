@@ -120,6 +120,10 @@ $files = @(
     "docs\CODEGRAPH.md",
     "docs\CONTEXT-EVIDENCE-ENGINE.md",
     "docs\CURATED-SKILLS.md",
+    "docs\HARNESS-READINESS.md",
+    "scripts\detect-stack.ps1",
+    "scripts\new-verification-profile.ps1",
+    "scripts\doctor.ps1",
     "scripts\policy-check.ps1",
     "scripts\verify.ps1",
     "scripts\setup-codegraph.ps1",
@@ -127,10 +131,15 @@ $files = @(
     "scripts\skills.ps1",
     "skills\catalog.json",
     "scripts\record-evidence.ps1",
-    "scripts\run-harness.ps1"
+    "scripts\run-harness.ps1",
+    "scripts\lifecycle.ps1",
+    "scripts\maker-checker.ps1",
+    "scripts\audit-runs.ps1",
+    "scripts\audit-integrity.ps1",
+    "scripts\new-audit-report.ps1"
 )
 foreach ($file in $files) {
-    $display = $file -replace "\","/"
+    $display = $file.Replace([char]92, [char]47)
     $results[$display] = Copy-HarnessFile $file $file
 }
 if ($stack.Signals.DotNet) { $results[".github/instructions/dotnet.instructions.md"] = Copy-HarnessFile ".github\instructions\dotnet.instructions.md" ".github\instructions\dotnet.instructions.md" }
@@ -164,7 +173,9 @@ $manifest = [ordered]@{
     codeGraph = [ordered]@{ repository = $codeGraphRepository; requested = (-not $SkipCodeGraph); configuredThisRun = $codeGraphConfigured; requestedVersion = $CodeGraphVersion; projectInitRequested = (-not $SkipCodeGraphInit); telemetryEnabledByHarness = [bool]$KeepCodeGraphTelemetry; mode = "cli-only" }
     policy = [ordered]@{ gate = "docs/POLICY-GATE.md"; evaluator = "scripts/policy-check.ps1" }
     verification = [ordered]@{ contract = "docs/VERIFICATION-CONTRACT.md"; runner = "scripts/verify.ps1"; profile = ".copilot-harness.verify.json"; profileGenerator = "scripts/new-verification-profile.ps1"; profileStatus = $verificationProfileStatus }
-    context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
+    context = [ordered]@{ builder = "scripts/context.ps1"; orchestrator = "scripts/run-harness.ps1"; evidenceRecorder = "scripts/record-evidence.ps1"; lifecycle = "scripts/lifecycle.ps1"; makerChecker = "scripts/maker-checker.ps1"; contract = "docs/CONTEXT-EVIDENCE-ENGINE.md" }
+    observability = [ordered]@{ metrics = "scripts/audit-runs.ps1"; integrity = "scripts/audit-integrity.ps1"; report = "scripts/new-audit-report.ps1" }
+    readiness = [ordered]@{ contract = "docs/HARNESS-READINESS.md"; doctor = "scripts/doctor.ps1"; schemaVersion = 1 }
     skills = [ordered]@{ selector = "scripts/skills.ps1"; catalog = "skills/catalog.json"; contract = "docs/CURATED-SKILLS.md"; authority = "advisory/harness-mapped" }
     releaseTesting = [ordered]@{ contract = "docs/RELEASE-TESTING.md"; template = "docs/releases/TESTING-TEMPLATE.md" }
 }

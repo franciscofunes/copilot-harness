@@ -28,6 +28,22 @@ jobs:
         shell: pwsh
         run: .\tests\smoke.ps1
 
+      - name: Run installer contract smoke checks
+        shell: pwsh
+        run: .\tests\installer-contract-smoke.ps1
+
+      - name: Run fresh install and upgrade smoke checks
+        shell: pwsh
+        run: .\tests\install-upgrade-smoke.ps1
+
+      - name: Run doctor readiness smoke checks
+        shell: pwsh
+        run: .\tests\doctor-readiness-smoke.ps1
+
+      - name: Run v1 end-to-end acceptance gate
+        shell: pwsh
+        run: .\tests\v1-acceptance-smoke.ps1
+
       - name: Run end-to-end orchestration smoke checks
         shell: pwsh
         run: .\tests\orchestration-smoke.ps1

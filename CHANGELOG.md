@@ -4,6 +4,34 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [1.0.0] - 2026-10-06
+
+### Added
+
+- Complete installable stable runtime covering context, policy, verification, lifecycle, maker/checker, evidence, orchestration, and observability.
+- Stable Doctor/readiness contract that fails closed for partial or inconsistent installations.
+- Fresh-install and safe-upgrade acceptance coverage preserving repository-owned configuration.
+- End-to-end v1 acceptance gate covering install, Doctor readiness, proposal orchestration, deterministic verification, checker acceptance, lifecycle completion, durable evidence, integrity diagnostics, and audit reporting.
+
+### Changed
+
+- Installer payload and manifest now describe and install the complete stable runtime rather than a partial pre-lifecycle surface.
+- Path normalization in the installer uses literal character replacement rather than regex replacement.
+- Upgrade validation protects repository-owned verification configuration under the default skip conflict policy.
+- v1 stabilization prioritizes executable product contracts and deterministic evidence over additional capability expansion.
+
+### Verification
+
+- PR #42 stabilized the complete installer contract and completed Harness Smoke successfully.
+- PR #43 validated fresh installation and safe upgrade behavior; final Harness Smoke #37228868451 succeeded.
+- PR #44 hardened Doctor/readiness behavior; final Harness Smoke #37473845105 succeeded.
+- PR #47 added the final end-to-end v1 acceptance gate; Harness Smoke #37479465164 succeeded.
+- Release-head CI is required before promotion to `main`.
+
+### Notes
+
+v1.0.0 is the first stable Copilot Harness release. The stable contract is repository-native, Windows-oriented, deterministic at authorization/verification boundaries, and designed around durable evidence. Copilot proposes; the harness verifies.
+
 ## [0.9.2] - 2026-10-03
 
 ### Added
