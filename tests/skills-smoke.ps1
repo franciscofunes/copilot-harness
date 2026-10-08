@@ -8,7 +8,10 @@ $tokens=$null;$errors=$null
 [System.Management.Automation.Language.Parser]::ParseFile($selector,[ref]$tokens,[ref]$errors)|Out-Null
 if($errors.Count -gt 0){throw "skills.ps1 parse failure: $($errors[0].Message)"}
 $data=Get-Content -LiteralPath $catalog -Raw|ConvertFrom-Json
-if($data.schemaVersion -ne 1){throw "Catalog schema must be 1."}
+if($data.schemaVersion -ne 2){throw "Catalog schema must be 2."}
+foreach($skill in $data.skills){
+ if($null -eq $skill.PSObject.Properties["antiTriggers"] -or $null -eq $skill.PSObject.Properties["provenance"] -or $null -eq $skill.PSObject.Properties["verification"]){throw "Missing v2 capability metadata: $($skill.id)"}
+}
 $ids=@($data.skills.id)
 foreach($required in @("systematic-debugging","test-driven-development","verification-before-completion","acquire-codebase-knowledge")){
  if($ids -notcontains $required){throw "Missing curated skill: $required"}
@@ -22,6 +25,8 @@ try{
  if(@($debug.SelectedSkills|Where-Object{$_.Id -eq "systematic-debugging"}).Count -ne 1){throw "Debug intent must select systematic-debugging."}
  $done=(& $selector -TargetPath $temp -Intent "feature complete create pr" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
  if(@($done.SelectedSkills|Where-Object{$_.Id -eq "verification-before-completion"}).Count -ne 1){throw "Completion intent must select verification-before-completion."}
+ $excluded=(& $selector -TargetPath $temp -Intent "feature documentation-only" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($excluded.SelectedSkills|Where-Object{$_.Id -eq "test-driven-development"}).Count -ne 0){throw "Anti-trigger must exclude TDD for documentation-only work."}
  if(-not $done.Rules.VerifyOwnsEvidence){throw "Harness verification must remain authoritative."}
  Write-Host "PASS: Curated skill catalog and deterministic selection contracts passed."
  exit 0
