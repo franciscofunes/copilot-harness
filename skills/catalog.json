@@ -197,6 +197,112 @@
         "mode": "existing-harness",
         "requiredEvidence": "deterministic"
       }
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "sql-server-data-review",
+      "title": "SQL Server Data Review",
+      "source": {
+        "project": "dotnet/SqlClient",
+        "url": "https://github.com/dotnet/SqlClient"
+      },
+      "triggers": [
+        "sql server",
+        "sqlserver",
+        "query",
+        "migration",
+        "index",
+        "transaction"
+      ],
+      "antiTriggers": [
+        "mongodb only",
+        "snowflake only",
+        "frontend only"
+      ],
+      "compatibleStacks": [
+        "SqlServer"
+      ],
+      "summary": "Review SQL Server query safety, parameterization, transactions, indexes, migrations, and local verification; do not execute database mutations."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "mongodb-data-review",
+      "title": "MongoDB Data Review",
+      "source": {
+        "project": "mongodb/agent-skills",
+        "url": "https://github.com/mongodb/agent-skills"
+      },
+      "triggers": [
+        "mongodb",
+        "mongo",
+        "aggregation",
+        "document schema",
+        "index"
+      ],
+      "antiTriggers": [
+        "sql server only",
+        "snowflake only",
+        "frontend only"
+      ],
+      "compatibleStacks": [
+        "MongoDb"
+      ],
+      "summary": "Review MongoDB data modeling, query patterns, aggregation, indexes, and safe migration planning without remote execution."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "snowflake-data-review",
+      "title": "Snowflake Data Review",
+      "source": {
+        "project": "snowflakedb/snowflake-connector-net",
+        "url": "https://github.com/snowflakedb/snowflake-connector-net"
+      },
+      "triggers": [
+        "snowflake",
+        "warehouse",
+        "snowpark",
+        "data pipeline",
+        "parquet"
+      ],
+      "antiTriggers": [
+        "mongodb only",
+        "sql server only",
+        "frontend only"
+      ],
+      "compatibleStacks": [
+        "Snowflake"
+      ],
+      "summary": "Review Snowflake warehouse access, SQL transformations, connector patterns, cost-aware querying, and data pipeline verification without remote execution."
     }
   ]
 }

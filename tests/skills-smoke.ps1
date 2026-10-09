@@ -36,6 +36,18 @@ try{
  if(@($angular.SelectedSkills|Where-Object{$_.Id -eq "angular-application-review"}).Count -ne 1){throw "Angular component intent must select Angular capability."}
  $excludedApi=(& $selector -TargetPath $temp -Intent "api frontend only" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
  if(@($excludedApi.SelectedSkills|Where-Object{$_.Id -eq "aspnet-core-api-review"}).Count -ne 0){throw "API anti-trigger must exclude frontend-only work."}
+ $dataRepo=Join-Path $temp "data-fixture";New-Item -ItemType Directory -Path $dataRepo -Force|Out-Null
+ Set-Content (Join-Path $dataRepo "data.csproj") '<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" /><PackageReference Include="MongoDB.Driver" Version="2.0.0" /><PackageReference Include="Snowflake.Data" Version="4.0.0" /></ItemGroup></Project>'
+ $sql=(& $selector -TargetPath $dataRepo -Intent "review sql server query" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ if(@($sql.SelectedSkills|Where-Object{$_.Id -eq "sql-server-data-review"}).Count -ne 1){throw "SQL Server capability not selected."}
+ $mongo=(& $selector -TargetPath $dataRepo -Intent "review mongodb aggregation" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ if(@($mongo.SelectedSkills|Where-Object{$_.Id -eq "mongodb-data-review"}).Count -ne 1){throw "MongoDB capability not selected."}
+ $snow=(& $selector -TargetPath $dataRepo -Intent "review snowflake warehouse" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ if(@($snow.SelectedSkills|Where-Object{$_.Id -eq "snowflake-data-review"}).Count -ne 1){throw "Snowflake capability not selected."}
+ $blocked=(& $selector -TargetPath $dataRepo -Intent "mongodb only index" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ if(@($blocked.SelectedSkills|Where-Object{$_.Id -eq "sql-server-data-review"}).Count -ne 0){throw "SQL Server anti-trigger ignored."}
+ $plain=(& $selector -TargetPath $temp -Intent "review snowflake warehouse" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ if(@($plain.SelectedSkills|Where-Object{$_.Id -eq "snowflake-data-review"}).Count -ne 0){throw "Snowflake capability selected without stack signal."}
  Write-Host "PASS: Curated skill catalog and deterministic selection contracts passed."
  exit 0
 }finally{Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue}
