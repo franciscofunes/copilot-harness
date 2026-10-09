@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "skills": [
     {
       "id": "systematic-debugging",
@@ -20,7 +20,19 @@
       ],
       "requiresMcp": false,
       "authority": "advisory",
-      "summary": "Investigate and reproduce root cause before proposing a fix."
+      "summary": "Investigate and reproduce root cause before proposing a fix.",
+      "antiTriggers": [
+        "feature planning only"
+      ],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     },
     {
       "id": "test-driven-development",
@@ -41,7 +53,20 @@
       ],
       "requiresMcp": false,
       "authority": "advisory",
-      "summary": "Use a red-green-refactor loop when automated behavior tests are appropriate."
+      "summary": "Use a red-green-refactor loop when automated behavior tests are appropriate.",
+      "antiTriggers": [
+        "documentation-only",
+        "no behavior change"
+      ],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     },
     {
       "id": "verification-before-completion",
@@ -62,7 +87,17 @@
       ],
       "requiresMcp": false,
       "authority": "harness-mapped",
-      "summary": "Require fresh deterministic evidence before completion claims; the harness verification contract remains authoritative."
+      "summary": "Require fresh deterministic evidence before completion claims; the harness verification contract remains authoritative.",
+      "antiTriggers": [],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     },
     {
       "id": "acquire-codebase-knowledge",
@@ -83,7 +118,17 @@
       ],
       "requiresMcp": false,
       "authority": "advisory",
-      "summary": "Map an unfamiliar codebase; in this harness, combine repository instructions and CodeGraph rather than overwriting established guidance."
+      "summary": "Map an unfamiliar codebase; in this harness, combine repository instructions and CodeGraph rather than overwriting established guidance.",
+      "antiTriggers": [],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }

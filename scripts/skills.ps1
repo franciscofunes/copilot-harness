@@ -11,7 +11,7 @@ $root=Split-Path -Parent $PSScriptRoot
 $catalogPath=Join-Path $root "skills\catalog.json"
 if (-not (Test-Path -LiteralPath $catalogPath -PathType Leaf)) { throw "Skill catalog not found: $catalogPath" }
 $catalog=Get-Content -LiteralPath $catalogPath -Raw | ConvertFrom-Json
-if ($catalog.schemaVersion -ne 1) { throw "Unsupported skill catalog schemaVersion '$($catalog.schemaVersion)'." }
+if ($catalog.schemaVersion -notin @(1,2)) { throw "Unsupported skill catalog schemaVersion '$($catalog.schemaVersion)'." }
 $target=(Resolve-Path -LiteralPath $TargetPath).Path
 $stack=& (Join-Path $root "scripts\detect-stack.ps1") -Path $target
 $haystack=("$Intent $ChangeType").ToLowerInvariant()
@@ -21,12 +21,16 @@ foreach($skill in @($catalog.skills)) {
   $stackMatch=($skill.compatibleStacks -contains "all") -or (@($skill.compatibleStacks | Where-Object { $stack.DetectedStacks -contains $_ }).Count -gt 0)
   if (-not $stackMatch) { continue }
   $triggerMatch=@($skill.triggers | Where-Object { $haystack -match [regex]::Escape($_.ToLowerInvariant()) }).Count -gt 0
-  if ($triggerMatch) {
+  $excluded=$false
+  if ($catalog.schemaVersion -eq 2) {
+    $excluded=@($skill.antiTriggers | Where-Object { $haystack -match [regex]::Escape($_.ToLowerInvariant()) }).Count -gt 0
+  }
+  if ($triggerMatch -and -not $excluded) {
     $selected += [pscustomobject]@{ Id=$skill.id; Title=$skill.title; Source=$skill.source; Authority=$skill.authority; Summary=$skill.summary }
   }
 }
 $result=[pscustomobject]@{
-  SchemaVersion=1
+  SchemaVersion=$catalog.schemaVersion
   Target=$target
   Intent=$Intent
   ChangeType=$ChangeType
