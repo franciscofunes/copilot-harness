@@ -28,6 +28,14 @@ try{
  $excluded=(& $selector -TargetPath $temp -Intent "feature documentation-only" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
  if(@($excluded.SelectedSkills|Where-Object{$_.Id -eq "test-driven-development"}).Count -ne 0){throw "Anti-trigger must exclude TDD for documentation-only work."}
  if(-not $done.Rules.VerifyOwnsEvidence){throw "Harness verification must remain authoritative."}
+ $api=(& $selector -TargetPath $temp -Intent "review api endpoint" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($api.SelectedSkills|Where-Object{$_.Id -eq "aspnet-core-api-review"}).Count -ne 1){throw "DotNet API intent must select API capability."}
+ if(@($api.SelectedSkills|Where-Object{$_.Id -eq "angular-application-review"}).Count -ne 0){throw "Angular capability must not activate for DotNet-only repository."}
+ Set-Content (Join-Path $temp "angular.json") "{}"
+ $angular=(& $selector -TargetPath $temp -Intent "review angular component" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($angular.SelectedSkills|Where-Object{$_.Id -eq "angular-application-review"}).Count -ne 1){throw "Angular component intent must select Angular capability."}
+ $excludedApi=(& $selector -TargetPath $temp -Intent "api frontend only" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($excludedApi.SelectedSkills|Where-Object{$_.Id -eq "aspnet-core-api-review"}).Count -ne 0){throw "API anti-trigger must exclude frontend-only work."}
  Write-Host "PASS: Curated skill catalog and deterministic selection contracts passed."
  exit 0
 }finally{Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue}
