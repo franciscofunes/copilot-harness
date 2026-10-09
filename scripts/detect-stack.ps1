@@ -65,7 +65,7 @@ $signals = [ordered]@{
     Kubernetes = (Test-FileContent @("*.yaml", "*.yml") @("apiVersion:\\s*(apps/|batch/|v1)", "kind:\\s*(Deployment|StatefulSet|DaemonSet|Service|Ingress|ConfigMap)"))
     Tailwind = (
         (Test-AnyFile @("tailwind.config.js", "tailwind.config.ts", "tailwind.config.mjs")) -or
-        (Test-FileContent @("package.json", "*.css") @("tailwindcss", "@import\\s+['\"]tailwindcss"))
+        (Test-FileContent @("package.json", "*.css") @("tailwindcss", "@import\\s+tailwindcss"))
     )
     AzureDevOps = (
         (Test-AnyFile @("azure-pipelines.yml", "azure-pipelines.yaml")) -or
