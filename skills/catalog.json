@@ -129,6 +129,74 @@
         "mode": "existing-harness",
         "requiredEvidence": "deterministic"
       }
+    },
+    {
+      "id": "aspnet-core-api-review",
+      "title": "ASP.NET Core API Review",
+      "source": {
+        "project": "dotnet/aspnetcore",
+        "url": "https://github.com/dotnet/aspnetcore"
+      },
+      "triggers": [
+        "api",
+        "endpoint",
+        "controller",
+        "minimal api",
+        "middleware"
+      ],
+      "antiTriggers": [
+        "frontend only",
+        "angular only"
+      ],
+      "compatibleStacks": [
+        "DotNet"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review API contracts, middleware ordering, validation, async cancellation, authorization and test coverage.",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "angular-application-review",
+      "title": "Angular Application Review",
+      "source": {
+        "project": "angular/angular",
+        "url": "https://github.com/angular/angular"
+      },
+      "triggers": [
+        "angular",
+        "component",
+        "route",
+        "signal",
+        "template"
+      ],
+      "antiTriggers": [
+        "backend only",
+        "api only"
+      ],
+      "compatibleStacks": [
+        "Angular"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review Angular components, signals, templates, routing, accessibility and tests against project version.",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }
