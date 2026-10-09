@@ -48,6 +48,25 @@ try{
  if(@($blocked.SelectedSkills|Where-Object{$_.Id -eq "sql-server-data-review"}).Count -ne 0){throw "SQL Server anti-trigger ignored."}
  $plain=(& $selector -TargetPath $temp -Intent "review snowflake warehouse" -ChangeType data -Json|Out-String)|ConvertFrom-Json
  if(@($plain.SelectedSkills|Where-Object{$_.Id -eq "snowflake-data-review"}).Count -ne 0){throw "Snowflake capability selected without stack signal."}
+ $infra=Join-Path $temp "infra-fixture"
+ New-Item -ItemType Directory -Path $infra -Force | Out-Null
+ Set-Content (Join-Path $infra "main.tf") 'provider "aws" {}'
+ Set-Content (Join-Path $infra "package.json") '{"dependencies":{"tailwindcss":"4.0.0"}}'
+ Set-Content (Join-Path $infra "deployment.yaml") "apiVersion: apps/v1`nkind: Deployment"
+ foreach($case in @(
+  @{Intent="review aws iam";Id="aws-cloud-review"},
+  @{Intent="review terraform module";Id="terraform-infrastructure-review"},
+  @{Intent="review kubernetes yaml";Id="kubernetes-manifest-review"},
+  @{Intent="review tailwind responsive";Id="tailwind-ui-review"}
+ )){
+  $selected=(& $selector -TargetPath $infra -Intent $case.Intent -ChangeType platform -Json | Out-String) | ConvertFrom-Json
+  if(@($selected.SelectedSkills | Where-Object {$_.Id -eq $case.Id}).Count -ne 1){throw "Expected capability: $($case.Id)"}
+ }
+ $generic=Join-Path $temp "generic-yaml"
+ New-Item -ItemType Directory -Path $generic -Force | Out-Null
+ Set-Content (Join-Path $generic "notes.yaml") "description: generic configuration"
+ $result=(& $selector -TargetPath $generic -Intent "review yaml" -ChangeType platform -Json | Out-String) | ConvertFrom-Json
+ if(@($result.SelectedSkills | Where-Object {$_.Id -eq "kubernetes-manifest-review"}).Count -ne 0){throw "Generic YAML must not select Kubernetes capability."}
  Write-Host "PASS: Curated skill catalog and deterministic selection contracts passed."
  exit 0
 }finally{Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue}
