@@ -46,7 +46,11 @@ try{
  if(@($snow.SelectedSkills|Where-Object{$_.Id -eq "snowflake-data-review"}).Count -ne 1){throw "Snowflake capability not selected."}
  $blocked=(& $selector -TargetPath $dataRepo -Intent "mongodb only index" -ChangeType data -Json|Out-String)|ConvertFrom-Json
  if(@($blocked.SelectedSkills|Where-Object{$_.Id -eq "sql-server-data-review"}).Count -ne 0){throw "SQL Server anti-trigger ignored."}
- $plain=(& $selector -TargetPath $temp -Intent "review snowflake warehouse" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ $plainRepo=Join-Path ([IO.Path]::GetTempPath()) ("skills-no-stack-"+[guid]::NewGuid().ToString("N"))
+ New-Item -ItemType Directory -Path $plainRepo -Force|Out-Null
+ try {
+  $plain=(& $selector -TargetPath $plainRepo -Intent "review snowflake warehouse" -ChangeType data -Json|Out-String)|ConvertFrom-Json
+ } finally {Remove-Item -LiteralPath $plainRepo -Recurse -Force -ErrorAction SilentlyContinue}
  if(@($plain.SelectedSkills|Where-Object{$_.Id -eq "snowflake-data-review"}).Count -ne 0){throw "Snowflake capability selected without stack signal."}
  $infra=Join-Path $temp "infra-fixture"
  New-Item -ItemType Directory -Path $infra -Force | Out-Null
