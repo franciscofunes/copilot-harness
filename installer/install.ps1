@@ -110,6 +110,7 @@ $files = @(
     ".github\instructions\tests.instructions.md",
     ".github\instructions\release-testing.instructions.md",
     ".github\instructions\policy-verification.instructions.md",
+    ".github\instructions\data.instructions.md",
     ".github\prompts\feature.prompt.md",
     "spec-kit\constitution-template.md",
     "docs\POLICY-GATE.md",

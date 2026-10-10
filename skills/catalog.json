@@ -303,6 +303,138 @@
         "Snowflake"
       ],
       "summary": "Review Snowflake warehouse access, SQL transformations, connector patterns, cost-aware querying, and data pipeline verification without remote execution."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "aws-cloud-review",
+      "title": "AWS Cloud Review",
+      "source": {
+        "project": "aws/aws-cdk",
+        "url": "https://github.com/aws/aws-cdk"
+      },
+      "triggers": [
+        "aws",
+        "iam",
+        "lambda",
+        "cloudformation",
+        "cdk"
+      ],
+      "antiTriggers": [
+        "azure only"
+      ],
+      "compatibleStacks": [
+        "Aws"
+      ],
+      "summary": "Review IAM least privilege, service boundaries, deployment and local validation; do not apply changes."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "terraform-infrastructure-review",
+      "title": "Terraform Infrastructure Review",
+      "source": {
+        "project": "hashicorp/terraform",
+        "url": "https://github.com/hashicorp/terraform"
+      },
+      "triggers": [
+        "terraform",
+        "infrastructure",
+        "provider",
+        "module",
+        "state"
+      ],
+      "antiTriggers": [
+        "documentation only"
+      ],
+      "compatibleStacks": [
+        "Terraform"
+      ],
+      "summary": "Review Terraform modules, providers, state and plans; never run apply automatically."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "kubernetes-manifest-review",
+      "title": "Kubernetes Manifest Review",
+      "source": {
+        "project": "kubernetes/kubernetes",
+        "url": "https://github.com/kubernetes/kubernetes"
+      },
+      "triggers": [
+        "kubernetes",
+        "manifest",
+        "deployment",
+        "helm",
+        "yaml"
+      ],
+      "antiTriggers": [
+        "github actions only",
+        "azure pipelines only"
+      ],
+      "compatibleStacks": [
+        "Kubernetes"
+      ],
+      "summary": "Review workload YAML, security context, resources, probes and manifest validation."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "tailwind-ui-review",
+      "title": "Tailwind UI Review",
+      "source": {
+        "project": "tailwindlabs/tailwindcss",
+        "url": "https://github.com/tailwindlabs/tailwindcss"
+      },
+      "triggers": [
+        "tailwind",
+        "responsive",
+        "utility classes",
+        "styling"
+      ],
+      "antiTriggers": [
+        "backend only"
+      ],
+      "compatibleStacks": [
+        "Tailwind"
+      ],
+      "summary": "Review Tailwind configuration, responsive patterns and accessible styling."
     }
   ]
 }

@@ -60,7 +60,8 @@ try {
 
     $ready = Invoke-DoctorJson $target
     if ($ready.Exit -ne 0) {
-        throw "Doctor should return exit 0 for a complete fresh install, got $($ready.Exit)."
+        $failedChecks = @($ready.Data.Checks | Where-Object { $_.Status -eq "FAIL" } | ForEach-Object { "$($_.Name): $($_.Detail)" }) -join "; "
+        throw "Doctor should return exit 0 for a complete fresh install, got $($ready.Exit). Failed checks: $failedChecks"
     }
     if (-not $ready.Data.Ready -or $ready.Data.SchemaVersion -ne 1 -or $ready.Data.Counts.Fail -ne 0) {
         throw "Doctor JSON did not report a ready schemaVersion 1 runtime."

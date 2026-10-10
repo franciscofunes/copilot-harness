@@ -57,6 +57,16 @@ $signals = [ordered]@{
         (Test-AnyFile @("*.parquet")) -or
         (Test-FileContent @("*.csproj", "package.json", "*.py") @("Parquet\.Net", "ParquetSharp", "parquetjs", "pyarrow", "fastparquet"))
     )
+    Aws = (
+        (Test-AnyFile @("cdk.json", "samconfig.toml")) -or
+        (Test-FileContent @("*.csproj", "package.json", "*.tf") @("AWSSDK\\.", "@aws-sdk/", "aws-cdk", "hashicorp/aws"))
+    )
+    Terraform = (Test-AnyFile @("*.tf", "*.tf.json", ".terraform.lock.hcl"))
+    Kubernetes = (Test-FileContent @("*.yaml", "*.yml") @("apiVersion:\\s*(apps/|batch/|v1)", "kind:\\s*(Deployment|StatefulSet|DaemonSet|Service|Ingress|ConfigMap)"))
+    Tailwind = (
+        (Test-AnyFile @("tailwind.config.js", "tailwind.config.ts", "tailwind.config.mjs")) -or
+        (Test-FileContent @("package.json", "*.css") @("tailwindcss", "@import\\s+tailwindcss"))
+    )
     AzureDevOps = (
         (Test-AnyFile @("azure-pipelines.yml", "azure-pipelines.yaml")) -or
         (Test-AnyFile @("*.pipeline.yml", "*.pipeline.yaml"))
