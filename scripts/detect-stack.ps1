@@ -58,7 +58,7 @@ $signals = [ordered]@{
         (Test-FileContent @("*.csproj", "package.json", "*.py") @("Parquet\.Net", "ParquetSharp", "parquetjs", "pyarrow", "fastparquet"))
     )
     Aws = (
-        (Test-AnyFile @("template.yaml", "template.yml", "cdk.json", "samconfig.toml")) -or
+        (Test-AnyFile @("cdk.json", "samconfig.toml")) -or
         (Test-FileContent @("*.csproj", "package.json", "*.tf") @("AWSSDK\\.", "@aws-sdk/", "aws-cdk", "hashicorp/aws"))
     )
     Terraform = (Test-AnyFile @("*.tf", "*.tf.json", ".terraform.lock.hcl"))
