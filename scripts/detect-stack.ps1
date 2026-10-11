@@ -62,7 +62,7 @@ $signals = [ordered]@{
         (Test-FileContent @("*.csproj", "package.json", "*.tf") @("AWSSDK\\.", "@aws-sdk/", "aws-cdk", "hashicorp/aws"))
     )
     Terraform = (Test-AnyFile @("*.tf", "*.tf.json", ".terraform.lock.hcl"))
-    Kubernetes = (Test-FileContent @("*.yaml", "*.yml") @("apiVersion:\\s*(apps/|batch/|v1)", "kind:\\s*(Deployment|StatefulSet|DaemonSet|Service|Ingress|ConfigMap)"))
+    Kubernetes = (Test-FileContent @("*.yaml", "*.yml") @("apiVersion:\s*(apps/|batch/|v1)", "kind:\s*(Deployment|StatefulSet|DaemonSet|Service|Ingress|ConfigMap)"))
     Tailwind = (
         (Test-AnyFile @("tailwind.config.js", "tailwind.config.ts", "tailwind.config.mjs")) -or
         (Test-FileContent @("package.json", "*.css") @("tailwindcss", "@import\\s+tailwindcss"))
