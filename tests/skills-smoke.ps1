@@ -55,6 +55,7 @@ try{
  $infra=Join-Path $temp "infra-fixture"
  New-Item -ItemType Directory -Path $infra -Force | Out-Null
  Set-Content (Join-Path $infra "main.tf") 'provider "aws" {}'
+ Set-Content (Join-Path $infra "cdk.json") '{"app":"npx ts-node bin/app.ts"}'
  Set-Content (Join-Path $infra "package.json") '{"dependencies":{"tailwindcss":"4.0.0"}}'
  Set-Content (Join-Path $infra "deployment.yaml") "apiVersion: apps/v1`nkind: Deployment"
  foreach($case in @(
