@@ -26,7 +26,7 @@ foreach ($source in @($registry.sources)) {
   Require ($categories -ccontains [string]$source.category) "Invalid category: '$id'"
   Require ($statuses -ccontains [string]$source.reviewStatus) "Invalid review status: '$id'"
   Require ([string]$source.integration -ceq "reference-only") "Only reference-only integration is permitted: '$id'"
-  Require ($source.requiresMcp -ceq $false) "Baseline cannot require MCP: '$id'"
+  Require ($null -ne $source.requiresMcp -and $source.requiresMcp -ceq $false) "Baseline cannot require MCP: '$id'"
   $rev = [string]$source.revision
   $license = [string]$source.license
   if ([string]$source.reviewStatus -ceq "reviewed") {
