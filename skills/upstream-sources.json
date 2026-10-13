@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "defaultIntegration": "reference-only",
+    "allowRemoteExecution": false,
+    "requirePinnedRevisionForPromotion": true,
+    "requireVerifiedLicenseForPromotion": true
+  },
+  "sources": [
+    {
+      "id": "github-awesome-copilot",
+      "repository": "github/awesome-copilot",
+      "url": "https://github.com/github/awesome-copilot",
+      "category": "copilot-library",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    },
+    {
+      "id": "microsoft-skills",
+      "repository": "microsoft/skills",
+      "url": "https://github.com/microsoft/skills",
+      "category": "technology-skills",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    },
+    {
+      "id": "walkinglabs-learn-harness-engineering",
+      "repository": "walkinglabs/learn-harness-engineering",
+      "url": "https://github.com/walkinglabs/learn-harness-engineering",
+      "category": "harness-patterns",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    },
+    {
+      "id": "mongodb-agent-skills",
+      "repository": "mongodb/agent-skills",
+      "url": "https://github.com/mongodb/agent-skills",
+      "category": "technology-skills",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    },
+    {
+      "id": "anthropics-skills",
+      "repository": "anthropics/skills",
+      "url": "https://github.com/anthropics/skills",
+      "category": "skill-authoring",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    },
+    {
+      "id": "microsoftdocs-agent-skills",
+      "repository": "MicrosoftDocs/Agent-Skills",
+      "url": "https://github.com/MicrosoftDocs/Agent-Skills",
+      "category": "documentation-skills",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    }
+  ]
+}
