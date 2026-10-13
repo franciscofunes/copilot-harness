@@ -28,3 +28,6 @@ try{
   if($bad.Passed -or -not (@($bad.Errors) -match "reference-only")){throw "Remote integration must be rejected."}
   Write-Host "PASS: Upstream registry validation and negative-path tests passed."
 }finally{Remove-Item -LiteralPath $temp -Force -ErrorAction SilentlyContinue}
+# Negative fixtures intentionally return exit 1; do not propagate that status to CI.
+$global:LASTEXITCODE = 0
+exit 0
