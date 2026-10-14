@@ -468,6 +468,72 @@
         "mode": "existing-harness",
         "requiredEvidence": "deterministic"
       }
+    },
+    {
+      "id": "grill-with-docs",
+      "title": "Grill With Docs — Decision Capture",
+      "source": {
+        "project": "mattpocock/skills",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "triggers": [
+        "grill with docs",
+        "document our decisions",
+        "capture design decisions",
+        "write decision record"
+      ],
+      "antiTriggers": [
+        "routine bug fix only",
+        "documentation-only"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Capture confirmed decisions, assumptions and acceptance criteria for Spec Kit input without silently editing files.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "session-handoff",
+      "title": "Session Handoff",
+      "source": {
+        "project": "mattpocock/skills",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "triggers": [
+        "session handoff",
+        "handoff to another developer",
+        "prepare continuation note",
+        "resume in another session"
+      ],
+      "antiTriggers": [
+        "routine bug fix only",
+        "documentation-only"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Produce an evidence-aware continuation note with verified state, blockers and next safe action.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }
