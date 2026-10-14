@@ -3,26 +3,151 @@
   "scenarios": [
     {
       "id": "dotnet-debug",
-      "stackMarkers": ["sample.sln"],
+      "stackMarkers": [
+        "sample.sln"
+      ],
       "intent": "debug unexpected build failure",
       "changeType": "dotnet",
-      "expectedSkills": ["systematic-debugging"],
-      "expectedStacks": ["DotNet"]
+      "expectedSkills": [
+        "systematic-debugging"
+      ],
+      "expectedStacks": [
+        "DotNet"
+      ]
     },
     {
       "id": "angular-feature",
-      "stackMarkers": ["angular.json", "package.json"],
+      "stackMarkers": [
+        "angular.json",
+        "package.json"
+      ],
       "intent": "implement feature using test driven development",
       "changeType": "angular",
-      "expectedSkills": ["test-driven-development"],
-      "expectedStacks": ["Angular"]
+      "expectedSkills": [
+        "test-driven-development"
+      ],
+      "expectedStacks": [
+        "Angular"
+      ]
     },
     {
       "id": "release-verification",
       "stackMarkers": [],
       "intent": "complete release and verify before done",
       "changeType": "release",
-      "expectedSkills": ["verification-before-completion"],
+      "expectedSkills": [
+        "verification-before-completion"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "grill-explicit",
+      "stackMarkers": [],
+      "intent": "grill me about this architecture",
+      "changeType": "feature",
+      "expectedSkills": [
+        "grill-me"
+      ],
+      "forbiddenSkills": [
+        "grill-with-docs",
+        "session-handoff"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "grill-assumptions",
+      "stackMarkers": [],
+      "intent": "challenge my assumptions about the design",
+      "changeType": "feature",
+      "expectedSkills": [
+        "grill-me"
+      ],
+      "forbiddenSkills": [
+        "grill-with-docs",
+        "session-handoff"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "decision-record",
+      "stackMarkers": [],
+      "intent": "document our decisions from requirements review",
+      "changeType": "feature",
+      "expectedSkills": [
+        "grill-with-docs"
+      ],
+      "forbiddenSkills": [
+        "grill-me",
+        "session-handoff"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "session-handoff",
+      "stackMarkers": [],
+      "intent": "prepare a session handoff",
+      "changeType": "feature",
+      "expectedSkills": [
+        "session-handoff"
+      ],
+      "forbiddenSkills": [
+        "grill-me",
+        "grill-with-docs"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "routine-bug-no-interview",
+      "stackMarkers": [],
+      "intent": "fix a typo in an error message",
+      "changeType": "bug",
+      "expectedSkills": [],
+      "forbiddenSkills": [
+        "grill-me",
+        "grill-with-docs",
+        "session-handoff"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "routine-docs-no-interview",
+      "stackMarkers": [],
+      "intent": "update readme formatting",
+      "changeType": "docs",
+      "expectedSkills": [],
+      "forbiddenSkills": [
+        "grill-me",
+        "grill-with-docs",
+        "session-handoff"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "generic-feature-no-interview",
+      "stackMarkers": [],
+      "intent": "implement feature for dashboard",
+      "changeType": "feature",
+      "expectedSkills": [],
+      "forbiddenSkills": [
+        "grill-me",
+        "grill-with-docs",
+        "session-handoff"
+      ],
+      "expectedStacks": []
+    },
+    {
+      "id": "routine-debug",
+      "stackMarkers": [],
+      "intent": "debug unexpected failure",
+      "changeType": "bug",
+      "expectedSkills": [
+        "systematic-debugging"
+      ],
+      "forbiddenSkills": [
+        "grill-me",
+        "grill-with-docs",
+        "session-handoff"
+      ],
       "expectedStacks": []
     }
   ]
