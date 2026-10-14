@@ -84,6 +84,10 @@ jobs:
         shell: pwsh
         run: .\tests\upstream-audit-smoke.ps1
 
+      - name: Run Grill Me native skill smoke checks
+        shell: pwsh
+        run: .\tests\grill-me-smoke.ps1
+
       - name: Run harness eval regression checks
         shell: pwsh
         run: .\tests\evals-smoke.ps1
