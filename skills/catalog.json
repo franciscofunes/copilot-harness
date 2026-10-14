@@ -435,6 +435,39 @@
         "Tailwind"
       ],
       "summary": "Review Tailwind configuration, responsive patterns and accessible styling."
+    },
+    {
+      "id": "grill-me",
+      "title": "Grill Me — Requirements Challenge",
+      "source": {
+        "project": "mattpocock/skills",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "triggers": [
+        "grill me",
+        "challenge my assumptions",
+        "interrogate requirements",
+        "question my design"
+      ],
+      "antiTriggers": [
+        "bug fix only",
+        "documentation-only"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Optional one-question-at-a-time requirements challenge before Spec Kit; stop on request, document decisions and unknowns.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }

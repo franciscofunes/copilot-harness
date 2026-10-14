@@ -78,6 +78,18 @@
       "license": "unverified",
       "requiresMcp": false,
       "notes": "Source existence checked; license, target revision, applicability and content security require review before promotion."
+    },
+    {
+      "id": "mattpocock-skills",
+      "repository": "mattpocock/skills",
+      "url": "https://github.com/mattpocock/skills",
+      "category": "skill-authoring",
+      "reviewStatus": "candidate",
+      "integration": "reference-only",
+      "revision": null,
+      "license": "unverified",
+      "requiresMcp": false,
+      "notes": "Interaction-skill inspiration: grill-me and grilling. Candidate only; independently authored harness guidance below is not a vendored copy. Review license, commit and dependencies before adopting upstream text."
     }
   ]
 }
