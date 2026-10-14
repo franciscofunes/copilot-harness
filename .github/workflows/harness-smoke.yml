@@ -88,6 +88,10 @@ jobs:
         shell: pwsh
         run: .\tests\grill-me-smoke.ps1
 
+      - name: Run decision and handoff skill smoke checks
+        shell: pwsh
+        run: .\tests\interaction-skills-smoke.ps1
+
       - name: Run harness eval regression checks
         shell: pwsh
         run: .\tests\evals-smoke.ps1
