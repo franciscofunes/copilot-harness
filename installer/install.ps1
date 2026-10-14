@@ -107,6 +107,7 @@ Write-Step "Installing repository-native Copilot harness"
 $results = [ordered]@{}
 $files = @(
     ".github\copilot-instructions.md",
+    ".github\skills\grill-me\SKILL.md",
     ".github\instructions\tests.instructions.md",
     ".github\instructions\release-testing.instructions.md",
     ".github\instructions\policy-verification.instructions.md",
