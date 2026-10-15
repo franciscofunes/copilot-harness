@@ -92,6 +92,10 @@ jobs:
         shell: pwsh
         run: .\tests\interaction-skills-smoke.ps1
 
+      - name: Run interaction response quality rubric smoke checks
+        shell: pwsh
+        run: .\tests\interaction-quality-smoke.ps1
+
       - name: Run harness eval regression checks
         shell: pwsh
         run: .\tests\evals-smoke.ps1
