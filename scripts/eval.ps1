@@ -30,12 +30,15 @@ try {
     $actualStacks = @($skillResult.DetectedStacks)
     $missingSkills = @($scenario.expectedSkills | Where-Object { $actualSkills -notcontains $_ })
     $missingStacks = @($scenario.expectedStacks | Where-Object { $actualStacks -notcontains $_ })
-    $pass = ($missingSkills.Count -eq 0 -and $missingStacks.Count -eq 0)
+    $forbiddenSkills = if ($null -eq $scenario.PSObject.Properties["forbiddenSkills"]) { @() } else { @($scenario.forbiddenSkills) }
+    $unexpectedSkills = @($forbiddenSkills | Where-Object { $actualSkills -contains $_ })
+    $pass = ($missingSkills.Count -eq 0 -and $missingStacks.Count -eq 0 -and $unexpectedSkills.Count -eq 0)
     $results += [pscustomobject]@{
       Id = $scenario.id; Passed = $pass
       ExpectedSkills = @($scenario.expectedSkills); ActualSkills = $actualSkills
       ExpectedStacks = @($scenario.expectedStacks); ActualStacks = $actualStacks
       MissingSkills = $missingSkills; MissingStacks = $missingStacks
+      ForbiddenSkills = @($forbiddenSkills); UnexpectedSkills = @($unexpectedSkills)
     }
   }
 } finally { Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue }

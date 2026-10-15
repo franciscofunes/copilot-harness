@@ -15,5 +15,9 @@ $json=& $eval -ScenarioPath $scenarios -Json
 if($LASTEXITCODE -ne 0){throw "Eval runner returned exit $LASTEXITCODE"}
 $result=$json|ConvertFrom-Json
 if($result.Failed -ne 0){throw "Expected zero failed evals"}
-if($result.Total -lt 3){throw "Expected at least three evals"}
+if($result.Total -lt 11){throw "Expected at least eleven eval scenarios"}
+foreach($id in @("grill-explicit","decision-record","session-handoff","routine-bug-no-interview","generic-feature-no-interview")){
+ if(@($result.Results|Where-Object{$_.Id -eq $id -and $_.Passed}).Count -ne 1){throw "Missing passing interaction eval: $id"}
+}
+if(@($result.Results|Where-Object{@($_.UnexpectedSkills).Count -gt 0}).Count -gt 0){throw "Interaction eval detected forbidden skill activation"}
 Write-Host "Harness eval smoke: PASS"
