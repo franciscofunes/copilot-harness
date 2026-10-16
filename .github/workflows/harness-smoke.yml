@@ -96,6 +96,10 @@ jobs:
         shell: pwsh
         run: .\tests\interaction-quality-smoke.ps1
 
+      - name: Run native .NET and Angular skill smoke checks
+        shell: pwsh
+        run: .\tests\native-stack-skills-smoke.ps1
+
       - name: Run harness eval regression checks
         shell: pwsh
         run: .\tests\evals-smoke.ps1
