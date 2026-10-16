@@ -534,6 +534,72 @@
         "mode": "existing-harness",
         "requiredEvidence": "deterministic"
       }
+    },
+    {
+      "id": "aspnet-core-review",
+      "title": "ASP.NET Core API Review",
+      "source": {
+        "project": "franciscofunes/copilot-harness",
+        "url": "https://github.com/franciscofunes/copilot-harness"
+      },
+      "triggers": [
+        "asp.net core review",
+        "review asp.net api",
+        "review c# api",
+        "review dotnet endpoints"
+      ],
+      "antiTriggers": [
+        "unrelated backend only",
+        "routine typo"
+      ],
+      "compatibleStacks": [
+        "DotNet"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review API contracts, DI, async behavior, authorization, persistence and reliability.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "angular-feature-review",
+      "title": "Angular Feature Review",
+      "source": {
+        "project": "franciscofunes/copilot-harness",
+        "url": "https://github.com/franciscofunes/copilot-harness"
+      },
+      "triggers": [
+        "review angular feature",
+        "review angular component",
+        "angular signals review",
+        "angular forms review"
+      ],
+      "antiTriggers": [
+        "unrelated backend only",
+        "routine typo"
+      ],
+      "compatibleStacks": [
+        "Angular"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review Angular component architecture, forms, signals, routing, accessibility and tests.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }
