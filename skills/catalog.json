@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "skills": [
     {
       "id": "systematic-debugging",
@@ -20,7 +20,19 @@
       ],
       "requiresMcp": false,
       "authority": "advisory",
-      "summary": "Investigate and reproduce root cause before proposing a fix."
+      "summary": "Investigate and reproduce root cause before proposing a fix.",
+      "antiTriggers": [
+        "feature planning only"
+      ],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     },
     {
       "id": "test-driven-development",
@@ -41,7 +53,20 @@
       ],
       "requiresMcp": false,
       "authority": "advisory",
-      "summary": "Use a red-green-refactor loop when automated behavior tests are appropriate."
+      "summary": "Use a red-green-refactor loop when automated behavior tests are appropriate.",
+      "antiTriggers": [
+        "documentation-only",
+        "no behavior change"
+      ],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     },
     {
       "id": "verification-before-completion",
@@ -62,7 +87,17 @@
       ],
       "requiresMcp": false,
       "authority": "harness-mapped",
-      "summary": "Require fresh deterministic evidence before completion claims; the harness verification contract remains authoritative."
+      "summary": "Require fresh deterministic evidence before completion claims; the harness verification contract remains authoritative.",
+      "antiTriggers": [],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     },
     {
       "id": "acquire-codebase-knowledge",
@@ -83,7 +118,488 @@
       ],
       "requiresMcp": false,
       "authority": "advisory",
-      "summary": "Map an unfamiliar codebase; in this harness, combine repository instructions and CodeGraph rather than overwriting established guidance."
+      "summary": "Map an unfamiliar codebase; in this harness, combine repository instructions and CodeGraph rather than overwriting established guidance.",
+      "antiTriggers": [],
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "aspnet-core-api-review",
+      "title": "ASP.NET Core API Review",
+      "source": {
+        "project": "dotnet/aspnetcore",
+        "url": "https://github.com/dotnet/aspnetcore"
+      },
+      "triggers": [
+        "api",
+        "endpoint",
+        "controller",
+        "minimal api",
+        "middleware"
+      ],
+      "antiTriggers": [
+        "frontend only",
+        "angular only"
+      ],
+      "compatibleStacks": [
+        "DotNet"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review API contracts, middleware ordering, validation, async cancellation, authorization and test coverage.",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "angular-application-review",
+      "title": "Angular Application Review",
+      "source": {
+        "project": "angular/angular",
+        "url": "https://github.com/angular/angular"
+      },
+      "triggers": [
+        "angular",
+        "component",
+        "route",
+        "signal",
+        "template"
+      ],
+      "antiTriggers": [
+        "backend only",
+        "api only"
+      ],
+      "compatibleStacks": [
+        "Angular"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review Angular components, signals, templates, routing, accessibility and tests against project version.",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "sql-server-data-review",
+      "title": "SQL Server Data Review",
+      "source": {
+        "project": "dotnet/SqlClient",
+        "url": "https://github.com/dotnet/SqlClient"
+      },
+      "triggers": [
+        "sql server",
+        "sqlserver",
+        "query",
+        "migration",
+        "index",
+        "transaction"
+      ],
+      "antiTriggers": [
+        "mongodb only",
+        "snowflake only",
+        "frontend only"
+      ],
+      "compatibleStacks": [
+        "SqlServer"
+      ],
+      "summary": "Review SQL Server query safety, parameterization, transactions, indexes, migrations, and local verification; do not execute database mutations."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "mongodb-data-review",
+      "title": "MongoDB Data Review",
+      "source": {
+        "project": "mongodb/agent-skills",
+        "url": "https://github.com/mongodb/agent-skills"
+      },
+      "triggers": [
+        "mongodb",
+        "mongo",
+        "aggregation",
+        "document schema",
+        "index"
+      ],
+      "antiTriggers": [
+        "sql server only",
+        "snowflake only",
+        "frontend only"
+      ],
+      "compatibleStacks": [
+        "MongoDb"
+      ],
+      "summary": "Review MongoDB data modeling, query patterns, aggregation, indexes, and safe migration planning without remote execution."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "snowflake-data-review",
+      "title": "Snowflake Data Review",
+      "source": {
+        "project": "snowflakedb/snowflake-connector-net",
+        "url": "https://github.com/snowflakedb/snowflake-connector-net"
+      },
+      "triggers": [
+        "snowflake",
+        "warehouse",
+        "snowpark",
+        "data pipeline",
+        "parquet"
+      ],
+      "antiTriggers": [
+        "mongodb only",
+        "sql server only",
+        "frontend only"
+      ],
+      "compatibleStacks": [
+        "Snowflake"
+      ],
+      "summary": "Review Snowflake warehouse access, SQL transformations, connector patterns, cost-aware querying, and data pipeline verification without remote execution."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "aws-cloud-review",
+      "title": "AWS Cloud Review",
+      "source": {
+        "project": "aws/aws-cdk",
+        "url": "https://github.com/aws/aws-cdk"
+      },
+      "triggers": [
+        "aws",
+        "iam",
+        "lambda",
+        "cloudformation",
+        "cdk"
+      ],
+      "antiTriggers": [
+        "azure only"
+      ],
+      "compatibleStacks": [
+        "Aws"
+      ],
+      "summary": "Review IAM least privilege, service boundaries, deployment and local validation; do not apply changes."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "terraform-infrastructure-review",
+      "title": "Terraform Infrastructure Review",
+      "source": {
+        "project": "hashicorp/terraform",
+        "url": "https://github.com/hashicorp/terraform"
+      },
+      "triggers": [
+        "terraform",
+        "infrastructure",
+        "provider",
+        "module",
+        "state"
+      ],
+      "antiTriggers": [
+        "documentation only"
+      ],
+      "compatibleStacks": [
+        "Terraform"
+      ],
+      "summary": "Review Terraform modules, providers, state and plans; never run apply automatically."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "kubernetes-manifest-review",
+      "title": "Kubernetes Manifest Review",
+      "source": {
+        "project": "kubernetes/kubernetes",
+        "url": "https://github.com/kubernetes/kubernetes"
+      },
+      "triggers": [
+        "kubernetes",
+        "manifest",
+        "deployment",
+        "helm",
+        "yaml"
+      ],
+      "antiTriggers": [
+        "github actions only",
+        "azure pipelines only"
+      ],
+      "compatibleStacks": [
+        "Kubernetes"
+      ],
+      "summary": "Review workload YAML, security context, resources, probes and manifest validation."
+    },
+    {
+      "requiresMcp": false,
+      "authority": "advisory",
+      "provenance": {
+        "kind": "upstream-reference",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      },
+      "id": "tailwind-ui-review",
+      "title": "Tailwind UI Review",
+      "source": {
+        "project": "tailwindlabs/tailwindcss",
+        "url": "https://github.com/tailwindlabs/tailwindcss"
+      },
+      "triggers": [
+        "tailwind",
+        "responsive",
+        "utility classes",
+        "styling"
+      ],
+      "antiTriggers": [
+        "backend only"
+      ],
+      "compatibleStacks": [
+        "Tailwind"
+      ],
+      "summary": "Review Tailwind configuration, responsive patterns and accessible styling."
+    },
+    {
+      "id": "grill-me",
+      "title": "Grill Me — Requirements Challenge",
+      "source": {
+        "project": "mattpocock/skills",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "triggers": [
+        "grill me",
+        "challenge my assumptions",
+        "interrogate requirements",
+        "question my design"
+      ],
+      "antiTriggers": [
+        "bug fix only",
+        "documentation-only"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Optional one-question-at-a-time requirements challenge before Spec Kit; stop on request, document decisions and unknowns.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "grill-with-docs",
+      "title": "Grill With Docs — Decision Capture",
+      "source": {
+        "project": "mattpocock/skills",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "triggers": [
+        "grill with docs",
+        "document our decisions",
+        "capture design decisions",
+        "write decision record"
+      ],
+      "antiTriggers": [
+        "routine bug fix only",
+        "documentation-only"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Capture confirmed decisions, assumptions and acceptance criteria for Spec Kit input without silently editing files.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "session-handoff",
+      "title": "Session Handoff",
+      "source": {
+        "project": "mattpocock/skills",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "triggers": [
+        "session handoff",
+        "handoff to another developer",
+        "prepare continuation note",
+        "resume in another session"
+      ],
+      "antiTriggers": [
+        "routine bug fix only",
+        "documentation-only"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Produce an evidence-aware continuation note with verified state, blockers and next safe action.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "aspnet-core-review",
+      "title": "ASP.NET Core API Review",
+      "source": {
+        "project": "franciscofunes/copilot-harness",
+        "url": "https://github.com/franciscofunes/copilot-harness"
+      },
+      "triggers": [
+        "asp.net core review",
+        "review asp.net api",
+        "review c# api",
+        "review dotnet endpoints"
+      ],
+      "antiTriggers": [
+        "unrelated backend only",
+        "routine typo"
+      ],
+      "compatibleStacks": [
+        "DotNet"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review API contracts, DI, async behavior, authorization, persistence and reliability.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
+    },
+    {
+      "id": "angular-feature-review",
+      "title": "Angular Feature Review",
+      "source": {
+        "project": "franciscofunes/copilot-harness",
+        "url": "https://github.com/franciscofunes/copilot-harness"
+      },
+      "triggers": [
+        "review angular feature",
+        "review angular component",
+        "angular signals review",
+        "angular forms review"
+      ],
+      "antiTriggers": [
+        "unrelated backend only",
+        "routine typo"
+      ],
+      "compatibleStacks": [
+        "Angular"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review Angular component architecture, forms, signals, routing, accessibility and tests.",
+      "provenance": {
+        "kind": "independent-adaptation",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }

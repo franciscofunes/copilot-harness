@@ -80,6 +80,38 @@ jobs:
         shell: pwsh
         run: .\tests\skills-smoke.ps1
 
+      - name: Run upstream source audit smoke checks
+        shell: pwsh
+        run: .\tests\upstream-audit-smoke.ps1
+
+      - name: Run Grill Me native skill smoke checks
+        shell: pwsh
+        run: .\tests\grill-me-smoke.ps1
+
+      - name: Run decision and handoff skill smoke checks
+        shell: pwsh
+        run: .\tests\interaction-skills-smoke.ps1
+
+      - name: Run interaction response quality rubric smoke checks
+        shell: pwsh
+        run: .\tests\interaction-quality-smoke.ps1
+
+      - name: Validate v1.1.0 release readiness plan
+        shell: pwsh
+        run: .\tests\release-1-1-readiness-smoke.ps1
+
+      - name: Run IDE adoption review rubric smoke checks
+        shell: pwsh
+        run: .\tests\ide-adoption-smoke.ps1
+
+      - name: Run native skill installation and discovery acceptance checks
+        shell: pwsh
+        run: .\tests\native-skill-adoption-smoke.ps1
+
+      - name: Run native .NET and Angular skill smoke checks
+        shell: pwsh
+        run: .\tests\native-stack-skills-smoke.ps1
+
       - name: Run harness eval regression checks
         shell: pwsh
         run: .\tests\evals-smoke.ps1

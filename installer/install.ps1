@@ -107,9 +107,15 @@ Write-Step "Installing repository-native Copilot harness"
 $results = [ordered]@{}
 $files = @(
     ".github\copilot-instructions.md",
+    ".github\skills\grill-me\SKILL.md",
+    ".github\skills\grill-with-docs\SKILL.md",
+    ".github\skills\session-handoff\SKILL.md",
+    ".github\skills\aspnet-core-review\SKILL.md",
+    ".github\skills\angular-feature-review\SKILL.md",
     ".github\instructions\tests.instructions.md",
     ".github\instructions\release-testing.instructions.md",
     ".github\instructions\policy-verification.instructions.md",
+    ".github\instructions\data.instructions.md",
     ".github\prompts\feature.prompt.md",
     "spec-kit\constitution-template.md",
     "docs\POLICY-GATE.md",

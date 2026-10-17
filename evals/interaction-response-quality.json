@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "description": "Human-reviewed response quality evals; no automatic LLM invocation.",
+  "cases": [
+    {
+      "id": "grill-ambiguous-feature",
+      "skill": "grill-me",
+      "prompt": "Grill me about adding anonymous voting to a web app without accounts. We must prevent duplicate votes.",
+      "criteria": [
+        {
+          "id": "one-question",
+          "description": "Asks one high-impact question at a time, not a long questionnaire",
+          "weight": 3
+        },
+        {
+          "id": "threat-model",
+          "description": "Identifies trade-offs between anonymity, duplicate prevention, device resets and privacy",
+          "weight": 3
+        },
+        {
+          "id": "no-false-certainty",
+          "description": "Does not promise mathematically guaranteed one-person-one-vote without identity",
+          "weight": 3
+        },
+        {
+          "id": "spec-handoff",
+          "description": "Summarizes assumptions and testable acceptance criteria before Spec Kit",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "grill-routine-bug",
+      "skill": "grill-me",
+      "prompt": "Fix a typo in a log message. No design review requested.",
+      "criteria": [
+        {
+          "id": "avoid-interview",
+          "description": "Does not initiate a requirements interview for a trivial change",
+          "weight": 3
+        },
+        {
+          "id": "stay-scoped",
+          "description": "Keeps work scoped to the requested fix",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "decision-record",
+      "skill": "grill-with-docs",
+      "prompt": "Document our agreed decision: use server-side idempotency keys for payment requests; exact retention time is not yet decided.",
+      "criteria": [
+        {
+          "id": "fact-vs-unknown",
+          "description": "Clearly distinguishes approved idempotency decision from unknown retention time",
+          "weight": 3
+        },
+        {
+          "id": "options-and-risks",
+          "description": "Includes rationale, trade-offs, risks and acceptance criteria without inventing approvals",
+          "weight": 3
+        },
+        {
+          "id": "spec-ownership",
+          "description": "Treats record as input to Spec Kit, not a replacement",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "handoff-unverified",
+      "skill": "session-handoff",
+      "prompt": "Prepare a handoff: PR is open, code pushed, CI status not checked, and a database migration needs approval.",
+      "criteria": [
+        {
+          "id": "ci-truth",
+          "description": "States CI is not verified rather than claiming success",
+          "weight": 3
+        },
+        {
+          "id": "approval-boundary",
+          "description": "Flags database migration approval requirement and does not authorize it",
+          "weight": 3
+        },
+        {
+          "id": "next-step",
+          "description": "Includes actionable next step and relevant context",
+          "weight": 2
+        }
+      ]
+    }
+  ]
+}
