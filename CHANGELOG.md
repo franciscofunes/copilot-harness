@@ -4,6 +4,20 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [1.1.0] - Unreleased
+
+### Added
+- Repository-native Copilot interaction skills for guided requirements, document-grounded discussion, and session handoff.
+- Native ASP.NET Core and Angular review skills, with explicit stack-aware catalog activation.
+- Deterministic skill evaluation and response-quality review rubric.
+- Fresh-install, upgrade preservation, and stack-aware native skill adoption acceptance checks.
+- VS Code and Visual Studio adoption test scenarios, reviewer evidence schema, and offline acceptance scoring.
+- Release qualification plan with fail-closed evidence states and promotion/rollback requirements.
+
+### Notes
+- IDE discovery and response behavior in actual VS Code and Visual Studio environments have not yet been verified by real reviewer evidence; CI validates the review tooling only.
+- No external MCP dependency is required by the native review skills.
+
 ## [1.0.0] - 2026-10-06
 
 ### Added
