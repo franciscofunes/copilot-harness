@@ -3,7 +3,11 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 $root=Split-Path -Parent $PSScriptRoot
 $version=(Get-Content -LiteralPath (Join-Path $root "VERSION") -Raw).Trim()
-if($version -ne "1.0.0"){throw "Expected v1.0.0 baseline before release cut; got $version"}
+if($version -notin @("1.0.0","1.1.0")){throw "Unexpected release version $version"}
+if($version -eq "1.1.0"){
+ $changelog=Get-Content -LiteralPath (Join-Path $root "CHANGELOG.md") -Raw
+ if(-not $changelog.Contains("## [1.1.0] - Unreleased")){throw "Release candidate missing unreleased changelog entry"}
+}
 $path=Join-Path $root "docs\releases\1.1.0-testing.md"
 $doc=Get-Content -LiteralPath $path -Raw
 foreach($item in @("release/1.1.0","Harness Smoke","native-skill-adoption-smoke.ps1","BLOCKED","NOT RUN","v1.0.0","main","develop","rollback")){
