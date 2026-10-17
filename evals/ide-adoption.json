@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "description": "Manual Copilot IDE adoption checks; record real observed evidence, not synthetic model claims.",
+  "cases": [
+    {
+      "id": "vscode-dotnet",
+      "ide": "vscode",
+      "stack": "DotNet",
+      "fixture": "sample.sln",
+      "skill": "aspnet-core-review",
+      "intent": "review asp.net api",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    },
+    {
+      "id": "vscode-angular",
+      "ide": "vscode",
+      "stack": "Angular",
+      "fixture": "angular.json",
+      "skill": "angular-feature-review",
+      "intent": "review angular feature",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    },
+    {
+      "id": "visualstudio-dotnet",
+      "ide": "visualstudio",
+      "stack": "DotNet",
+      "fixture": "sample.sln",
+      "skill": "aspnet-core-review",
+      "intent": "review asp.net api",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    },
+    {
+      "id": "vscode-handoff",
+      "ide": "vscode",
+      "stack": "DotNet",
+      "fixture": "sample.sln",
+      "skill": "session-handoff",
+      "intent": "prepare a session handoff",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    }
+  ]
+}

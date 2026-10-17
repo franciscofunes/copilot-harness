@@ -96,6 +96,10 @@ jobs:
         shell: pwsh
         run: .\tests\interaction-quality-smoke.ps1
 
+      - name: Run IDE adoption review rubric smoke checks
+        shell: pwsh
+        run: .\tests\ide-adoption-smoke.ps1
+
       - name: Run native skill installation and discovery acceptance checks
         shell: pwsh
         run: .\tests\native-skill-adoption-smoke.ps1
