@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "description": "Deterministic stack-aware skill selector benchmark. Character-count metrics are context proxies, not tokenizer measurements.",
+  "cases": [
+    {
+      "id": "sql-specific",
+      "stack": "SqlServer",
+      "intent": "review sql server transaction",
+      "expected": [
+        "sql-server-data-review"
+      ],
+      "excluded": [
+        "mongodb-data-review",
+        "snowflake-data-review"
+      ]
+    },
+    {
+      "id": "mongo-specific",
+      "stack": "MongoDb",
+      "intent": "review mongodb aggregation",
+      "expected": [
+        "mongodb-data-review"
+      ],
+      "excluded": [
+        "sql-server-data-review",
+        "snowflake-data-review"
+      ]
+    },
+    {
+      "id": "snowflake-specific",
+      "stack": "Snowflake",
+      "intent": "review snowflake warehouse",
+      "expected": [
+        "snowflake-data-review"
+      ],
+      "excluded": [
+        "sql-server-data-review",
+        "mongodb-data-review"
+      ]
+    },
+    {
+      "id": "sql-anti-trigger",
+      "stack": "SqlServer",
+      "intent": "mongodb only query",
+      "expected": [],
+      "excluded": [
+        "sql-server-data-review"
+      ]
+    },
+    {
+      "id": "mongo-anti-trigger",
+      "stack": "MongoDb",
+      "intent": "sql server only index",
+      "expected": [],
+      "excluded": [
+        "mongodb-data-review"
+      ]
+    },
+    {
+      "id": "snowflake-anti-trigger",
+      "stack": "Snowflake",
+      "intent": "mongodb only parquet",
+      "expected": [],
+      "excluded": [
+        "snowflake-data-review"
+      ]
+    },
+    {
+      "id": "unrelated",
+      "stack": "SqlServer",
+      "intent": "fix button alignment",
+      "expected": [],
+      "excluded": [
+        "sql-server-data-review"
+      ]
+    },
+    {
+      "id": "mixed-data",
+      "stack": "SqlServer,MongoDb,Snowflake",
+      "intent": "review sql server transaction and mongodb aggregation and snowflake warehouse",
+      "expected": [
+        "sql-server-data-review",
+        "mongodb-data-review",
+        "snowflake-data-review"
+      ],
+      "excluded": []
+    }
+  ]
+}
