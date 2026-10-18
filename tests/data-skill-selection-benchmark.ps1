@@ -25,7 +25,10 @@ try{
    }
   }
   $result=(& $selector -TargetPath $path -Intent ([string]$case.intent) -ChangeType feature -Json|Out-String)|ConvertFrom-Json
-  if($LASTEXITCODE -ne 0){throw "Selector failed for $id"}
+  # PowerShell script invocation does not necessarily set $LASTEXITCODE. Under StrictMode,
+  # referencing an unset automatic variable fails even when the selector succeeded.
+  # Selector errors propagate through $ErrorActionPreference = "Stop"; validate the result contract.
+  if($null -eq $result -or $null -eq $result.SelectedSkills){throw "Selector returned invalid JSON for $id"}
   $selected=@($result.SelectedSkills|ForEach-Object{$_.Id})
   foreach($expected in @($case.expected)){if($selected -notcontains $expected){throw "$id missing expected $expected (selected $($selected -join ','))"}}
   foreach($excluded in @($case.excluded)){if($selected -contains $excluded){throw "$id unexpectedly selected $excluded"}}
