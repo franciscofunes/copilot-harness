@@ -108,6 +108,10 @@ jobs:
         shell: pwsh
         run: .\tests\native-skill-adoption-smoke.ps1
 
+      - name: Benchmark data skill selection and static context footprint
+        shell: pwsh
+        run: .\tests\data-skill-selection-benchmark.ps1
+
       - name: Run native data engineering skill smoke checks
         shell: pwsh
         run: .\tests\native-data-skills-smoke.ps1
