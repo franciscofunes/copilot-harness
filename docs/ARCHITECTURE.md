@@ -55,3 +55,23 @@ Visual Studio receives the shared repository instructions, path-specific instruc
 The architecture intentionally avoids a giant global instruction file. Universal behavior belongs in `.github/copilot-instructions.md`; language/framework/database-specific behavior belongs in path-scoped files; task procedures belong in prompt files or Spec Kit skills; detailed feature context belongs in the active Spec Kit artifacts.
 
 This structure reduces repeated tokens and makes Copilot more likely to receive relevant rather than generic context.
+
+## Native skill selection and authority boundaries (v1.2.0)
+
+```mermaid
+flowchart LR
+    R[Repository files and intent] --> D[Stack detector]
+    D --> C[Curated catalog and selector]
+    C --> S[Native Copilot skills]
+    S --> A[Advisory review]
+    A --> P[Spec Kit planning]
+    P --> G{Policy gate}
+    G -->|Authorized| V[Deterministic verification]
+    G -->|Approval required| H[Human decision]
+    H --> G
+    V --> E[Evidence and QA]
+```
+
+Native skills under `.github/skills/` cover ASP.NET Core, Angular, SQL Server, MongoDB, Snowflake and interaction workflows. Selection is driven by repository signals and task intent. Doctor reports optional installed data skill status as PASS or WARN; a PASS does **not** establish that a specific IDE invoked the skill.
+
+The data skill selection benchmark includes positive, negative and mixed-stack scenarios. Its static character-count comparison is **not** measured Copilot context inclusion, token usage or cost. See [the benchmark contract](DATA-SKILL-SELECTION-BENCHMARK.md) and [IDE adoption acceptance](IDE-ADOPTION-ACCEPTANCE.md).
