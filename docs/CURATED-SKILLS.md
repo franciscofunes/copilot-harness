@@ -52,3 +52,31 @@ The installer deploys `scripts/skills.ps1`, `skills/catalog.json`, and this cont
 A selected skill cannot raise the automatic execution ceiling or turn generated guidance into deterministic verification evidence.
 
 **Copilot proposes; the harness verifies.**
+
+## Native skill catalog (v1.1–v1.2)
+
+The original curated patterns above remain catalog capabilities. The repository also installs native `SKILL.md` guidance for:
+
+| Native skill | Intended review |
+| --- | --- |
+| `grill-me` | Clarify requirements through guided questions |
+| `grill-with-docs` | Review requirements against supplied documentation |
+| `session-handoff` | Transfer task state with evidence and next steps |
+| `aspnet-core-review` | ASP.NET Core architecture and correctness |
+| `angular-feature-review` | Angular features, accessibility and maintainability |
+| `sql-server-data-review` | SQL Server queries, transactions, indexes and migrations |
+| `mongodb-data-review` | MongoDB document models, queries and aggregation |
+| `snowflake-data-review` | Snowflake transformations, ingestion and cost-aware review |
+
+```mermaid
+flowchart TD
+    I[Intent and repository signals] --> C[Deterministic catalog selection]
+    C --> R{Skill matches?}
+    R -->|Yes| N[Load relevant native guidance]
+    R -->|No| X[No unrelated skill]
+    N --> A[Advisory analysis]
+    A --> P[Policy gate and human authorization]
+    P --> V[Harness verification]
+```
+
+Run `pwsh ./tests/native-data-skills-smoke.ps1` and `pwsh ./tests/data-skill-selection-benchmark.ps1` for deterministic coverage. A selected skill does not prove real IDE invocation. Doctor reports optional skill installation separately from the IDE adoption acceptance process.
