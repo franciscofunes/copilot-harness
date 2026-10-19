@@ -194,7 +194,7 @@ foreach ($entry in $dataSkillMap) {
         continue
     }
     $content = Get-Content -LiteralPath $installed -Raw
-    if ($content -notmatch "(?m)^name:\\s*$([regex]::Escape($entry.Id))\\s*$") {
+    if ($content -notmatch "(?m)^name:\s*$([regex]::Escape($entry.Id))\s*$") {
         Add-Check "skill:$($entry.Id)" "WARN" "Native skill file is present but its metadata name does not match $($entry.Id); review the installed file."
     } else {
         Add-Check "skill:$($entry.Id)" "PASS" "Native advisory skill is installed for $($entry.Stack); IDE invocation is not verified by Doctor."
