@@ -5,7 +5,7 @@ $root=Split-Path -Parent $PSScriptRoot
 $path=Join-Path $root "docs\releases\1.2.0-testing.md"
 if(-not(Test-Path -LiteralPath $path -PathType Leaf)){throw "Missing v1.2.0 qualification plan"}
 $text=Get-Content -LiteralPath $path -Raw
-foreach($required in @("NOT RELEASED","SqlServer","MongoDB","Snowflake","main...develop","NOT RUN","BLOCKED","rollback","release/1.2.0","v1.2.0")){
+foreach($required in @("NOT RELEASED","SQL Server","MongoDB","Snowflake","main...develop","NOT RUN","BLOCKED","rollback","release/1.2.0","v1.2.0")){
  if(-not $text.Contains($required)){throw "Release plan missing $required"}
 }
 if($text -match '(?im)^\|[^\r\n]*\|\s*PASS\s*\|'){throw "Release qualification must not pre-approve gates"}
