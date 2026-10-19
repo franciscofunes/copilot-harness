@@ -178,6 +178,29 @@ if ($stack.Signals.SqlServer -or $stack.Signals.MongoDb -or $stack.Signals.Snowf
     Test-FileCheck ".github\instructions\data.instructions.md"
 }
 
+# Native data skills are optional adoption capabilities, not stable runtime prerequisites.
+# Report per-stack installation state without turning advisory gaps into blocking failures.
+$dataSkillMap = @(
+    @{ Stack = "SqlServer"; Id = "sql-server-data-review" },
+    @{ Stack = "MongoDb"; Id = "mongodb-data-review" },
+    @{ Stack = "Snowflake"; Id = "snowflake-data-review" }
+)
+foreach ($entry in $dataSkillMap) {
+    if ($stack.DetectedStacks -notcontains $entry.Stack) { continue }
+    $relative = ".github\\skills\\$($entry.Id)\\SKILL.md"
+    $installed = Join-Path $targetRoot $relative
+    if (-not (Test-Path -LiteralPath $installed -PathType Leaf)) {
+        Add-Check "skill:$($entry.Id)" "WARN" "Native advisory skill is not installed; reinstall or upgrade the harness to enable $($entry.Stack) review."
+        continue
+    }
+    $content = Get-Content -LiteralPath $installed -Raw
+    if ($content -notmatch "(?m)^name:\\s*$([regex]::Escape($entry.Id))\\s*$") {
+        Add-Check "skill:$($entry.Id)" "WARN" "Native skill file is present but its metadata name does not match $($entry.Id); review the installed file."
+    } else {
+        Add-Check "skill:$($entry.Id)" "PASS" "Native advisory skill is installed for $($entry.Stack); IDE invocation is not verified by Doctor."
+    }
+}
+
 $profilePath = Join-Path $targetRoot ".copilot-harness.verify.json"
 if (Test-Path -LiteralPath $profilePath -PathType Leaf) {
     try {
