@@ -81,6 +81,21 @@ try {
         }
     }
 
+    # Stack-aware advisory diagnostics: installed MongoDB skill is PASS; missing is WARN.
+    Set-Content -LiteralPath (Join-Path $target "package.json") -Value '{"dependencies":{"mongodb":"^6.0.0"}}'
+    $mongoReady = Invoke-DoctorJson $target
+    if (@($mongoReady.Data.Checks | Where-Object { $_.Name -eq "skill:mongodb-data-review" -and $_.Status -eq "PASS" }).Count -ne 1) {
+        throw "Doctor did not detect the installed MongoDB advisory skill."
+    }
+    Remove-Item -LiteralPath (Join-Path $target ".github\\skills\\mongodb-data-review\\SKILL.md") -Force
+    $mongoMissing = Invoke-DoctorJson $target
+    if ($mongoMissing.Exit -ne 0 -or -not $mongoMissing.Data.Ready) {
+        throw "Missing optional native skill must not block harness readiness."
+    }
+    if (@($mongoMissing.Data.Checks | Where-Object { $_.Name -eq "skill:mongodb-data-review" -and $_.Status -eq "WARN" }).Count -ne 1) {
+        throw "Doctor did not report missing optional MongoDB skill as WARN."
+    }
+
     Remove-Item -LiteralPath (Join-Path $target "scripts\lifecycle.ps1") -Force
     $broken = Invoke-DoctorJson $target
     if ($broken.Exit -ne 1) {

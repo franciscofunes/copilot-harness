@@ -63,6 +63,16 @@ Required local workflow tools such as Git and GitHub CLI are blocking when unava
 
 Spec Kit CLI/extensions, `uv`, Azure CLI, JFrog CLI, and other optional integrations may produce warnings when the core harness can still operate safely without them.
 
+## Native data skill diagnostics (v1.2.0)
+
+For detected `SqlServer`, `MongoDb`, and `Snowflake` stacks, Doctor reports one advisory check per applicable native review skill:
+
+- `skill:sql-server-data-review`
+- `skill:mongodb-data-review`
+- `skill:snowflake-data-review`
+
+`PASS` means the expected `.github/skills/<id>/SKILL.md` file is present with matching metadata. `WARN` means the file is absent or has mismatched metadata; the core runtime can still be ready. Doctor does **not** prove that GitHub Copilot discovers, invokes, or follows the skill inside an IDE. That requires the separate IDE adoption acceptance evidence.
+
 ## Upgrade behavior
 
 Running the installer in `skip` conflict mode preserves repository-owned harness files while adding stable runtime files that were introduced by later harness versions. After installation or upgrade, the doctor is the authoritative readiness check for runtime completeness.
