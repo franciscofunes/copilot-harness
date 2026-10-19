@@ -4,6 +4,19 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
+## [1.2.0] - Unreleased
+
+### Added
+- Native SQL Server, MongoDB and Snowflake Copilot review skills with advisory-only review guidance and installer integration.
+- Deterministic native data skill smoke tests and positive, negative, and mixed-stack selection benchmarks.
+- Static selected-skill character footprint comparison, explicitly not a measurement of actual Copilot token usage or cost.
+- Stack-aware Doctor diagnostics for native data skills, preserving nonblocking warnings for optional skills.
+- Evidence-gated v1.2.0 release qualification plan and CI smoke validation.
+
+### Notes
+- Real VS Code and Visual Studio skill discovery and invocation remain unverified until IDE acceptance evidence is recorded.
+- Review the v1.2.0 qualification plan before promoting this candidate to main.
+
 ## [1.1.0] - Unreleased
 
 ### Added

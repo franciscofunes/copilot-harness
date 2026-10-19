@@ -100,6 +100,10 @@ jobs:
         shell: pwsh
         run: .\tests\release-1-1-readiness-smoke.ps1
 
+      - name: Validate v1.2.0 release qualification plan
+        shell: pwsh
+        run: .\tests\release-1-2-readiness-smoke.ps1
+
       - name: Run IDE adoption review rubric smoke checks
         shell: pwsh
         run: .\tests\ide-adoption-smoke.ps1
@@ -107,6 +111,14 @@ jobs:
       - name: Run native skill installation and discovery acceptance checks
         shell: pwsh
         run: .\tests\native-skill-adoption-smoke.ps1
+
+      - name: Benchmark data skill selection and static context footprint
+        shell: pwsh
+        run: .\tests\data-skill-selection-benchmark.ps1
+
+      - name: Run native data engineering skill smoke checks
+        shell: pwsh
+        run: .\tests\native-data-skills-smoke.ps1
 
       - name: Run native .NET and Angular skill smoke checks
         shell: pwsh

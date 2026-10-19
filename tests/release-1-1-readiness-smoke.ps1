@@ -3,7 +3,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 $root=Split-Path -Parent $PSScriptRoot
 $version=(Get-Content -LiteralPath (Join-Path $root "VERSION") -Raw).Trim()
-if($version -notin @("1.0.0","1.1.0")){throw "Unexpected release version $version"}
+if($version -notin @("1.0.0","1.1.0","1.2.0")){throw "Unexpected release version $version"}
 if($version -eq "1.1.0"){
  $changelog=Get-Content -LiteralPath (Join-Path $root "CHANGELOG.md") -Raw
  if(-not $changelog.Contains("## [1.1.0] - Unreleased")){throw "Release candidate missing unreleased changelog entry"}
