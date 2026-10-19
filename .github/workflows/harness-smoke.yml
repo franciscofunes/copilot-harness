@@ -100,6 +100,10 @@ jobs:
         shell: pwsh
         run: .\tests\release-1-1-readiness-smoke.ps1
 
+      - name: Validate v1.2.0 release qualification plan
+        shell: pwsh
+        run: .\tests\release-1-2-readiness-smoke.ps1
+
       - name: Run IDE adoption review rubric smoke checks
         shell: pwsh
         run: .\tests\ide-adoption-smoke.ps1
