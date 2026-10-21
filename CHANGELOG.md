@@ -4,7 +4,7 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
-## [1.1.0] - Unreleased
+## [1.1.0] - 2026-10-17
 
 ### Added
 - Repository-native Copilot interaction skills for guided requirements, document-grounded discussion, and session handoff.

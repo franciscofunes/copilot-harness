@@ -117,23 +117,39 @@ docs/                           Contracts and implementation guidance
 .github/                        Copilot instructions, PR workflow, CI
 ```
 
-## Roadmap
+## Release roadmap
 
 ```mermaid
 flowchart LR
-    A["v0.8.x<br/>Verification + Evals"] --> B["v0.9.0<br/>End-to-End Orchestration"]
-    B --> C["v0.9.1<br/>Lifecycle State + Maker/Checker"]
-    C --> D["v0.9.2<br/>Harness Audit + Observability"]
-    D --> E["v1.0.0<br/>Stable Harness"]
+    A["v1.0.0<br/>Stable Harness"] --> B["v1.1.0<br/>Native Skills and Adoption Toolkit"]
+    B --> C["v1.2.0 candidate<br/>Data Skills, Selection Evals, Doctor"]
+    C --> D["Qualification<br/>CI, IDE evidence, upgrade and rollback"]
+    D --> E["Publish v1.2.0<br/>After approval"]
 ```
 
-**v0.9.0 — End-to-End Harness Orchestration** connects task intent, context, curated skills, verification, and durable evidence.
+**v1.0.0** established the stable runtime. **v1.1.0** added native interaction, ASP.NET Core and Angular review skills and adoption tooling. **v1.2.0** introduces native SQL Server, MongoDB and Snowflake review skills, deterministic selection benchmarks and stack-aware Doctor diagnostics.
 
-**v0.9.1 — Lifecycle State + Maker/Checker** will make work resumable and strengthen separation between generated work and independent evaluation.
+The v1.2.0 release candidate has been merged into `main`, but a GitHub release/tag and outstanding qualification evidence must be verified separately before calling it published. The benchmark reports a static character-count proxy, **not observed token savings**.
 
-**v0.9.2 — Harness Audit + Observability** will make harness health, failure attribution, and lifecycle coverage measurable.
+### Native data skill selection
 
-**v1.0.0 — Stable Harness** will focus on contract stability, representative project validation, upgrade behavior, documentation, and release-quality gates.
+```mermaid
+flowchart TD
+    U[Developer request] --> D[Stack and intent detection]
+    D --> S{Relevant native data skill?}
+    S -->|SQL Server| Q[SQL Server review]
+    S -->|MongoDB| M[MongoDB review]
+    S -->|Snowflake| W[Snowflake review]
+    S -->|No match| N[No data skill activated]
+    Q --> P[Advisory recommendations]
+    M --> P
+    W --> P
+    P --> G[Policy authorization]
+    G --> V[Deterministic verification]
+    V --> E[Evidence and review]
+```
+
+Skills do not authorize database writes, override policy, or count as verification evidence. See [curated skills](docs/CURATED-SKILLS.md), [architecture](docs/ARCHITECTURE.md), and [selection benchmarks](docs/DATA-SKILL-SELECTION-BENCHMARK.md).
 
 ## Getting started
 
