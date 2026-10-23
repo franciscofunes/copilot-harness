@@ -89,7 +89,7 @@
       "revision": null,
       "license": "unverified",
       "requiresMcp": false,
-      "notes": "Interaction-skill inspiration: grill-me and grilling. Candidate only; independently authored harness guidance below is not a vendored copy. Review license, commit and dependencies before adopting upstream text."
+      "notes": "AI Hero lists 27 upstream skills across setup, idea-to-ship, shaping, engineering, productivity and reference groups. Candidate for selective Copilot-compatible installation after pinned revision, license and dependency review. Existing harness grill-me and grill-with-docs are independent guidance; avoid duplicates, overwrites, and automatic installation."
     }
   ]
 }
