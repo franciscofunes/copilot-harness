@@ -5,7 +5,7 @@ $root=Split-Path -Parent $PSScriptRoot
 $installer=Join-Path $root "installer\install.ps1"
 $skillSelector=Join-Path $root "scripts\skills.ps1"
 $temp=Join-Path ([IO.Path]::GetTempPath()) ("native-skill-adoption-"+[guid]::NewGuid().ToString("N"))
-$skillPaths=@(".github\skills\aspnet-core-review\SKILL.md",".github\skills\angular-feature-review\SKILL.md",".github\skills\grill-me\SKILL.md",".github\skills\grill-with-docs\SKILL.md",".github\skills\session-handoff\SKILL.md")
+$skillPaths=@(".github\skills\code-review\SKILL.md",".github\skills\aspnet-core-review\SKILL.md",".github\skills\angular-feature-review\SKILL.md",".github\skills\grill-me\SKILL.md",".github\skills\grill-with-docs\SKILL.md",".github\skills\session-handoff\SKILL.md")
 function Install([string]$path,[string]$mode="skip"){
  $global:LASTEXITCODE=0
  & $installer -TargetPath $path -ConflictMode $mode -SkipSpecKit -SkipSpecKitExtensions -SkipCodeGraph -SkipVerificationProfile -SkipDoctor|Out-Null
