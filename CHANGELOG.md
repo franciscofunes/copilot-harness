@@ -4,7 +4,7 @@ All notable changes to Copilot Harness will be documented in this file.
 
 The project follows Semantic Versioning.
 
-## [1.2.0] - Unreleased
+## [1.2.0] - Release candidate (not yet published)
 
 ### Added
 - Native SQL Server, MongoDB and Snowflake Copilot review skills with advisory-only review guidance and installer integration.
@@ -17,7 +17,7 @@ The project follows Semantic Versioning.
 - Real VS Code and Visual Studio skill discovery and invocation remain unverified until IDE acceptance evidence is recorded.
 - Review the v1.2.0 qualification plan before promoting this candidate to main.
 
-## [1.1.0] - Unreleased
+## [1.1.0] - 2026-10-17
 
 ### Added
 - Repository-native Copilot interaction skills for guided requirements, document-grounded discussion, and session handoff.
