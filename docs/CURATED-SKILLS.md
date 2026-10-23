@@ -59,6 +59,7 @@ The original curated patterns above remain catalog capabilities. The repository 
 
 | Native skill | Intended review |
 | --- | --- |
+| `code-review` | Evidence-grounded cross-stack PR review, severity P0–P3, specification coverage and verification boundaries |
 | `grill-me` | Clarify requirements through guided questions |
 | `grill-with-docs` | Review requirements against supplied documentation |
 | `session-handoff` | Transfer task state with evidence and next steps |

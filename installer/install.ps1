@@ -110,6 +110,7 @@ $files = @(
     ".github\skills\grill-me\SKILL.md",
     ".github\skills\grill-with-docs\SKILL.md",
     ".github\skills\session-handoff\SKILL.md",
+    ".github\skills\code-review\SKILL.md",
     ".github\skills\aspnet-core-review\SKILL.md",
     ".github\skills\angular-feature-review\SKILL.md",
     ".github\skills\sql-server-data-review\SKILL.md",
