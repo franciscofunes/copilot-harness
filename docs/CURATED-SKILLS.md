@@ -81,3 +81,9 @@ flowchart TD
 ```
 
 Run `pwsh ./tests/native-data-skills-smoke.ps1` and `pwsh ./tests/data-skill-selection-benchmark.ps1` for deterministic coverage. A selected skill does not prove real IDE invocation. Doctor reports optional skill installation separately from the IDE adoption acceptance process.
+
+## Native code-review selection contract
+
+The optional `code-review` native skill is included in deterministic catalog selection only when the task explicitly requests a **code review**, **PR review**, **diff review** or **patch review**. Implementation-only tasks, handoffs and documentation-only changes do not activate it. This guidance is advisory: selecting the skill does not authorize code changes, PR approval, merge, or a passing verification claim.
+
+The `tests/skills-smoke.ps1` regression suite checks positive selection, negative selection and documentation anti-triggers. Real Copilot IDE invocation remains separately unverified.
