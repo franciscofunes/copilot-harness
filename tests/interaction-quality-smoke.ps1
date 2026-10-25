@@ -11,6 +11,11 @@ if($LASTEXITCODE -ne 0 -or $report.Cases -lt 4 -or $report.Reviewed -ne 0){throw
 $temp=Join-Path ([IO.Path]::GetTempPath()) ("quality-review-"+[guid]::NewGuid().ToString("N")+".json")
 try{
  $suite=Get-Content -LiteralPath (Join-Path $root "evals\interaction-response-quality.json") -Raw|ConvertFrom-Json
+ $reviewCases=@($suite.cases|Where-Object{$_.skill -eq "code-review"})
+ if($reviewCases.Count -lt 6){throw "Expected at least six cross-stack code-review cases"}
+ foreach($required in @("review-dotnet-auth","review-angular-xss","review-sql-server-transaction","review-mongodb-idempotency","review-snowflake-cost","review-clean-patch")){
+  if(@($reviewCases|Where-Object{$_.id -eq $required}).Count -ne 1){throw "Missing code-review scenario $required"}
+ }
  $reviews=@()
  foreach($case in $suite.cases){
   $grades=@($case.criteria|ForEach-Object{@{criterionId=$_.id;score=2}})
