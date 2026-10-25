@@ -87,3 +87,9 @@ Run `pwsh ./tests/native-data-skills-smoke.ps1` and `pwsh ./tests/data-skill-sel
 The optional `code-review` native skill is included in deterministic catalog selection only when the task explicitly requests a **code review**, **PR review**, **diff review** or **patch review**. Implementation-only tasks, handoffs and documentation-only changes do not activate it. This guidance is advisory: selecting the skill does not authorize code changes, PR approval, merge, or a passing verification claim.
 
 The `tests/skills-smoke.ps1` regression suite checks positive selection, negative selection and documentation anti-triggers. Real Copilot IDE invocation remains separately unverified.
+
+## Code-review quality benchmark
+
+The human-reviewed rubric in `evals/interaction-response-quality.json` includes six `code-review` cases: ASP.NET Core cross-tenant authorization, Angular untrusted HTML, SQL Server transfer atomicity, MongoDB idempotency races, Snowflake full-table ETL cost risk, and a clean C# rename to check false positives. Each case uses weighted criteria for evidence, scope, mitigation and accurate verification claims.
+
+Run `pwsh ./scripts/eval-interaction-quality.ps1 -Json` to validate the unreviewed rubric. Supply reviewer-scored results with `-ResultsPath` for actual quality assessment. `tests/interaction-quality-smoke.ps1` uses synthetic fixtures to verify scoring mechanics only; it does **not** execute an LLM or prove real Copilot behavior.
