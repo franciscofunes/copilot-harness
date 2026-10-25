@@ -600,6 +600,41 @@
         "mode": "existing-harness",
         "requiredEvidence": "deterministic"
       }
+    },
+    {
+      "id": "code-review",
+      "title": "Evidence-Grounded Code Review",
+      "source": {
+        "project": "franciscofunes/copilot-harness",
+        "url": "https://github.com/franciscofunes/copilot-harness/blob/develop/.github/skills/code-review/SKILL.md"
+      },
+      "triggers": [
+        "code review",
+        "review pull request",
+        "review pr",
+        "review diff",
+        "review patch"
+      ],
+      "antiTriggers": [
+        "documentation-only",
+        "docs only",
+        "no code changes"
+      ],
+      "compatibleStacks": [
+        "all"
+      ],
+      "requiresMcp": false,
+      "authority": "advisory",
+      "summary": "Review specification coverage and engineering quality with evidence-backed P0–P3 findings; no approval or verification authority.",
+      "provenance": {
+        "kind": "repository-native",
+        "reviewStatus": "curated",
+        "pinnedRevision": null
+      },
+      "verification": {
+        "mode": "existing-harness",
+        "requiredEvidence": "deterministic"
+      }
     }
   ]
 }
