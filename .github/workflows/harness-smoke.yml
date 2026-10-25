@@ -92,6 +92,10 @@ jobs:
         shell: pwsh
         run: .\tests\interaction-skills-smoke.ps1
 
+      - name: Validate code-review evidence benchmark contract
+        shell: pwsh
+        run: .\tests\code-review-evidence-smoke.ps1
+
       - name: Run interaction response quality rubric smoke checks
         shell: pwsh
         run: .\tests\interaction-quality-smoke.ps1
