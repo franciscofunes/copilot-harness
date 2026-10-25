@@ -23,6 +23,14 @@ try{
  Set-Content (Join-Path $temp "sample.sln") ""
  $debug=(& $selector -TargetPath $temp -Intent "debug unexpected failure" -ChangeType bug -Json|Out-String)|ConvertFrom-Json
  if(@($debug.SelectedSkills|Where-Object{$_.Id -eq "systematic-debugging"}).Count -ne 1){throw "Debug intent must select systematic-debugging."}
+ $review=(& $selector -TargetPath $temp -Intent "code review of API diff" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($review.SelectedSkills|Where-Object{$_.Id -eq "code-review"}).Count -ne 1){throw "Explicit code review must select native code-review capability."}
+ $plainFeature=(& $selector -TargetPath $temp -Intent "implement new API endpoint" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($plainFeature.SelectedSkills|Where-Object{$_.Id -eq "code-review"}).Count -ne 0){throw "Code-review capability selected for implementation-only request."}
+ $docsOnly=(& $selector -TargetPath $temp -Intent "code review documentation-only" -ChangeType documentation -Json|Out-String)|ConvertFrom-Json
+ if(@($docsOnly.SelectedSkills|Where-Object{$_.Id -eq "code-review"}).Count -ne 0){throw "Code-review anti-trigger ignored for documentation-only work."}
+ $handoff=(& $selector -TargetPath $temp -Intent "session handoff" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
+ if(@($handoff.SelectedSkills|Where-Object{$_.Id -eq "code-review"}).Count -ne 0){throw "Code-review capability selected for handoff."}
  $done=(& $selector -TargetPath $temp -Intent "feature complete create pr" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
  if(@($done.SelectedSkills|Where-Object{$_.Id -eq "verification-before-completion"}).Count -ne 1){throw "Completion intent must select verification-before-completion."}
  $excluded=(& $selector -TargetPath $temp -Intent "feature documentation-only" -ChangeType feature -Json|Out-String)|ConvertFrom-Json
