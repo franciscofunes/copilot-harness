@@ -89,6 +89,138 @@
           "weight": 2
         }
       ]
+    },
+    {
+      "id": "review-dotnet-auth",
+      "skill": "code-review",
+      "prompt": "Review an ASP.NET Core endpoint patch: [Authorize] is on the controller, but GET /accounts/{accountId} queries by accountId without checking tenant ownership. No integration tests are provided. Review only; do not change code.",
+      "criteria": [
+        {
+          "id": "tenant-boundary",
+          "description": "Identifies missing object-level/tenant authorization with concrete evidence and P0–P3 severity",
+          "weight": 3
+        },
+        {
+          "id": "test-evidence",
+          "description": "Requests negative cross-tenant authorization tests without claiming they ran",
+          "weight": 3
+        },
+        {
+          "id": "read-only",
+          "description": "Keeps review advisory and does not approve or modify code",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "review-angular-xss",
+      "skill": "code-review",
+      "prompt": "Review an Angular component patch that sets element.innerHTML to user-supplied Markdown rendered without sanitization. The PR claims the output is safe but contains no security tests.",
+      "criteria": [
+        {
+          "id": "unsafe-html",
+          "description": "Flags untrusted HTML injection and cites the concrete unsafe sink",
+          "weight": 3
+        },
+        {
+          "id": "mitigation",
+          "description": "Suggests safe rendering/sanitization and negative security tests",
+          "weight": 3
+        },
+        {
+          "id": "no-fabrication",
+          "description": "Distinguishes observed source behavior from unexecuted exploit tests",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "review-sql-server-transaction",
+      "skill": "code-review",
+      "prompt": "Review a SQL Server transfer patch: UPDATE Accounts SET Balance=Balance-100 WHERE Id=@from; UPDATE Accounts SET Balance=Balance+100 WHERE Id=@to; two separate calls with no explicit transaction or affected-row checks.",
+      "criteria": [
+        {
+          "id": "atomicity",
+          "description": "Identifies non-atomic transfer and partial-update risk",
+          "weight": 3
+        },
+        {
+          "id": "concurrency",
+          "description": "Discusses affected-row validation, insufficient funds and concurrency safeguards where relevant",
+          "weight": 3
+        },
+        {
+          "id": "evidence",
+          "description": "Separates code-visible risks from database runtime verification",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "review-mongodb-idempotency",
+      "skill": "code-review",
+      "prompt": "Review a MongoDB webhook handler: findOne({eventId}) then insertOne({eventId,payload}) with no unique index. Multiple workers can process the same event concurrently.",
+      "criteria": [
+        {
+          "id": "race",
+          "description": "Identifies check-then-insert race and duplicate processing",
+          "weight": 3
+        },
+        {
+          "id": "fix",
+          "description": "Suggests unique index plus atomic idempotency handling and tests",
+          "weight": 3
+        },
+        {
+          "id": "scope",
+          "description": "Avoids unrelated technology recommendations and false pass claims",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "review-snowflake-cost",
+      "skill": "code-review",
+      "prompt": "Review a Snowflake nightly ETL change that replaces incremental MERGE with CREATE OR REPLACE TABLE AS SELECT * FROM a 4 TB history table every hour, without performance measurements.",
+      "criteria": [
+        {
+          "id": "cost-risk",
+          "description": "Flags full-history reprocessing and cost/performance risk as unmeasured",
+          "weight": 3
+        },
+        {
+          "id": "validation",
+          "description": "Proposes query profile, credits, incremental correctness and rollback checks",
+          "weight": 3
+        },
+        {
+          "id": "uncertainty",
+          "description": "Does not invent measured speedups or credit totals",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "review-clean-patch",
+      "skill": "code-review",
+      "prompt": "Review a small C# patch that only renames a private local variable; all references are updated. No observable behavior changes are shown. Provide findings only when supported by evidence.",
+      "criteria": [
+        {
+          "id": "no-false-positives",
+          "description": "Does not manufacture a security or correctness issue",
+          "weight": 3
+        },
+        {
+          "id": "scope",
+          "description": "States evidence limits and keeps review proportional to change",
+          "weight": 3
+        },
+        {
+          "id": "verification",
+          "description": "Does not claim tests passed unless results were provided",
+          "weight": 2
+        }
+      ]
     }
   ]
 }
