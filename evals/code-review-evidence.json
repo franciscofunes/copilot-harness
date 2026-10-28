@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "description": "Human review evidence contract. These are scenarios and expectations, not observed model performance.",
+  "cases": [
+    {
+      "id": "dotnet-cross-tenant",
+      "stack": "DotNet",
+      "expectedFindings": [
+        {
+          "severity": "P1",
+          "signal": "Account lookup lacks tenant ownership check"
+        }
+      ],
+      "mustNotClaim": [
+        "CI passed",
+        "authorization proven"
+      ]
+    },
+    {
+      "id": "angular-untrusted-html",
+      "stack": "Angular",
+      "expectedFindings": [
+        {
+          "severity": "P1",
+          "signal": "Untrusted HTML bypasses sanitization"
+        }
+      ],
+      "mustNotClaim": [
+        "XSS exploit reproduced"
+      ]
+    },
+    {
+      "id": "sql-nonatomic-write",
+      "stack": "SqlServer",
+      "expectedFindings": [
+        {
+          "severity": "P1",
+          "signal": "Related writes lack transaction boundary"
+        }
+      ],
+      "mustNotClaim": [
+        "data loss observed"
+      ]
+    },
+    {
+      "id": "mongodb-retry-duplicates",
+      "stack": "MongoDb",
+      "expectedFindings": [
+        {
+          "severity": "P1",
+          "signal": "Retry lacks idempotency or uniqueness guarantee"
+        }
+      ],
+      "mustNotClaim": [
+        "duplicate writes observed"
+      ]
+    },
+    {
+      "id": "snowflake-full-scan",
+      "stack": "Snowflake",
+      "expectedFindings": [
+        {
+          "severity": "P2",
+          "signal": "Unbounded warehouse scan risks avoidable cost"
+        }
+      ],
+      "mustNotClaim": [
+        "measured cost increase"
+      ]
+    },
+    {
+      "id": "clean-patch",
+      "stack": "all",
+      "expectedFindings": [],
+      "mustNotClaim": [
+        "security issue found",
+        "CI passed"
+      ]
+    }
+  ]
+}
