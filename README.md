@@ -129,7 +129,7 @@ flowchart LR
 
 **v1.0.0** established the stable runtime. **v1.1.0** added native interaction, ASP.NET Core and Angular review skills and adoption tooling. **v1.2.0** introduces native SQL Server, MongoDB and Snowflake review skills, deterministic selection benchmarks and stack-aware Doctor diagnostics.
 
-The v1.2.0 release candidate has been merged into `main`, but a GitHub release/tag and outstanding qualification evidence must be verified separately before calling it published. The benchmark reports a static character-count proxy, **not observed token savings**.
+The v1.2.0 candidate has been merged into `main` (PR #69), but the latest published release at the November 2026 audit was v1.1.0. The [v1.2.0 qualification record](docs/releases/1.2.0-testing.md) remains **NO-GO** until its manual, security, upgrade/rollback and final-head CI gates are resolved. A `VERSION=1.2.0` file or green historical CI run does not authorize a tag or publication. The benchmark reports a static character-count proxy, **not observed token savings**.
 
 ### Native data skill selection
 
