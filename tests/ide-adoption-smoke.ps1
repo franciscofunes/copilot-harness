@@ -7,7 +7,18 @@ $tokens=$null;$errors=$null
 [System.Management.Automation.Language.Parser]::ParseFile($runner,[ref]$tokens,[ref]$errors)|Out-Null
 if(@($errors).Count -gt 0){throw "IDE adoption scorer parse failure: $($errors[0].Message)"}
 $empty=(& $runner -Json|Out-String)|ConvertFrom-Json
-if($LASTEXITCODE -ne 0 -or $empty.Cases -lt 4 -or $empty.Reviewed -ne 0){throw "Expected valid unreviewed suite"}
+if($LASTEXITCODE -ne 0 -or $empty.Cases -lt 8 -or $empty.Reviewed -ne 0){throw "Expected valid unreviewed v1.2 IDE adoption suite"}
+$suiteForCoverage=Get-Content -LiteralPath (Join-Path $root "evals\ide-adoption.json") -Raw|ConvertFrom-Json
+$requiredDataCases=@{
+ "vscode-sqlserver"="sql-server-data-review"
+ "vscode-mongodb"="mongodb-data-review"
+ "vscode-snowflake"="snowflake-data-review"
+ "visualstudio-sqlserver"="sql-server-data-review"
+}
+foreach($id in $requiredDataCases.Keys){
+ $matches=@($suiteForCoverage.cases|Where-Object{$_.id -eq $id -and $_.skill -eq $requiredDataCases[$id]})
+ if($matches.Count -ne 1){throw "v1.2 IDE adoption missing required case $id"}
+}
 $temp=Join-Path ([IO.Path]::GetTempPath()) ("ide-adoption-"+[guid]::NewGuid().ToString("N")+".json")
 try{
  $suite=Get-Content -LiteralPath (Join-Path $root "evals\ide-adoption.json") -Raw|ConvertFrom-Json
