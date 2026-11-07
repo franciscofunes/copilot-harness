@@ -15,7 +15,7 @@ The project follows Semantic Versioning.
 
 ### Notes
 - Real VS Code and Visual Studio skill discovery and invocation remain unverified until IDE acceptance evidence is recorded.
-- Review the v1.2.0 qualification plan before promoting this candidate to main.
+- The candidate was already merged into `main` in PR #69; this is not a published v1.2.0 release. Complete the [qualification gates](docs/releases/1.2.0-testing.md), including live IDE and v1.1.0 upgrade/rollback evidence, before tagging or publishing.
 
 ## [1.1.0] - 2026-10-17
 
