@@ -2,7 +2,7 @@
 
 ## Branch model
 
-- `main`: released, production-ready harness versions only.
+- `main`: normally the released, production-ready branch. **Current exception:** the unqualified v1.2.0 candidate was already merged here via PR #69; the latest published release is still v1.1.0. Treat branch state and a published release/tag as distinct facts.
 - `develop`: integration branch for the next version.
 - `feature/*`: created from `develop`, merged back through PRs.
 - `release/*`: created from `develop` for stabilization, then merged to `main` and back to `develop`.
