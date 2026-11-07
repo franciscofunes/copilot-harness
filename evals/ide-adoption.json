@@ -57,6 +57,62 @@
         "invoked",
         "evidence-captured"
       ]
+    },
+    {
+      "id": "vscode-sqlserver",
+      "ide": "vscode",
+      "stack": "SqlServer",
+      "fixture": "schema.sqlproj",
+      "skill": "sql-server-data-review",
+      "intent": "review sql server transaction",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    },
+    {
+      "id": "vscode-mongodb",
+      "ide": "vscode",
+      "stack": "MongoDb",
+      "fixture": "package.json",
+      "skill": "mongodb-data-review",
+      "intent": "review mongodb aggregation",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    },
+    {
+      "id": "vscode-snowflake",
+      "ide": "vscode",
+      "stack": "Snowflake",
+      "fixture": "requirements.toml",
+      "skill": "snowflake-data-review",
+      "intent": "review snowflake warehouse",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
+    },
+    {
+      "id": "visualstudio-sqlserver",
+      "ide": "visualstudio",
+      "stack": "SqlServer",
+      "fixture": "schema.sqlproj",
+      "skill": "sql-server-data-review",
+      "intent": "review sql server transaction",
+      "checks": [
+        "installed",
+        "discoverable",
+        "invoked",
+        "evidence-captured"
+      ]
     }
   ]
 }
