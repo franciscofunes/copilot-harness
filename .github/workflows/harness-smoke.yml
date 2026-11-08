@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
 
       - name: Run harness smoke checks
         shell: pwsh
@@ -143,7 +143,7 @@ jobs:
 
       - name: Upload provisional provenance evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
         with:
           name: provisional-v1-2-provenance
           path: release-evidence/provenance-receipt.json
@@ -157,19 +157,19 @@ jobs:
 
     steps:
       - name: Checkout qualification scripts
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
         with:
           persist-credentials: false
 
       - name: Checkout published v1.1.0 at immutable SHA
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
         with:
           ref: 1996bbaef67cf4815ad6c18554bffc9daa5f6ea5
           path: release-fixtures/baseline
           persist-credentials: false
 
       - name: Checkout nominated v1.2.0 candidate at immutable SHA
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
         with:
           ref: dfc0436054a7548e0ab78767a0df6fded2eee76f
           path: release-fixtures/candidate
@@ -187,7 +187,7 @@ jobs:
 
       - name: Upload provisional managed-upgrade evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
         with:
           name: provisional-managed-upgrade
           path: release-evidence/managed-upgrade-receipt.json
@@ -196,7 +196,7 @@ jobs:
 
       - name: Upload release qualification receipt
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
         with:
           name: pinned-v1-2-upgrade-rollback
           path: release-evidence/v1-2-upgrade-receipt.json
