@@ -3,7 +3,7 @@ param(
     [Parameter(Position = 0)]
     [string]$TargetPath = ".",
 
-    [ValidateSet("skip", "overwrite")]
+    [ValidateSet("skip", "overwrite", "managed-upgrade")]
     [string]$ConflictMode = "skip",
 
     [ValidateSet("commands", "skills")]
@@ -26,6 +26,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $harnessRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "managed-upgrade.ps1")
 $targetRoot = (Resolve-Path -LiteralPath $TargetPath).Path
 $detectScript = Join-Path $harnessRoot "scripts\detect-stack.ps1"
 $doctorScript = Join-Path $PSScriptRoot "doctor.ps1"
@@ -56,10 +57,74 @@ function Invoke-Specify {
     if ($LASTEXITCODE -ne 0) { throw "specify $($Arguments -join ' ') failed with exit code $LASTEXITCODE." }
 }
 
+$files = @(
+    ".github\copilot-instructions.md",
+    ".github\skills\grill-me\SKILL.md",
+    ".github\skills\grill-with-docs\SKILL.md",
+    ".github\skills\session-handoff\SKILL.md",
+    ".github\skills\code-review\SKILL.md",
+    ".github\skills\aspnet-core-review\SKILL.md",
+    ".github\skills\angular-feature-review\SKILL.md",
+    ".github\skills\sql-server-data-review\SKILL.md",
+    ".github\skills\mongodb-data-review\SKILL.md",
+    ".github\skills\snowflake-data-review\SKILL.md",
+    ".github\instructions\tests.instructions.md",
+    ".github\instructions\release-testing.instructions.md",
+    ".github\instructions\policy-verification.instructions.md",
+    ".github\instructions\data.instructions.md",
+    ".github\prompts\feature.prompt.md",
+    "spec-kit\constitution-template.md",
+    "docs\POLICY-GATE.md",
+    "docs\VERIFICATION-CONTRACT.md",
+    "docs\SPECKIT-EXTENSIONS-VALIDATION.md",
+    "docs\RELEASE-TESTING.md",
+    "docs\releases\TESTING-TEMPLATE.md",
+    "docs\CODEGRAPH.md",
+    "docs\CONTEXT-EVIDENCE-ENGINE.md",
+    "docs\CURATED-SKILLS.md",
+    "docs\HARNESS-READINESS.md",
+    "scripts\detect-stack.ps1",
+    "scripts\new-verification-profile.ps1",
+    "scripts\doctor.ps1",
+    "scripts\policy-check.ps1",
+    "scripts\verify.ps1",
+    "scripts\setup-codegraph.ps1",
+    "scripts\context.ps1",
+    "scripts\skills.ps1",
+    "skills\catalog.json",
+    "scripts\record-evidence.ps1",
+    "scripts\run-harness.ps1",
+    "scripts\lifecycle.ps1",
+    "scripts\maker-checker.ps1",
+    "scripts\audit-runs.ps1",
+    "scripts\audit-integrity.ps1",
+    "scripts\new-audit-report.ps1"
+)
+
 Write-Step "Detecting repository stack"
 $stack = & $detectScript -Path $targetRoot
 $detectedStacks = @($stack.DetectedStacks)
 if ($detectedStacks.Count -eq 0) { Write-Host "No known application stack detected; installing base harness only." } else { Write-Host ("Detected: " + ($detectedStacks -join ", ")) }
+
+# Run the full managed-file preflight before external setup or filesystem mutation.
+$managedUpgradeBackup = $null
+$upgradePlan = $null
+if ($ConflictMode -eq "managed-upgrade") {
+    if (-not $SkipSpecKit -or -not $SkipCodeGraph -or -not $SkipVerificationProfile) {
+        throw "Managed upgrade is a scoped file upgrade. Supply -SkipSpecKit -SkipCodeGraph -SkipVerificationProfile; bootstrap external tools separately."
+    }
+    $managedPaths = @($files)
+    if ($stack.Signals.DotNet) { $managedPaths += ".github/instructions/dotnet.instructions.md" }
+    if ($stack.Signals.Angular) { $managedPaths += ".github/instructions/angular.instructions.md" }
+    $upgradePlan = Get-HarnessManagedUpgradePlan -HarnessRoot $harnessRoot -TargetRoot $targetRoot -RelativePaths $managedPaths
+    Write-Step ("Managed-upgrade preflight passed: {0} pristine, {1} new" -f $upgradePlan.ExistingPristine.Count, $upgradePlan.NewFiles.Count)
+    if (-not $WhatIfPreference) {
+        $managedUpgradeBackup = Start-HarnessManagedUpgradeBackup -TargetRoot $targetRoot -Plan $upgradePlan
+        Write-Host "Recoverable managed-upgrade backup: $($managedUpgradeBackup.Relative)"
+    }
+}
+
+try {
 
 $specKitInitialized = $false
 $extensionsInstalled = @()
@@ -105,49 +170,6 @@ if (-not $SkipCodeGraph) {
 
 Write-Step "Installing repository-native Copilot harness"
 $results = [ordered]@{}
-$files = @(
-    ".github\copilot-instructions.md",
-    ".github\skills\grill-me\SKILL.md",
-    ".github\skills\grill-with-docs\SKILL.md",
-    ".github\skills\session-handoff\SKILL.md",
-    ".github\skills\code-review\SKILL.md",
-    ".github\skills\aspnet-core-review\SKILL.md",
-    ".github\skills\angular-feature-review\SKILL.md",
-    ".github\skills\sql-server-data-review\SKILL.md",
-    ".github\skills\mongodb-data-review\SKILL.md",
-    ".github\skills\snowflake-data-review\SKILL.md",
-    ".github\instructions\tests.instructions.md",
-    ".github\instructions\release-testing.instructions.md",
-    ".github\instructions\policy-verification.instructions.md",
-    ".github\instructions\data.instructions.md",
-    ".github\prompts\feature.prompt.md",
-    "spec-kit\constitution-template.md",
-    "docs\POLICY-GATE.md",
-    "docs\VERIFICATION-CONTRACT.md",
-    "docs\SPECKIT-EXTENSIONS-VALIDATION.md",
-    "docs\RELEASE-TESTING.md",
-    "docs\releases\TESTING-TEMPLATE.md",
-    "docs\CODEGRAPH.md",
-    "docs\CONTEXT-EVIDENCE-ENGINE.md",
-    "docs\CURATED-SKILLS.md",
-    "docs\HARNESS-READINESS.md",
-    "scripts\detect-stack.ps1",
-    "scripts\new-verification-profile.ps1",
-    "scripts\doctor.ps1",
-    "scripts\policy-check.ps1",
-    "scripts\verify.ps1",
-    "scripts\setup-codegraph.ps1",
-    "scripts\context.ps1",
-    "scripts\skills.ps1",
-    "skills\catalog.json",
-    "scripts\record-evidence.ps1",
-    "scripts\run-harness.ps1",
-    "scripts\lifecycle.ps1",
-    "scripts\maker-checker.ps1",
-    "scripts\audit-runs.ps1",
-    "scripts\audit-integrity.ps1",
-    "scripts\new-audit-report.ps1"
-)
 foreach ($file in $files) {
     $display = $file.Replace([char]92, [char]47)
     $results[$display] = Copy-HarnessFile $file $file
@@ -174,11 +196,37 @@ if (-not $SkipVerificationProfile) {
 $versionFile = Join-Path $harnessRoot "VERSION"
 $harnessVersion = if (Test-Path -LiteralPath $versionFile) { (Get-Content -LiteralPath $versionFile -Raw).Trim() } else { "unknown" }
 $manifestPath = Join-Path $targetRoot ".copilot-harness.json"
+
+$previousManifestPath = Join-Path $targetRoot ".copilot-harness.json"
+$previousManifest = $null
+if (Test-Path -LiteralPath $previousManifestPath -PathType Leaf) {
+    $previousManifest = Get-Content -LiteralPath $previousManifestPath -Raw | ConvertFrom-Json
+}
+$skippedOutdated = @()
+foreach ($entry in $results.GetEnumerator()) {
+    if ($entry.Value -ne "skipped") { continue }
+    $source = Join-Path $harnessRoot $entry.Key
+    $destination = Join-Path $targetRoot $entry.Key
+    if ((Test-Path -LiteralPath $source -PathType Leaf) -and
+        (Test-Path -LiteralPath $destination -PathType Leaf) -and
+        (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash) {
+        $skippedOutdated += $entry.Key
+    }
+}
+$upgradeStatus = if ($skippedOutdated.Count -gt 0) { "PARTIAL" } else { "COMPLETE" }
+$effectiveVersion = $harnessVersion
+if ($upgradeStatus -eq "PARTIAL") {
+    $effectiveVersion = if ($null -ne $previousManifest) { $previousManifest.harnessVersion } else { "unknown" }
+    Write-Warning "Partial skip-mode install: manifest retains effective version '$effectiveVersion'. Requested $harnessVersion, with $($skippedOutdated.Count) preserved differing files."
+}
+$backupRelativePath = if ($null -ne $managedUpgradeBackup) { $managedUpgradeBackup.Relative } else { $null }
+$previousVersion = if ($null -ne $upgradePlan) { $upgradePlan.PreviousVersion } elseif ($null -ne $previousManifest) { $previousManifest.harnessVersion } else { $null }
 $manifest = [ordered]@{
-    harnessVersion = $harnessVersion
+    harnessVersion = $effectiveVersion
     installedAtUtc = [DateTime]::UtcNow.ToString("o")
     detectedStacks = $detectedStacks
     conflictMode = $ConflictMode
+    upgrade = [ordered]@{ status = $upgradeStatus; requestedVersion = $harnessVersion; previousVersion = $previousVersion; skippedDifferingFiles = @($skippedOutdated); backupPath = $backupRelativePath }
     specKit = [ordered]@{ repository = $specKitRepository; requested = (-not $SkipSpecKit); layout = $SpecKitLayout; initializedThisRun = $specKitInitialized; requestedExtensions = @($SpecKitExtensions); installedThisRun = @($extensionsInstalled) }
     codeGraph = [ordered]@{ repository = $codeGraphRepository; requested = (-not $SkipCodeGraph); configuredThisRun = $codeGraphConfigured; requestedVersion = $CodeGraphVersion; projectInitRequested = (-not $SkipCodeGraphInit); telemetryEnabledByHarness = [bool]$KeepCodeGraphTelemetry; mode = "cli-only" }
     policy = [ordered]@{ gate = "docs/POLICY-GATE.md"; evaluator = "scripts/policy-check.ps1" }
@@ -213,3 +261,11 @@ if (-not $SkipDoctor -and (Test-Path -LiteralPath $doctorScript)) {
     if ($LASTEXITCODE -ne 0) { throw "Harness installation completed, but doctor reported blocking failures." }
 }
 Write-Host "Copilot Harness bootstrap complete."
+} catch {
+    $upgradeFailure = $_
+    if ($null -ne $managedUpgradeBackup) {
+        Write-Warning "Managed upgrade failed; restoring the pre-upgrade files and manifest."
+        Restore-HarnessManagedUpgradeBackup -TargetRoot $targetRoot -BackupRoot $managedUpgradeBackup.Root
+    }
+    throw $upgradeFailure
+}
