@@ -18,11 +18,24 @@ $report=[ordered]@{SchemaVersion=1;Cases=$cases.Count;Reviewed=0;Unreviewed=$cas
 if(-not [string]::IsNullOrWhiteSpace($ResultsPath)){
  $results=Get-Content -LiteralPath $ResultsPath -Raw|ConvertFrom-Json
  if($results.schemaVersion -ne 1){throw "Unsupported results schema"}
- $seen=@{}
+ $seen=@{};$completedCount=0
  foreach($review in @($results.reviews)){
   $id=[string]$review.caseId
   if(-not $cases.ContainsKey($id) -or $seen.ContainsKey($id)){throw "Unknown/duplicate case ID in review"}
   $seen[$id]=$true
+  # A generated pending review is deliberately excluded from completed evidence.
+  # It must never contain a positive observed check while it is pending.
+  if($null -ne $review.PSObject.Properties["pending"] -and $review.pending -eq $true){
+   foreach($check in $checks){
+    if($null -eq $review.observed -or $null -eq $review.observed.PSObject.Properties[$check] -or
+       $review.observed.$check -isnot [bool] -or $review.observed.$check){
+     throw "Pending case $id must explicitly contain false observed check $check"
+    }
+   }
+   $report.Results+=@{CaseId=$id;Passed=$false;Pending=$true}
+   continue
+  }
+  $completedCount++
   if([string]::IsNullOrWhiteSpace($review.reviewer) -or [string]::IsNullOrWhiteSpace($review.evidence) -or [string]::IsNullOrWhiteSpace($review.ideVersion) -or [string]::IsNullOrWhiteSpace($review.copilotVersion)){throw "Reviewer, evidence and IDE/Copilot versions are required"}
   $observed=$review.observed
   $allPassed=$true
@@ -32,7 +45,7 @@ if(-not [string]::IsNullOrWhiteSpace($ResultsPath)){
   }
   $report.Results+=@{CaseId=$id;Passed=$allPassed}
  }
- $report.Reviewed=$seen.Count;$report.Unreviewed=$cases.Count-$seen.Count
+ $report.Reviewed=$completedCount;$report.Unreviewed=$cases.Count-$completedCount
  $report.Passed=($report.Unreviewed -eq 0 -and @($report.Results|Where-Object{-not $_.Passed}).Count -eq 0)
 }
 if($Json){$report|ConvertTo-Json -Depth 7}else{Write-Host "IDE adoption: $($report.Reviewed)/$($report.Cases) reviewed; passed=$($report.Passed)"}
