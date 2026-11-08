@@ -33,6 +33,10 @@ jobs:
         shell: pwsh
         run: .\tests\release-1-2-static-smoke.ps1
 
+      - name: Validate v1.2.0 candidate provenance and bounded secret patterns
+        shell: pwsh
+        run: .\\tests\\release-1-2-provenance-smoke.ps1 -ReceiptPath "$env:GITHUB_WORKSPACE\\release-evidence\\provenance-receipt.json"
+
       - name: Run installer contract smoke checks
         shell: pwsh
         run: .\tests\installer-contract-smoke.ps1
@@ -136,6 +140,15 @@ jobs:
       - name: Run policy and evidence evals
         shell: pwsh
         run: .\tests\policy-evidence-evals.ps1
+
+      - name: Upload provisional provenance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provisional-v1-2-provenance
+          path: release-evidence/provenance-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
 
   release-upgrade-rollback:
     name: Pinned v1.2 upgrade and rollback
