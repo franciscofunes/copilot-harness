@@ -72,3 +72,7 @@ try {
 } finally {
     if (Test-Path -LiteralPath $tempRoot) { Remove-Item -LiteralPath $tempRoot -Recurse -Force }
 }
+
+# The negative scorer fixtures intentionally exit 1; do not leak that into the CI job.
+$global:LASTEXITCODE = 0
+exit 0
