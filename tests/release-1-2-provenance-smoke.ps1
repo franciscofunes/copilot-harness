@@ -40,6 +40,24 @@ if ($workflow -notmatch '(?m)^permissions:\s*\r?\n\s+contents:\s*read\s*$' -or
     throw "Release workflow has unexpected or elevated GitHub Actions permissions/triggers."
 }
 
+# Require the exact verified v4 commit identities, never movable action tags.
+# These SHAs are pinned from the official actions/* GitHub tag refs and commits.
+$expectedActionCommits = @{
+    "actions/checkout" = "11d5960a326750d5838078e36cf38b85af677262"
+    "actions/upload-artifact" = "ea165f8d65b6e75b540449e92b4886f43607fa02"
+}
+$actionUses = @([regex]::Matches($workflow, '(?m)^\s*uses:\s*([^\s#]+)') | ForEach-Object { $_.Groups[1].Value })
+if ($actionUses.Count -ne 7) {
+    throw "Release workflow must review every referenced action; observed $($actionUses.Count), expected 7."
+}
+foreach ($use in $actionUses) {
+    $parts = $use.Split([char]'@')
+    if ($parts.Count -ne 2 -or -not $expectedActionCommits.ContainsKey($parts[0]) -or
+        $parts[1] -ne $expectedActionCommits[$parts[0]]) {
+        throw "Unreviewed or mutable GitHub Actions reference: $use"
+    }
+}
+
 # Bounded, high-confidence source heuristic only; not a substitute for secret scanning.
 $secretRules = [ordered]@{
     github_pat = '(?<![A-Za-z0-9])(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,})'
@@ -77,6 +95,7 @@ $receipt = [ordered]@{
         publishedBaselineFingerprintMetadataValid = $true
         releaseNoGoExplicit = $true
         actionsPermissionsRestricted = $true
+        firstPartyActionsPinnedToVerifiedCommits = $true
         highConfidenceSecretPatternsAbsentInSelectedSources = $true
     }
     coverage = "Local metadata and bounded source heuristics only; not a signed security review."
