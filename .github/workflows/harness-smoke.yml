@@ -117,6 +117,10 @@ jobs:
         shell: pwsh
         run: .\tests\ide-adoption-smoke.ps1
 
+      - name: Validate pending IDE review template and fail-closed scoring
+        shell: pwsh
+        run: .\tests\ide-evidence-template-smoke.ps1
+
       - name: Run native skill installation and discovery acceptance checks
         shell: pwsh
         run: .\tests\native-skill-adoption-smoke.ps1
