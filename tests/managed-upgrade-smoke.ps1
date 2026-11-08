@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$BaselineSourcePath,
-    [Parameter(Mandatory)][string]$CandidateSourcePath
+    [Parameter(Mandatory)][string]$CandidateSourcePath,
+    [string]$ReceiptPath
 )
 
 Set-StrictMode -Version Latest
@@ -132,6 +133,25 @@ try {
     if (@($skipManifest.upgrade.skippedDifferingFiles).Count -lt 1) { throw "Partial skip manifest lacks differing-file evidence" }
     Assert-Equal $oldDoctor (Get-FileHash -LiteralPath (Join-Path $skip "scripts/doctor.ps1") -Algorithm SHA256).Hash "Skip-mode Doctor preservation"
 
+    if (-not [string]::IsNullOrWhiteSpace($ReceiptPath)) {
+        $candidateCommit = (& git -C $CandidateSourcePath rev-parse HEAD | Out-String).Trim()
+        $receipt = [ordered]@{
+            schemaVersion = 1
+            publishedBaseline = [ordered]@{ version = "1.1.0"; sha = $baselineSha }
+            testedImplementation = [ordered]@{ version = "1.2.0"; sha = $candidateCommit; note = "PR integration head, not the nominated pinned main candidate" }
+            gates = [ordered]@{
+                customizedFilesRejectedBeforeMutation = $true
+                pristineRuntimeUpgraded = $true
+                skipModeManifestReportsPartial = $true
+                backupVerifiedAndRestoredByteForByte = $true
+            }
+            releaseGate = "BLOCKED"
+            reason = "The final v1.2.0 candidate has not been updated, frozen, and requalified; live IDE adoption and owner sign-off remain outstanding."
+        }
+        $folder = Split-Path -Parent $ReceiptPath
+        if (-not (Test-Path -LiteralPath $folder)) { New-Item -ItemType Directory -Path $folder -Force | Out-Null }
+        $receipt | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $ReceiptPath -Encoding UTF8
+    }
     Write-Host "PASS: pinned pristine upgrade, custom-content preflight, effective-version reporting, backup integrity and exact rollback."
 } finally {
     if (Test-Path -LiteralPath $workRoot) { Remove-Item -LiteralPath $workRoot -Recurse -Force }
