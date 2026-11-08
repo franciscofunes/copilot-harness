@@ -170,6 +170,20 @@ jobs:
         run: |
           .\tests\release-1-2-upgrade-rollback-smoke.ps1 -BaselineSourcePath "$env:GITHUB_WORKSPACE\release-fixtures\baseline" -CandidateSourcePath "$env:GITHUB_WORKSPACE\release-fixtures\candidate" -ReceiptPath "$env:GITHUB_WORKSPACE\release-evidence\v1-2-upgrade-receipt.json"
 
+      - name: Exercise safe managed upgrade against published v1.1.0
+        shell: pwsh
+        run: |
+          .\\tests\\managed-upgrade-smoke.ps1 -BaselineSourcePath "$env:GITHUB_WORKSPACE\\release-fixtures\\baseline" -CandidateSourcePath "$env:GITHUB_WORKSPACE" -ReceiptPath "$env:GITHUB_WORKSPACE\\release-evidence\\managed-upgrade-receipt.json"
+
+      - name: Upload provisional managed-upgrade evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provisional-managed-upgrade
+          path: release-evidence/managed-upgrade-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Upload release qualification receipt
         if: always()
         uses: actions/upload-artifact@v4
