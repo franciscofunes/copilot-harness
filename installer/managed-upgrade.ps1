@@ -4,7 +4,21 @@ Set-StrictMode -Version Latest
 
 function Get-HarnessGitBlobHash {
     param([Parameter(Mandatory)][string]$Path)
-    $bytes = [IO.File]::ReadAllBytes($Path)
+    $originalBytes = [IO.File]::ReadAllBytes($Path)
+    # Git stores text blobs with LF, while actions/checkout on Windows may produce CRLF.
+    # Normalize only CRLF byte pairs; preserve all other bytes (including any BOM).
+    $stream = [IO.MemoryStream]::new()
+    try {
+        for ($i = 0; $i -lt $originalBytes.Length; $i++) {
+            if ($originalBytes[$i] -eq 13 -and ($i + 1) -lt $originalBytes.Length -and $originalBytes[$i + 1] -eq 10) {
+                continue
+            }
+            $stream.WriteByte($originalBytes[$i])
+        }
+        $bytes = $stream.ToArray()
+    } finally {
+        $stream.Dispose()
+    }
     $header = [Text.Encoding]::ASCII.GetBytes("blob $($bytes.Length)" + [char]0)
     $inputBytes = [byte[]]::new($header.Length + $bytes.Length)
     [Buffer]::BlockCopy($header, 0, $inputBytes, 0, $header.Length)
