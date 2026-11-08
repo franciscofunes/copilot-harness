@@ -139,3 +139,42 @@ jobs:
       - name: Run policy and evidence evals
         shell: pwsh
         run: .\tests\policy-evidence-evals.ps1
+
+  release-upgrade-rollback:
+    name: Pinned v1.2 upgrade and rollback
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout qualification scripts
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout published v1.1.0 at immutable SHA
+        uses: actions/checkout@v4
+        with:
+          ref: 1996bbaef67cf4815ad6c18554bffc9daa5f6ea5
+          path: release-fixtures/baseline
+          persist-credentials: false
+
+      - name: Checkout nominated v1.2.0 candidate at immutable SHA
+        uses: actions/checkout@v4
+        with:
+          ref: dfc0436054a7548e0ab78767a0df6fded2eee76f
+          path: release-fixtures/candidate
+          persist-credentials: false
+
+      - name: Exercise pinned upgrade modes and snapshot restoration
+        shell: pwsh
+        run: |
+          .\tests\release-1-2-upgrade-rollback-smoke.ps1 -BaselineSourcePath "$env:GITHUB_WORKSPACE\release-fixtures\baseline" -CandidateSourcePath "$env:GITHUB_WORKSPACE\release-fixtures\candidate" -ReceiptPath "$env:GITHUB_WORKSPACE\release-evidence\v1-2-upgrade-receipt.json"
+
+      - name: Upload release qualification receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinned-v1-2-upgrade-rollback
+          path: release-evidence/v1-2-upgrade-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
