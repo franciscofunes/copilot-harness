@@ -12,12 +12,14 @@ The project follows Semantic Versioning.
 - Static selected-skill character footprint comparison, explicitly not a measurement of actual Copilot token usage or cost.
 - Stack-aware Doctor diagnostics for native data skills, preserving nonblocking warnings for optional skills.
 - Evidence-gated v1.2.0 release qualification plan and CI smoke validation.
+- Opt-in, fail-closed v1.1.0 managed-file upgrade with pinned pristine-content detection, SHA-256 backup receipt, and targeted rollback.
 
 ### Notes
 - Real VS Code and Visual Studio skill discovery and invocation remain unverified until IDE acceptance evidence is recorded.
-- Review the v1.2.0 qualification plan before promoting this candidate to main.
+- Default skip mode preserves differing managed files and marks the install PARTIAL, retaining the previous effective version instead of claiming a complete 1.2.0 runtime.
+- Review the v1.2.0 qualification plan before promoting this candidate to main; IDE, security and owner gates remain unresolved.
 
-## [1.1.0] - Unreleased
+## [1.1.0] - 2026-10-17
 
 ### Added
 - Repository-native Copilot interaction skills for guided requirements, document-grounded discussion, and session handoff.
