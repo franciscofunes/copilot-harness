@@ -141,8 +141,11 @@ try {
     }
     $candidateDoctorDiffers = (Get-FileHashValue (Join-Path $candidate "scripts\doctor.ps1")) -ne $oldDoctorHash
     $candidateCatalogDiffers = (Get-FileHashValue (Join-Path $candidate "skills\catalog.json")) -ne $oldCatalogHash
-    if (-not $candidateDoctorDiffers -or -not $candidateCatalogDiffers) {
-        throw "Expected cross-version Doctor/catalog changes were not present"
+    if (-not $candidateDoctorDiffers) {
+        throw "Expected cross-version Doctor changes were not present"
+    }
+    if ($candidateCatalogDiffers) {
+        throw "Catalog content unexpectedly changed between pinned versions; review the baseline assumption"
     }
 
     # Overwrite is intentionally explicit and demonstrated only on a disposable copy.
@@ -175,7 +178,8 @@ try {
         defaultSkip = [ordered]@{
             existingFilesPreserved = $true
             newDataSkillsInstalled = $true
-            oldDoctorAndCatalogRemain = $true
+            oldDoctorRemains = $true
+            catalogIdenticalAcrossPins = $true
             completeRuntimeUpgrade = $false
         }
         explicitOverwrite = [ordered]@{
@@ -189,7 +193,7 @@ try {
             restoredManifestVersion = "1.1.0"
         }
         releaseGate = "BLOCKED"
-        reason = "Default skip preserves old runtime/catalog while reporting a 1.2.0 manifest; overwrite replaces customized content. A safe full in-place upgrade policy is not yet proven."
+        reason = "Default skip preserves old Doctor/runtime while reporting a 1.2.0 manifest (the catalog is identical across pins); overwrite replaces customized content. A safe full in-place upgrade policy is not yet proven."
     }
     if (-not [string]::IsNullOrWhiteSpace($ReceiptPath)) {
         $receiptDirectory = Split-Path -Parent $ReceiptPath
@@ -199,7 +203,7 @@ try {
         $receipt | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ReceiptPath -Encoding UTF8
     }
     Write-Host "PASS: Pinned v1.1.0 -> v1.2.0 fixture checks and both snapshot restorations passed."
-    Write-Warning "RELEASE BLOCKED: Skip preserves old Doctor/catalog; overwrite destroys customizations. No full safe upgrade claim."
+    Write-Warning "RELEASE BLOCKED: Skip preserves the old Doctor; overwrite destroys customizations. No full safe upgrade claim."
 } finally {
     if (Test-Path -LiteralPath $workRoot) {
         Remove-Item -LiteralPath $workRoot -Recurse -Force
