@@ -9,7 +9,8 @@ This is a **manual, evidence-backed** acceptance kit. CI cannot establish whethe
 3. Generate a **PENDING** template covering every required case, in a secure local directory **outside the repository**. The generator refuses to overwrite existing results:
 
    ```powershell
-   pwsh ./scripts/new-ide-adoption-review.ps1 -OutputPath "C:\\temp\\ide-review.json"
+   $reviewFile = Join-Path $env:TEMP 'ide-review.json'
+   pwsh ./scripts/new-ide-adoption-review.ps1 -OutputPath $reviewFile
    ```
 
 4. In the IDE named by each case in `evals/ide-adoption.json`, open the target, record the exact IDE/Copilot versions, and verify whether Copilot **actually discovers and invokes** the native `.github/skills/<skill>/SKILL.md` skill.
@@ -17,7 +18,7 @@ This is a **manual, evidence-backed** acceptance kit. CI cannot establish whethe
 6. Score the local file:
 
    ```powershell
-   pwsh ./scripts/eval-ide-adoption.ps1 -ResultsPath "C:\\temp\\ide-review.json" -Json
+   pwsh ./scripts/eval-ide-adoption.ps1 -ResultsPath $reviewFile -Json
    ```
 
    The scorer exits nonzero until all cases have been reviewed and passed. Submit the **redacted evidence references and reviewer decision** to the release owner using an approved private channel. Do not commit raw screenshots or proprietary project details.
