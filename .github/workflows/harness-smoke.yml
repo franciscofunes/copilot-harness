@@ -113,6 +113,10 @@ jobs:
         shell: pwsh
         run: .\tests\release-1-2-readiness-smoke.ps1
 
+      - name: Validate Q-01 scope review inventory and drift protection
+        shell: pwsh
+        run: .\tests\release-1-2-scope-review-smoke.ps1
+
       - name: Run IDE adoption review rubric smoke checks
         shell: pwsh
         run: .\tests\ide-adoption-smoke.ps1
