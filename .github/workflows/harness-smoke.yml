@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
+        with:
+          fetch-depth: 0 # Q-08 candidate ancestry history scan must reject shallow clones
 
       - name: Run harness smoke checks
         shell: pwsh
@@ -36,6 +38,14 @@ jobs:
       - name: Validate v1.2.0 candidate provenance and bounded secret patterns
         shell: pwsh
         run: .\\tests\\release-1-2-provenance-smoke.ps1 -ReceiptPath "$env:GITHUB_WORKSPACE\\release-evidence\\provenance-receipt.json"
+
+      - name: Test redacted Git-history credential scanner
+        shell: pwsh
+        run: .\tests\release-1-2-history-secrets-smoke.ps1
+
+      - name: Scan candidate Git history for bounded credential patterns
+        shell: pwsh
+        run: .\scripts\audit-release-history-secrets.ps1 -ReceiptPath "$env:GITHUB_WORKSPACE\release-evidence\history-secrets-receipt.json"
 
       - name: Run installer contract smoke checks
         shell: pwsh
@@ -154,7 +164,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
         with:
           name: provisional-v1-2-provenance
-          path: release-evidence/provenance-receipt.json
+          path: |
+            release-evidence/provenance-receipt.json
+            release-evidence/history-secrets-receipt.json
           if-no-files-found: warn
           retention-days: 14
 
