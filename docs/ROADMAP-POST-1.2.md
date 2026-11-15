@@ -56,6 +56,14 @@ flowchart LR
 
 **Acceptance:** unchanged default Copilot behavior, no credentials collected or leaked by the harness, no silent remote execution, safe failure/rollback, Doctor validation, pinned provenance and documented opt-in. The release must not ship an install toggle that cannot meet these conditions.
 
+## Cross-release workstream — Opt-in Copilot End-to-End Lab
+
+**Status: PROPOSED / NOT RUN.** [Copilot E2E Lab design](COPILOT-E2E-LAB.md) defines the planned deterministic Windows lane (L0), optional authenticated Copilot CLI lane (L1), and manual VS Code/Visual Studio lane (L2), with the proposed [scenario catalog](../evals/e2e-lab-cases.json). This is a **parallel verification workstream**, not a replacement for the v1.3.0 trusted-upstream, v1.4.0 prompt-efficiency, or v1.5.0 optional OMP roadmap.
+
+First implementation priority: isolate dummy workspaces, identify the real policy-enforcement boundary, and design a fail-closed tool dispatcher before any agent can mutate files or run commands. Do not infer policy enforcement from `policy-check.ps1` classification or a Copilot response alone.
+
+No Copilot API/CLI execution, Windows VM, test suite, release candidate merge, live IDE acceptance or owner approval is performed by this planning-only work. **v1.2.0 remains NO-GO** and its manual acceptance [Issue #87](https://github.com/franciscofunes/copilot-harness/issues/87) stays open.
+
 ## Boundary and go/no-go decisions
 
 | Concern | Required decision |
