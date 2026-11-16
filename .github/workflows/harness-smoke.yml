@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - release/1.2.0
   push:
     branches:
       - develop
@@ -22,11 +23,29 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
+        with:
+          fetch-depth: 0 # Q-08 candidate ancestry history scan must reject shallow clones
 
       - name: Run harness smoke checks
         shell: pwsh
         run: .\tests\smoke.ps1
+
+      - name: Validate all PowerShell and JSON source syntax
+        shell: pwsh
+        run: .\tests\release-1-2-static-smoke.ps1
+
+      - name: Validate v1.2.0 candidate provenance and bounded secret patterns
+        shell: pwsh
+        run: .\\tests\\release-1-2-provenance-smoke.ps1 -ReceiptPath "$env:GITHUB_WORKSPACE\\release-evidence\\provenance-receipt.json"
+
+      - name: Test redacted Git-history credential scanner
+        shell: pwsh
+        run: .\tests\release-1-2-history-secrets-smoke.ps1
+
+      - name: Scan candidate Git history for bounded credential patterns
+        shell: pwsh
+        run: .\scripts\audit-release-history-secrets.ps1 -ReceiptPath "$env:GITHUB_WORKSPACE\release-evidence\history-secrets-receipt.json"
 
       - name: Run installer contract smoke checks
         shell: pwsh
@@ -104,9 +123,17 @@ jobs:
         shell: pwsh
         run: .\tests\release-1-2-readiness-smoke.ps1
 
+      - name: Validate Q-01 scope review inventory and drift protection
+        shell: pwsh
+        run: .\tests\release-1-2-scope-review-smoke.ps1
+
       - name: Run IDE adoption review rubric smoke checks
         shell: pwsh
         run: .\tests\ide-adoption-smoke.ps1
+
+      - name: Validate pending IDE review template and fail-closed scoring
+        shell: pwsh
+        run: .\tests\ide-evidence-template-smoke.ps1
 
       - name: Run native skill installation and discovery acceptance checks
         shell: pwsh
@@ -131,3 +158,67 @@ jobs:
       - name: Run policy and evidence evals
         shell: pwsh
         run: .\tests\policy-evidence-evals.ps1
+
+      - name: Upload provisional provenance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
+        with:
+          name: provisional-v1-2-provenance
+          path: |
+            release-evidence/provenance-receipt.json
+            release-evidence/history-secrets-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  release-upgrade-rollback:
+    name: Pinned v1.2 upgrade and rollback
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout qualification scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
+        with:
+          persist-credentials: false
+
+      - name: Checkout published v1.1.0 at immutable SHA
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
+        with:
+          ref: 1996bbaef67cf4815ad6c18554bffc9daa5f6ea5
+          path: release-fixtures/baseline
+          persist-credentials: false
+
+      - name: Checkout nominated v1.2.0 candidate at immutable SHA
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified GitHub tag
+        with:
+          ref: dfc0436054a7548e0ab78767a0df6fded2eee76f
+          path: release-fixtures/candidate
+          persist-credentials: false
+
+      - name: Exercise pinned upgrade modes and snapshot restoration
+        shell: pwsh
+        run: |
+          .\tests\release-1-2-upgrade-rollback-smoke.ps1 -BaselineSourcePath "$env:GITHUB_WORKSPACE\release-fixtures\baseline" -CandidateSourcePath "$env:GITHUB_WORKSPACE\release-fixtures\candidate" -ReceiptPath "$env:GITHUB_WORKSPACE\release-evidence\v1-2-upgrade-receipt.json"
+
+      - name: Exercise safe managed upgrade against published v1.1.0
+        shell: pwsh
+        run: |
+          .\\tests\\managed-upgrade-smoke.ps1 -BaselineSourcePath "$env:GITHUB_WORKSPACE\\release-fixtures\\baseline" -CandidateSourcePath "$env:GITHUB_WORKSPACE" -ReceiptPath "$env:GITHUB_WORKSPACE\\release-evidence\\managed-upgrade-receipt.json"
+
+      - name: Upload provisional managed-upgrade evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
+        with:
+          name: provisional-managed-upgrade
+          path: release-evidence/managed-upgrade-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload release qualification receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, verified GitHub tag
+        with:
+          name: pinned-v1-2-upgrade-rollback
+          path: release-evidence/v1-2-upgrade-receipt.json
+          if-no-files-found: warn
+          retention-days: 14

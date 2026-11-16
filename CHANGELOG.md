@@ -12,12 +12,15 @@ The project follows Semantic Versioning.
 - Static selected-skill character footprint comparison, explicitly not a measurement of actual Copilot token usage or cost.
 - Stack-aware Doctor diagnostics for native data skills, preserving nonblocking warnings for optional skills.
 - Evidence-gated v1.2.0 release qualification plan and CI smoke validation.
+- Opt-in, fail-closed v1.1.0 managed-file upgrade with pinned pristine-content detection, SHA-256 backup receipt, and targeted rollback.
 
 ### Notes
-- Real VS Code and Visual Studio skill discovery and invocation remain unverified until IDE acceptance evidence is recorded.
-- Review the v1.2.0 qualification plan before promoting this candidate to main.
+- **Known limitation (Q-07):** Real VS Code and Visual Studio skill discovery/invocation was **not validated** for this candidate (0/4 manual IDE scenarios observed). Deferred tests are tracked in [Issue #90](https://github.com/franciscofunes/copilot-harness/issues/90); they may not be reported as passed. Shipping without this evidence needs an explicitly recorded owner risk-acceptance exception and disclosure in the GitHub Release description.
+- Deterministic policy classification and verification do **not** provide a general enforcement layer over Copilot's independent IDE/CLI tool execution; do not market this release as an autonomous tool-call firewall.
+- Default skip mode preserves differing managed files and marks the install PARTIAL, retaining the previous effective version instead of claiming a complete 1.2.0 runtime.
+- Review the v1.2.0 qualification plan before promoting this candidate to main; IDE, security and owner gates remain unresolved.
 
-## [1.1.0] - Unreleased
+## [1.1.0] - 2026-10-17
 
 ### Added
 - Repository-native Copilot interaction skills for guided requirements, document-grounded discussion, and session handoff.
